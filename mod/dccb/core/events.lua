@@ -15,6 +15,10 @@ local handlers = {}
 -- Private: maximum telemetry event buffer size
 local MAX_TELEMETRY_EVENTS = 100
 
+-- Private: cached State module reference (loaded lazily)
+local State = nil
+local state_load_attempted = false
+
 -- Subscribe to an event
 -- Handlers are called in registration order
 -- @param event_name string - the event to listen for
@@ -84,7 +88,7 @@ function Events.emit(event_name, payload)
   -- Normalize payload
   payload = payload or {}
   if type(payload) ~= "table" then
-    log.warn("Events.emit: payload should be a table, got:", type(payload), "- wrapping it")
+    log.debug("Events.emit: payload should be a table, got:", type(payload), "- wrapping it")
     payload = { value = payload }
   end
   
@@ -101,8 +105,16 @@ function Events.emit(event_name, payload)
   log.debug("Events.emit:", event_name)
   
   -- Record to telemetry if State is available
-  local ok, State = pcall(require, "mod.dccb.core.state")
-  if ok and State and State.get then
+  -- Lazy load State module on first use
+  if not state_load_attempted then
+    local ok, loaded_state = pcall(require, "mod.dccb.core.state")
+    if ok then
+      State = loaded_state
+    end
+    state_load_attempted = true
+  end
+  
+  if State and State.get then
     local state_ok, state = pcall(State.get)
     if state_ok and state and state.telemetry and state.telemetry.events then
       -- Add event to telemetry buffer
