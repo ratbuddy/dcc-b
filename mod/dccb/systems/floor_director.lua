@@ -24,6 +24,44 @@ local module_state = {
   rng_stream = nil
 }
 
+-- Private helper: Create a deep copy of a table (one level deep for arrays/objects)
+-- @param tbl table - the table to copy
+-- @return table - a new table with copied values
+local function deep_copy_table(tbl)
+  if type(tbl) ~= "table" then
+    return tbl
+  end
+  
+  local copy = {}
+  for key, value in pairs(tbl) do
+    if type(value) == "table" then
+      -- Copy nested table (one level)
+      copy[key] = deep_copy_table(value)
+    else
+      copy[key] = value
+    end
+  end
+  return copy
+end
+
+-- Private helper: Create a defensive copy of a weighted list
+-- Used to ensure no input mutation in adjust_spawn_weights
+-- @param weights table - array of weighted items {id, w, ...}
+-- @return table - new array with copied items
+local function copy_weighted_list(weights)
+  local copy = {}
+  for _, item in ipairs(weights) do
+    local new_item = {id = item.id, w = item.w}
+    for key, value in pairs(item) do
+      if key ~= "id" and key ~= "w" then
+        new_item[key] = value
+      end
+    end
+    table.insert(copy, new_item)
+  end
+  return copy
+end
+
 -- Initialize the Floor Director
 -- @param state table - the global DCCBState singleton
 -- @param data table - bootstrap data including floor_rules_by_id and mutations_by_id
@@ -291,14 +329,14 @@ function FloorDirector.apply_generation_mutations(state, gen_params)
     modified[key] = value
   end
   
-  -- Attach dccb_floor subtable
+  -- Attach dccb_floor subtable (deep copy to prevent mutation of floor_state)
   modified.dccb_floor = {
     floor_number = floor_state.floor_number,
     rule_set_id = floor_state.rule_set_id,
-    active_rules = floor_state.active_rules,
-    active_mutations = floor_state.active_mutations,
-    spawn_modifiers = floor_state.spawn_modifiers,
-    loot_modifiers = floor_state.loot_modifiers
+    active_rules = deep_copy_table(floor_state.active_rules),
+    active_mutations = deep_copy_table(floor_state.active_mutations),
+    spawn_modifiers = deep_copy_table(floor_state.spawn_modifiers),
+    loot_modifiers = deep_copy_table(floor_state.loot_modifiers)
   }
   
   log.debug("FloorDirector.apply_generation_mutations: complete")
@@ -327,18 +365,7 @@ function FloorDirector.adjust_spawn_weights(state, spawn_type, weights, context)
   local floor_state = state.floor.state
   if not floor_state then
     log.debug("FloorDirector.adjust_spawn_weights: floor state not activated, returning copy of weights")
-    -- Return a defensive copy to maintain "no input mutation" guarantee
-    local copy = {}
-    for _, item in ipairs(weights) do
-      local new_item = {id = item.id, w = item.w}
-      for key, value in pairs(item) do
-        if key ~= "id" and key ~= "w" then
-          new_item[key] = value
-        end
-      end
-      table.insert(copy, new_item)
-    end
-    return copy
+    return copy_weighted_list(weights)
   end
   
   -- Phase-1: apply spawn_modifiers.faction_weight_overrides if provided
@@ -347,18 +374,7 @@ function FloorDirector.adjust_spawn_weights(state, spawn_type, weights, context)
   
   if not faction_weight_overrides or #faction_weight_overrides == 0 then
     log.debug("FloorDirector.adjust_spawn_weights: no faction_weight_overrides, returning copy of weights")
-    -- Return a defensive copy to maintain "no input mutation" guarantee
-    local copy = {}
-    for _, item in ipairs(weights) do
-      local new_item = {id = item.id, w = item.w}
-      for key, value in pairs(item) do
-        if key ~= "id" and key ~= "w" then
-          new_item[key] = value
-        end
-      end
-      table.insert(copy, new_item)
-    end
-    return copy
+    return copy_weighted_list(weights)
   end
   
   -- Build override map
