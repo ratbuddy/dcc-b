@@ -1,0 +1,66 @@
+You are a senior gameplay systems engineer.
+
+We are building a Barony total-conversion mod defined by three authoritative documents:
+- DCC-Barony-Spec.md (vision, invariants, architecture)
+- DCC-Barony-Engineering.md (module contracts, repo layout, hook flow)
+- DCC-Barony-DataSchemas.md (data contracts)
+
+These documents are AUTHORITATIVE. Do not contradict them. Do not invent responsibilities outside them.
+
+Task:
+Produce a focused module design document named:
+
+<ModuleName>-Design.md
+
+for the subsystem: <MODULE NAME>
+
+This document must be implementation-adjacent but engine-agnostic.
+
+It should include these sections:
+
+1. Purpose
+   - What this module exists to do in the DCC-B system.
+
+2. Responsibilities
+   - Explicit list of what it owns.
+
+3. Non-Responsibilities
+   - Explicit list of what it must never own.
+
+4. State Model
+   - What persistent and transient state it maintains.
+   - How it is represented conceptually.
+
+5. Inputs
+   - What data, events, and calls it consumes.
+   - From which systems.
+
+6. Outputs
+   - What data, events, or directives it emits.
+   - To which systems.
+
+7. Core Behaviors
+   - Bullet list of its main logical flows.
+
+8. Extension Points
+   - Where new content or mechanics plug in.
+
+9. Failure Modes
+   - What can go wrong.
+   - How it should fail (log, fallback, abort, degrade).
+
+10. Performance & Scale Notes
+   - Expected call frequency.
+   - Caching, determinism, or memory concerns.
+
+11. Phase-1 Implementation Scope
+   - What is explicitly in-scope for the first working version.
+   - What is explicitly deferred.
+
+12. Open Questions
+   - Any unresolved design dependencies that must be validated.
+
+Output:
+Clean Markdown only. No code unless it clarifies a state shape or flow. No filler text.
+
+The document must be suitable to become authoritative for this module and to be used as context in future AI-assisted coding sessions.
