@@ -1,0 +1,35 @@
+{
+  "id": "floor-1-onboarding",
+  "name": "Onboarding Chaos",
+  "description": "High scavenging, low elites, teach systems via pressure spikes.",
+  "floor_number": 1,
+  "rules": ["scarcity-lite", "tutorial-pressure"],
+  "mutations": [
+    {
+      "id": "mut-reward-box-boost",
+      "params": {
+        "box_rate": 1.3
+      }
+    }
+  ],
+  "spawn_modifiers": {
+    "enemy_density": 0.9,
+    "elite_chance_add": -0.1,
+    "faction_weight_overrides": [
+      {
+        "id": "humanoid-scavengers",
+        "w": 2.0
+      }
+    ]
+  },
+  "loot_modifiers": {
+    "box_rate": 1.3,
+    "rarity_bias": 0.0
+  },
+  "event_injections": [
+    {
+      "event_id": "announcer-intro",
+      "once": true
+    }
+  ]
+}
