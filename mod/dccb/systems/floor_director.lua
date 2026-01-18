@@ -200,7 +200,7 @@ function FloorDirector.activate_rules(state, rng)
       if data.mutations_by_id then
         if not data.mutations_by_id[mutation_id] then
           -- WARN in Phase-1 (or ERROR if strict flag exists in config)
-          local strict = state.run.config.enable_validation_strict
+          local strict = state.run and state.run.config and state.run.config.enable_validation_strict
           if strict then
             log.error("FloorDirector.activate_rules: mutation '" .. mutation_id .. "' not found in mutations_by_id (strict mode)")
             error("FloorDirector.activate_rules: mutation '" .. mutation_id .. "' not found")
