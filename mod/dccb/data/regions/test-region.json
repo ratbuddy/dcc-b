@@ -1,0 +1,40 @@
+{
+  "id": "test-region",
+  "name": "Test Region",
+  "description": "A test region for validation",
+  "tags": {
+    "test": true
+  },
+  "asset_sets": {
+    "tileset_ids": ["test-tileset"],
+    "prop_pool_ids": ["test-props"]
+  },
+  "enemy_factions": {
+    "allowed": [
+      { "id": "test-faction-1", "w": 2 },
+      { "id": "test-faction-2", "w": 1 }
+    ],
+    "banned": ["banned-faction"],
+    "elite_bias": 0.1
+  },
+  "hazard_rules": {
+    "hazards": [
+      { "id": "test-hazard", "w": 1 }
+    ],
+    "base_intensity": 0.3
+  },
+  "npc_archetypes": [
+    { "id": "test-npc", "w": 1 }
+  ],
+  "loot_bias": {
+    "table_weights": [
+      { "id": "test-loot-table", "w": 2 }
+    ],
+    "rarity_bias": 0.0
+  },
+  "traversal_modifiers": {
+    "verticality_bias": 0.5,
+    "trap_density": 0.2,
+    "room_compactness": 0.5
+  }
+}

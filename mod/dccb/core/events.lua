@@ -150,6 +150,7 @@ end
 
 -- Phase-1 event constants (convenience exports)
 Events.RUN_START = "RUN_START"
+Events.REGION_SELECTED = "REGION_SELECTED"
 Events.FLOOR_START = "FLOOR_START"
 Events.FLOOR_END = "FLOOR_END"
 Events.SPAWN_REQUEST = "SPAWN_REQUEST"
