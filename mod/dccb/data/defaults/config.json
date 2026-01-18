@@ -1,0 +1,10 @@
+{
+  "version": "0.1",
+  "seed_mode": "fixed",
+  "fixed_seed": 12345,
+  "region_mode": "random",
+  "npc_roster_size": 3,
+  "logging_level": "INFO",
+  "enable_ui_overlay": false,
+  "difficulty_curve": "default"
+}
