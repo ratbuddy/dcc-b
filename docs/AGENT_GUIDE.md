@@ -1,5 +1,5 @@
 # AGENT_GUIDE.md
-Version: 0.1
+Version: 0.2
 Status: Canonical (must be read before any agentic work)
 
 This document defines the non-negotiable operating rules for human- or agent-driven development in this repository.
@@ -12,18 +12,30 @@ It exists to prevent architectural drift, silent assumption changes, and engine-
 
 The following documents are AUTHORITATIVE. They define the system and must not be contradicted.
 
-- /docs/DCC-Barony-Spec.md
-- /docs/DCC-Barony-Engineering.md
-- /docs/DCC-Barony-DataSchemas.md
+- /docs/DCC-Spec.md
+- /docs/DCC-Engineering.md
+- /docs/DCC-DataSchemas.md
+- /docs/ENGINE_PIVOT_Barony_to_ToME.md
 
 If behavior is unclear, these must be consulted first.
 If behavior is missing, update these docs before implementing code.
 
 ---
 
-## 2. Hard Invariants
+## 2. Active Engine Target
 
-- Barony-specific code MUST live only in:
+**The current target engine is Tales of Maj'Eyal (ToME / T-Engine4).**
+
+All engine-specific integration work must target ToME unless explicitly stated otherwise.
+
+For engine-specific implementation details, consult:
+- /docs/ToME-Integration-Notes.md (future: will contain ToME API details, hook signatures, and integration patterns)
+
+---
+
+## 3. Hard Invariants
+
+- Engine-specific code MUST live only in:
   - /mod/dccb/integration/*
 - Engine-agnostic logic MUST live only in:
   - /mod/dccb/core/*
@@ -33,27 +45,28 @@ If behavior is missing, update these docs before implementing code.
 
 - Do NOT mix engine hooks with business logic.
 - Do NOT bypass the event bus for cross-system communication.
-- Do NOT invent Barony APIs, hook names, or data structures.
+- Do NOT invent ToME APIs, hook names, or data structures without research.
   - If unknown, create adapter stubs with TODOs and clear log output.
+  - Document all ToME API discoveries in /docs/ToME-Integration-Notes.md
 
 ---
 
-## 3. Scope Control
+## 4. Scope Control
 
 - One module per task/PR.
 - No cross-module refactors unless explicitly approved.
 - No schema changes without updating:
-  - DCC-Barony-DataSchemas.md
+  - DCC-DataSchemas.md
   - and affected validation logic.
 
 - If an engine limitation is discovered:
-  - Document it in /docs/Barony-Integration-Notes.md
+  - Document it in /docs/ToME-Integration-Notes.md
   - Adjust integration adapters first.
   - Revise core specs only if strictly required.
 
 ---
 
-## 4. Required Outputs for Every Task
+## 5. Required Outputs for Every Task
 
 Every agentic change set must include:
 
@@ -64,7 +77,7 @@ Every agentic change set must include:
 
 ---
 
-## 5. Logging & Determinism
+## 6. Logging & Determinism
 
 - All major actions must log via core/log.lua.
 - All randomness must go through core/rng.lua.
@@ -73,7 +86,7 @@ Every agentic change set must include:
 
 ---
 
-## 6. Documentation Discipline
+## 7. Documentation Discipline
 
 - New behaviors require doc updates.
 - Removed behaviors require doc updates.
@@ -83,7 +96,7 @@ Docs are part of the system. They are not optional.
 
 ---
 
-## 7. Review Checklist (for humans or reviewer agents)
+## 8. Review Checklist (for humans or reviewer agents)
 
 - [ ] Files changed match allowed scope.
 - [ ] No engine calls outside /integration.
