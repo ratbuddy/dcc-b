@@ -326,8 +326,19 @@ function FloorDirector.adjust_spawn_weights(state, spawn_type, weights, context)
   
   local floor_state = state.floor.state
   if not floor_state then
-    log.debug("FloorDirector.adjust_spawn_weights: floor state not activated, returning weights unchanged")
-    return weights
+    log.debug("FloorDirector.adjust_spawn_weights: floor state not activated, returning copy of weights")
+    -- Return a defensive copy to maintain "no input mutation" guarantee
+    local copy = {}
+    for _, item in ipairs(weights) do
+      local new_item = {id = item.id, w = item.w}
+      for key, value in pairs(item) do
+        if key ~= "id" and key ~= "w" then
+          new_item[key] = value
+        end
+      end
+      table.insert(copy, new_item)
+    end
+    return copy
   end
   
   -- Phase-1: apply spawn_modifiers.faction_weight_overrides if provided
@@ -335,8 +346,19 @@ function FloorDirector.adjust_spawn_weights(state, spawn_type, weights, context)
   local faction_weight_overrides = spawn_modifiers.faction_weight_overrides
   
   if not faction_weight_overrides or #faction_weight_overrides == 0 then
-    log.debug("FloorDirector.adjust_spawn_weights: no faction_weight_overrides, returning weights unchanged")
-    return weights
+    log.debug("FloorDirector.adjust_spawn_weights: no faction_weight_overrides, returning copy of weights")
+    -- Return a defensive copy to maintain "no input mutation" guarantee
+    local copy = {}
+    for _, item in ipairs(weights) do
+      local new_item = {id = item.id, w = item.w}
+      for key, value in pairs(item) do
+        if key ~= "id" and key ~= "w" then
+          new_item[key] = value
+        end
+      end
+      table.insert(copy, new_item)
+    end
+    return copy
   end
   
   -- Build override map
