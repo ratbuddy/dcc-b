@@ -16,13 +16,17 @@ local hlog = require("mod.tome_addon_harness.logging")
 -- WARNING: Normally this should be false - ToME will trigger on_run_start via hooks
 local DEV_AUTORUN = false
 
+-- Addon metadata
+local ADDON_VERSION = "0.2"
+local ADDON_PHASE = "Phase-2 Task 2.2"
+
 -- Store DEV_AUTORUN in global so hooks/load.lua can access it
 _G.DCCB_HARNESS_DEV_AUTORUN = DEV_AUTORUN
 
 hlog.info("========================================")
 hlog.info("DCCB ToME Addon Descriptor: init.lua")
 hlog.info("========================================")
-hlog.info("Version: 0.2 (Phase-2 Task 2.2)")
+hlog.info("Version:", ADDON_VERSION, "(" .. ADDON_PHASE .. ")")
 hlog.info("Hooks enabled: true")
 hlog.info("DEV_AUTORUN:", DEV_AUTORUN)
 hlog.info("Waiting for ToME to trigger hooks/load.lua...")
@@ -31,7 +35,7 @@ hlog.info("Waiting for ToME to trigger hooks/load.lua...")
 -- This metadata describes the addon to ToME's addon system
 return {
   name = "DCCB ToME Addon Harness",
-  version = "0.2",
+  version = ADDON_VERSION,
   description = "Dungeon Crawler Challenge Broadcast integration for Tales of Maj'Eyal",
   author = "DCCB Project",
   hooks_enabled = true,

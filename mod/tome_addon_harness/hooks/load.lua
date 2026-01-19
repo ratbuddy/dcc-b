@@ -22,11 +22,8 @@ hlog.info("This confirms ToME addon hook registration works")
 local Loader = require("mod.tome_addon_harness.loader")
 
 -- Check for DEV_AUTORUN setting from init.lua
--- (passed via module state if init.lua was executed first, otherwise default to false)
-local dev_autorun = false
-if _G.DCCB_HARNESS_DEV_AUTORUN ~= nil then
-  dev_autorun = _G.DCCB_HARNESS_DEV_AUTORUN
-end
+-- (passed via global if init.lua was executed first, otherwise default to false)
+local dev_autorun = _G.DCCB_HARNESS_DEV_AUTORUN or false
 
 local success, Hooks = Loader.run(dev_autorun)
 

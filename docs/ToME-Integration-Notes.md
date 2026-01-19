@@ -68,9 +68,6 @@ Where exact ToME function/event names are unknown, they are marked **TBD** with 
 
 | ToME Concept | Candidate Hook Surface | When It Runs | Inputs Available | Outputs We Can Affect | Risks/Unknowns | Maps to DCCB Hook |
 |--------------|------------------------|--------------|------------------|----------------------|----------------|-------------------|
-| ToME Concept | Candidate Hook Surface | When It Runs | Inputs Available | Outputs We Can Affect | Risks/Unknowns | Maps to DCCB Hook |
-|--------------|------------------------|--------------|------------------|----------------------|----------------|-------------------|
-| **Addon Load** | `hooks/load.lua` execution | Addon first loaded | None (bootstrap) | Can register hooks, load data | May run before game state ready | `Hooks.install()` |
 | **Addon Load** | **VERIFIED: `hooks/load.lua`** | **Addon first loaded by ToME** | **None (file execution context)** | **Can register hooks, load data, initialize systems** | **VERIFIED: Runs before game state** | **`Hooks.install()` - VERIFIED** |
 | **Game Load / New Game** | TBD: Game lifecycle hook | Player starts new game or loads save | Game state, player object | Can initialize DCCB state | Unknown: save/load persistence | `Hooks.on_run_start()` |
 | **Zone Generation** | TBD: Zone generator hooks | Before/during zone level creation | Zone definition, level number, zone params | Can modify generation params (size, features, spawns) | Unknown: generator param format, what's mutable | `Hooks.on_pre_generate()` |

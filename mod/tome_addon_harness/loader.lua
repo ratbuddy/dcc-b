@@ -17,6 +17,8 @@ local Loader = {}
 -- Returns: success (boolean), Hooks module (or nil on failure)
 -------------------------------------------------------------------------------
 function Loader.run(dev_autorun)
+  -- Default dev_autorun to false if not provided
+  -- (allows callers to omit parameter for normal operation)
   dev_autorun = dev_autorun or false
   
   hlog.info("========================================")
