@@ -1,5 +1,6 @@
-# DCC-B Data Schemas (Barony Total-Conversion)
-Version: 0.1
+# DCC-B Data Schemas
+
+Version: 0.2
 Status: Draft (iterative)
 
 This document defines the **data contracts** for DCC-B. These schemas are designed to be:
@@ -126,7 +127,7 @@ Recommended/optional:
 - `music_set` (ID) — future use
 
 #### 2.2.1 asset_sets
-This is intentionally abstract; it’s a “capability list” the Integration Layer maps to Barony specifics.
+This is intentionally abstract; it’s a “capability list” the Integration Layer maps to engine-specific assets.
 
 Fields (phase 1):
 - `tileset_ids` (array of string IDs known to integration)
@@ -353,7 +354,7 @@ Optional:
 - `region_affinity` (array of IDs)
 
 #### 4.2.1 base_stats
-Keep engine-independent. Integration maps to Barony stats.
+Keep engine-independent. Integration maps to engine-specific stats.
 Fields (phase 1):
 - `stat_bias` (object of {stat_id: number})
 - `hp_scalar` (number 0.5..2.0; optional)
@@ -549,6 +550,6 @@ When generating data:
 - Prefer small, composable files (one region per file, one floor per file)
 - Keep weights simple (1, 2, 3, 5)
 - Use tags for semantic routing (e.g., `urban`, `support`, `vermin`)
-- Put “engine mapping” IDs (real Barony item IDs) behind integration-friendly abstractions when unsure
+- Put “engine mapping” IDs (real engine item IDs) behind integration-friendly abstractions when unsure
 
 ---

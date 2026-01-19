@@ -1,8 +1,9 @@
-# DCC-B Engineering Spec (Barony Total-Conversion)
-Version: 0.1
+# DCC-B Engineering Spec
+
+Version: 0.2
 Status: Draft (intended to be iterated in-repo)
 
-This document is the implementation-oriented companion to `DCC-Barony-Spec.md`.
+This document is the implementation-oriented companion to `DCC-Spec.md`.
 It defines concrete module boundaries, file layout, data contracts, hook flow, and coding conventions.
 
 ---
@@ -10,8 +11,8 @@ It defines concrete module boundaries, file layout, data contracts, hook flow, a
 ## 0. Language & Modding Stack
 
 ### 0.1 Primary implementation language
-- **Lua** is the primary scripting language for Barony modding. This engineering spec assumes Lua for runtime logic and JSON (or equivalent) for data.
-- Use your C#/Python comfort for **offline tooling** (schema validation, content generation, linting, build scripts), but keep **runtime** logic in Lua unless a Barony-native mechanism requires otherwise.
+- **Lua** is the primary scripting language for the game engine. This engineering spec assumes Lua for runtime logic and JSON (or equivalent) for data.
+- Use your C#/Python comfort for **offline tooling** (schema validation, content generation, linting, build scripts), but keep **runtime** logic in Lua unless an engine-native mechanism requires otherwise.
 
 ### 0.2 Runtime principles
 - Runtime code must be deterministic given the same seed + config.
@@ -21,13 +22,14 @@ It defines concrete module boundaries, file layout, data contracts, hook flow, a
 
 ## 1. Repository Layout
 
-Recommended repo structure (can live inside a Barony mod folder or be vendored into a larger repo):
+Recommended repo structure:
 
 ```
 /docs
-  DCC-Barony-Spec.md
-  DCC-Barony-Engineering.md
-  DCC-Barony-DataSchemas.md   (future)
+  DCC-Spec.md
+  DCC-Engineering.md
+  DCC-DataSchemas.md
+  ENGINE_PIVOT_Barony_to_ToME.md
 /mod
   /dccb
     init.lua
@@ -44,10 +46,10 @@ Recommended repo structure (can live inside a Barony mod folder or be vendored i
       contestant_system.lua
       meta_layer.lua
     /integration
-      barony_hooks.lua
-      gen_adapter.lua
-      spawn_adapter.lua
-      room_tags.lua
+      tome_hooks.lua
+      zone_adapter.lua
+      actor_adapter.lua
+      zone_tags.lua
     /data
       /regions
         *.json
@@ -71,7 +73,7 @@ Recommended repo structure (can live inside a Barony mod folder or be vendored i
 
 Notes:
 - `/mod/dccb/init.lua` is the only required “entry” file; everything else is imported from there.
-- Keep Barony-specific API calls inside `/integration/*`.
+- Keep engine-specific API calls inside `/integration/*`.
 - Keep pure logic inside `/systems/*` and `/core/*`.
 
 ---
@@ -121,8 +123,8 @@ Notes:
 
 ### 2.5 Integration Layer (`/integration/*`)
 **Owns**
-- Hook binding to Barony events / lifecycle
-- Adapter functions: apply region/floor constraints to Barony generator inputs
+- Hook binding to game engine events / lifecycle (currently ToME)
+- Adapter functions: apply region/floor constraints to engine generator inputs
 - Spawn interception + tagging
 
 **Does NOT own**
@@ -167,7 +169,7 @@ DCCBState = {
 
 ### 3.2 Persistence
 - Phase 1 target: in-memory only (fresh per run).
-- Phase 2+: persist minimal run metadata if Barony supports it (optional).
+- Phase 2+: persist minimal run metadata if the engine supports it (optional).
 
 ---
 
@@ -208,14 +210,14 @@ Use named RNG streams to prevent cross-system interference:
 - `rng:stream("contestants")`
 
 ### 5.3 Seed derivation
-- Base run seed comes from Barony or user config.
+- Base run seed comes from the engine or user config.
 - Stream seeds derived from base seed + stable hash(stream_name).
 
 ---
 
 ## 6. Hook Flow (Lifecycle Contracts)
 
-This section defines the expected integration points. Names are conceptual; actual hook names depend on Barony APIs.
+This section defines the expected integration points. Names are conceptual; actual hook names depend on the target engine's APIs (currently ToME).
 
 ### 6.1 Run start
 1. `DCCB.bootstrap()`
@@ -401,7 +403,7 @@ Goal: a runnable mod skeleton that proves the architecture works.
 ## 13. AI-Driven Development Workflow (Operational)
 
 When using ChatGPT/Cursor/Claude:
-- Paste the relevant section of this doc + `DCC-Barony-Spec.md` invariants
+- Paste the relevant section of this doc + `DCC-Spec.md` invariants
 - Ask for code that implements one module at a time
 - Require unit-test-like “self checks” via log output and deterministic seed runs
 - Merge results back into repo and update docs as contracts evolve

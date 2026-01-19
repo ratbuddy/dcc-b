@@ -25,9 +25,9 @@ Example:
 
 List the exact sections of canonical docs this task implements.
 
-- DCC-Barony-Spec.md: <section>
-- DCC-Barony-Engineering.md: <section>
-- DCC-Barony-DataSchemas.md: <section if relevant>
+- DCC-Spec.md: <section>
+- DCC-Engineering.md: <section>
+- DCC-DataSchemas.md: <section if relevant>
 
 ---
 
@@ -38,7 +38,7 @@ List the only files/directories this task may modify.
 Example:
 - /mod/dccb/core/rng.lua
 - /mod/dccb/core/log.lua
-- /docs/DCC-Barony-Engineering.md (if doc update required)
+- /docs/DCC-Engineering.md (if doc update required)
 
 ---
 
@@ -102,7 +102,7 @@ Explicitly list what this task must not attempt.
 
 Example:
 - No gameplay logic
-- No Barony hook exploration
+- No engine hook exploration
 
 ---
 
