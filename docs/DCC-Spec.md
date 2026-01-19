@@ -321,3 +321,108 @@ The project is succeeding if:
 - Outputs from tools are merged back here  
 
 ---
+
+
+---
+
+# 🔷 Run Flow, Spatial Model, and Time Pressure (ToME-oriented)
+
+This section formalizes how a DCC-B run is expressed spatially and temporally, particularly when targeting Tales of Maj'Eyal (T-Engine4). It captures the intended player experience and system responsibilities, without binding to engine APIs.
+
+## 1. Run → Floor → World Map → Subzones
+
+A run consists of sequential **floors**.  
+Each floor is expressed as a **playable overworld-style zone** (“floor world map”), not merely a menu of dungeons.
+
+A floor world map may contain:
+
+- Open traversal spaces (wilderness, corridors, ruins, districts)
+- Roaming enemies and neutral/friendly NPCs
+- Environmental hazards and spectacles
+- Entrances to **subzones** (interior dungeons, arenas, structures, vaults)
+
+Not every tile is special. Large portions of a floor may be traversal-only, supporting ambient encounters, patrols, and emergent events.
+
+Subzones are optional deep-play spaces. Players may enter and leave multiple subzones during a floor. Only some locations (overworld or subzones) may contain valid descent opportunities.
+
+Typical loop:
+
+Run start  
+→ Floor N world map generated  
+→ Explore overworld (roaming encounters, events, NPCs)  
+→ Optionally enter subzones  
+→ Return to overworld  
+→ Eventually discover a descent  
+→ Floor N ends  
+→ Floor N+1 world map generated
+
+## 2. Overworld Moment Types
+
+Floors are designed to support diverse “moment types,” including but not limited to:
+
+- Mysterious or narrative sites (e.g., strange tents, ritual circles, anomalies)
+- Safe rooms and social hubs (restaurants, rentals, neutral zones, sponsor booths)
+- Obvious dominance spaces (boss arenas, faction strongholds, spectacle pits)
+- Ambient traversal (ruins, streets, forests, industrial zones)
+- Roaming encounter fields (crawler parties, patrols, migrating threats)
+
+These moments are expressed through region/floor descriptors, zone tags, and generation constraints. They are not limited to subzones.
+
+## 3. Time Pressure Model
+
+Each floor may impose a **time budget**.
+
+Time is mechanically turn-based, but fictionally represented as **hours or days**. The intent is to create persistent pressure without introducing real-time mechanics.
+
+Core principles:
+
+- Player actions advance a global floor clock.
+- The Meta Layer owns the authoritative floor timer.
+- The Floor Director defines time budgets and escalation thresholds.
+
+Time pressure may drive:
+
+- Announcements and narrative beats
+- Environmental changes
+- New roaming threats
+- Closure of safe spaces
+- Increased likelihood of forced encounters
+- Eligibility or urgency of descent
+
+Example progression:
+
+- Early floor: exploration, light encounters  
+- Mid floor: roaming elites, environmental instability  
+- Late floor: predator release, collapsing zones, forced spectacles  
+- Expiration: floor failure state or forced terminal event
+
+Failure to descend before expiration may trigger:
+
+- Mandatory boss events
+- Forced transitions
+- Run-ending conditions
+
+Exact behaviors are defined by floor rule sets and run configuration.
+
+## 4. System Responsibilities
+
+- **Meta Layer**
+  - Tracks floor time.
+  - Emits time-based announcements and events.
+  - Enforces expiration outcomes.
+
+- **Floor Director**
+  - Defines time budgets and escalation rules.
+  - Activates time-based mutations.
+
+- **Integration Layer**
+  - Sources turn/time advancement from the engine.
+  - Emits time progression events into DCCB.
+
+- **Zone Adapter / Zone Tags**
+  - Translate floor states and escalation phases into environmental and generation descriptors.
+
+This model ensures that time pressure is systemic, deterministic, and data-driven.
+
+---
+
