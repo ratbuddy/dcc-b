@@ -1,12 +1,12 @@
-# DCC-B: Dungeon Crawler Carl – Barony Framework
+# DCC-B: Dungeon Crawler Carl Framework
 
-High-level engineering and systems design specification for a Barony total-conversion mod that transforms the game into a procedural “dungeon show” simulator inspired by Dungeon Crawler Carl–style mechanics.
+High-level engineering and systems design specification for an engine-agnostic dungeon crawler system that transforms into a procedural "dungeon show" simulator inspired by Dungeon Crawler Carl-style mechanics. Currently targets Tales of Maj'Eyal (ToME / T-Engine4) as the integration layer.
 
 ---
 
 ## 1. Project Goal
 
-Build a modular, data-driven total-conversion mod on top of Barony that provides:
+Build a modular, data-driven dungeon crawler system that provides:
 
 - Region-seeded dungeon shards  
 - Escalating “floor rules” instead of static biomes  
@@ -30,7 +30,7 @@ Primary focus: system composition and extensibility, not handcrafted content.
 
 ## 3. Architectural Overview
 
-The mod is structured as layered systems above Barony’s native dungeon engine.
+The system is structured as layered systems above the game engine's native dungeon engine.
 
 Meta Layer (show logic, announcer, sponsors)  
 ↓  
@@ -38,7 +38,7 @@ Floor Director (escalation, rule sets, mutations)
 ↓  
 Region Director (geographic constraints & content filters)  
 ↓  
-Dungeon Integration Layer (Barony hooks)  
+Dungeon Integration Layer (Engine hooks - currently ToME)  
 ↓  
 Actors (players, contestants, enemies)
 
@@ -112,7 +112,7 @@ The Floor Director is the core behavioral engine.
 
 ### 4.3 Dungeon Integration Layer
 
-Thin translation layer between DCC systems and Barony internals.
+Thin translation layer between DCC systems and game engine internals.
 
 Responsibilities:
 - Intercept dungeon generation  
@@ -122,12 +122,12 @@ Responsibilities:
 - Register system hooks  
 
 Owns:
-- Barony hook bindings  
+- Engine hook bindings (currently ToME hooks)
 - Generator adapters  
 - Spawn interception  
 - Room tagging system  
 
-This is the only module that should deeply depend on Barony APIs.
+This is the only module that should deeply depend on engine-specific APIs.
 
 ---
 
