@@ -16,6 +16,12 @@ local Events = require("mod.dccb.core.events")
 
 local ContestantSystem = {}
 
+-- Phase-1 personality trait generation constants
+-- Personality traits are randomized within a bounded range to provide variety
+-- while avoiding extreme values that could cause problematic behavior
+local MIN_TRAIT_VALUE = 0.3  -- Minimum value for personality traits (cautious/cooperative)
+local TRAIT_RANGE = 0.4       -- Range of variation (max = MIN + RANGE = 0.7)
+
 -- Private module state
 local module_state = {
   initialized = false,
@@ -125,18 +131,22 @@ function ContestantSystem.generate_roster(state, rng)
     -- Create contestant object
     local contestant_id = "contestant-" .. string.format("%02d", i)
     
+    -- Get contestant name prefix from config or use default
+    local name_prefix = config.contestant_name_prefix or "Contestant"
+    local contestant_name = name_prefix .. "-" .. string.format("%02d", i)
+    
     -- Generate varied personality traits using RNG for diversity
     -- This prevents all contestants from having identical behavior
     local personality_profile = {
-      risk = rng_stream:next() * 0.4 + 0.3,        -- 0.3 to 0.7 range
-      teamplay = rng_stream:next() * 0.4 + 0.3,    -- 0.3 to 0.7 range
-      greed = rng_stream:next() * 0.4 + 0.3,       -- 0.3 to 0.7 range
-      aggression = rng_stream:next() * 0.4 + 0.3   -- 0.3 to 0.7 range
+      risk = rng_stream:next() * TRAIT_RANGE + MIN_TRAIT_VALUE,
+      teamplay = rng_stream:next() * TRAIT_RANGE + MIN_TRAIT_VALUE,
+      greed = rng_stream:next() * TRAIT_RANGE + MIN_TRAIT_VALUE,
+      aggression = rng_stream:next() * TRAIT_RANGE + MIN_TRAIT_VALUE
     }
     
     local contestant = {
       id = contestant_id,
-      name = "Contestant-" .. string.format("%02d", i),
+      name = contestant_name,
       archetype_id = archetype_id,
       personality_profile = personality_profile,
       build_path = {}, -- Stub: will be populated in later phases
