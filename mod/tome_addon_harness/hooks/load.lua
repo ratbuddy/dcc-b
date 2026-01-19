@@ -7,7 +7,7 @@
 
 -- Load harness logger
 -- Note: require paths follow ToME module search paths
-local hlog = require("mod.tome_addon_harness.logging")
+local hlog = require("mod.dccb.logging")
 
 hlog.info("========================================")
 hlog.info("DCCB: hooks/load.lua executed (file loaded)")
@@ -15,7 +15,7 @@ hlog.info("========================================")
 hlog.info("Registering ToME engine hooks via class:bindHook...")
 
 -- Load the harness loader module
-local Loader = require("mod.tome_addon_harness.loader")
+local Loader = require("mod.dccb.loader")
 
 -- DEV_AUTORUN: set to false for production (ToME will trigger via hooks)
 -- This is no longer read from init.lua to keep init.lua descriptor-only
