@@ -7,7 +7,8 @@
 -- in ToME's addon lifecycle.
 
 -- Load harness logger (safe logging helper)
-local hlog = require("mod.tome_addon_harness.logging")
+-- Note: require paths are relative to the addon root
+local hlog = require("logging")
 
 local Loader = {}
 
