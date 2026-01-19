@@ -12,6 +12,49 @@ local log = require("mod.dccb.core.log")
 local ZoneTags = {}
 
 -------------------------------------------------------------------------------
+-- Local helper: normalize a single tag string
+-- @param tag string - tag to normalize
+-- @return string - normalized tag (lowercase, trimmed), or nil if empty
+-------------------------------------------------------------------------------
+local function normalize_tag_string(tag)
+  if type(tag) ~= "string" then
+    return nil
+  end
+  local trimmed = tag:match("^%s*(.-)%s*$")  -- trim whitespace
+  local normalized = trimmed:lower()
+  if normalized == "" then
+    return nil
+  end
+  return normalized
+end
+
+-------------------------------------------------------------------------------
+-- Local helper: check if table is an array (sequential integer keys from 1)
+-- @param t table - table to check
+-- @return boolean - true if array, false if map
+-------------------------------------------------------------------------------
+local function is_array(t)
+  if type(t) ~= "table" then
+    return false
+  end
+  
+  -- Count using ipairs (only sequential integer keys from 1)
+  local array_count = 0
+  for _ in ipairs(t) do
+    array_count = array_count + 1
+  end
+  
+  -- Count all keys
+  local total_count = 0
+  for _ in pairs(t) do
+    total_count = total_count + 1
+  end
+  
+  -- If counts match, it's an array (all keys are sequential integers)
+  return array_count == total_count and array_count > 0
+end
+
+-------------------------------------------------------------------------------
 -- ZoneTags.normalize(tags) -> tag_set
 -- Normalize tags from array or map form into canonical {[string]=true} table
 --
@@ -39,9 +82,8 @@ function ZoneTags.normalize(tags)
   
   -- Handle string input (single tag)
   if type(tags) == "string" then
-    local trimmed = tags:match("^%s*(.-)%s*$")  -- trim whitespace
-    local normalized = trimmed:lower()
-    if normalized ~= "" then
+    local normalized = normalize_tag_string(tags)
+    if normalized then
       result[normalized] = true
       log.debug("ZoneTags.normalize: normalized string tag:", normalized)
     end
@@ -50,33 +92,20 @@ function ZoneTags.normalize(tags)
   
   -- Handle table input
   if type(tags) == "table" then
-    -- Check if it's an array or map by looking for numeric keys
-    local is_array = false
-    for k, v in pairs(tags) do
-      if type(k) == "number" then
-        is_array = true
-        break
-      end
-    end
-    
-    if is_array then
+    if is_array(tags) then
       -- Array form: {"dark", "wet"}
       for _, tag in ipairs(tags) do
-        if type(tag) == "string" then
-          local trimmed = tag:match("^%s*(.-)%s*$")
-          local normalized = trimmed:lower()
-          if normalized ~= "" then
-            result[normalized] = true
-          end
+        local normalized = normalize_tag_string(tag)
+        if normalized then
+          result[normalized] = true
         end
       end
     else
       -- Map form: {dark=true, wet=false}
       for tag, enabled in pairs(tags) do
-        if type(tag) == "string" and enabled then
-          local trimmed = tag:match("^%s*(.-)%s*$")
-          local normalized = trimmed:lower()
-          if normalized ~= "" then
+        if enabled then
+          local normalized = normalize_tag_string(tag)
+          if normalized then
             result[normalized] = true
           end
         end
