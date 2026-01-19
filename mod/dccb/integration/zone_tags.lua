@@ -38,6 +38,16 @@ local function is_array(t)
     return false
   end
   
+  -- Empty tables are treated as arrays
+  local has_any_key = false
+  for _ in pairs(t) do
+    has_any_key = true
+    break
+  end
+  if not has_any_key then
+    return true
+  end
+  
   -- Count using ipairs (only sequential integer keys from 1)
   local array_count = 0
   for _ in ipairs(t) do
@@ -51,7 +61,7 @@ local function is_array(t)
   end
   
   -- If counts match, it's an array (all keys are sequential integers)
-  return array_count == total_count and array_count > 0
+  return array_count == total_count
 end
 
 -------------------------------------------------------------------------------
@@ -185,17 +195,15 @@ end
 function ZoneTags.has(tag_set, tag)
   log.debug("ZoneTags.has: checking for tag:", tag)
   
-  if type(tag) ~= "string" then
-    log.debug("ZoneTags.has: invalid tag type, returning false")
-    return false
-  end
-  
   -- Normalize the tag set
   local normalized_set = ZoneTags.normalize(tag_set)
   
-  -- Normalize the search tag
-  local trimmed = tag:match("^%s*(.-)%s*$")
-  local normalized_tag = trimmed:lower()
+  -- Normalize the search tag using helper
+  local normalized_tag = normalize_tag_string(tag)
+  if not normalized_tag then
+    log.debug("ZoneTags.has: invalid tag, returning false")
+    return false
+  end
   
   local found = normalized_set[normalized_tag] == true
   log.debug("ZoneTags.has: tag", normalized_tag, "found:", found)
