@@ -63,9 +63,13 @@ function MetaLayer.on_event(state, event)
     -- Handle reward open event
     log.debug("MetaLayer.on_event: handling REWARD_OPEN event")
     
-    -- Get RNG from bootstrap data if available
-    -- In Phase-1, we need to get the RNG from somewhere - check state.run
-    local rng = state.run.rng or require("mod.dccb.core.rng").new(state.run.seed or 0)
+    -- Get RNG from state - it should have been initialized during bootstrap
+    if not state.run.rng then
+      log.error("MetaLayer.on_event: state.run.rng is nil - cannot resolve reward")
+      return
+    end
+    
+    local rng = state.run.rng
     local rng_stream = rng:stream("rewards")
     
     -- Resolve the reward
@@ -158,7 +162,7 @@ function MetaLayer.resolve_reward(state, reward_context, rng)
         local accumulated_weight = 0
         for _, entry in ipairs(entries) do
           accumulated_weight = accumulated_weight + (entry.w or 1)
-          if roll < accumulated_weight then
+          if roll <= accumulated_weight then
             -- This entry is selected
             reward_result.kind = entry.type or "item"
             reward_result.id = entry.id
@@ -238,10 +242,13 @@ function MetaLayer.emit_announcement(state, msg, severity)
   if state.show and state.show.state and state.show.state.announcer_log then
     local announcer_log = state.show.state.announcer_log
     
+    -- Use run timestamp for deterministic testing if available, otherwise os.time()
+    local timestamp = (state.run and state.run.started_at) or os.time()
+    
     table.insert(announcer_log, {
       msg = msg,
       severity = severity,
-      ts = os.time()
+      ts = timestamp
     })
     
     -- Keep log bounded
