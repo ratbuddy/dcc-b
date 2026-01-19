@@ -30,7 +30,7 @@ Primary focus: system composition and extensibility, not handcrafted content.
 
 ## 3. Architectural Overview
 
-The system is structured as layered systems above the game engine's native dungeon engine.
+The system is structured as layered systems above the game engine's native zone generation.
 
 Meta Layer (show logic, announcer, sponsors)  
 ↓  
@@ -38,7 +38,7 @@ Floor Director (escalation, rule sets, mutations)
 ↓  
 Region Director (geographic constraints & content filters)  
 ↓  
-Dungeon Integration Layer (Engine hooks - currently ToME)  
+Zone Integration Layer (Engine hooks - currently ToME)  
 ↓  
 Actors (players, contestants, enemies)
 
@@ -55,7 +55,7 @@ Responsible for making each run feel like a small slice of a massive dungeon.
 Responsibilities:
 - Selects region seed at run start  
 - Loads region profile  
-- Constrains all dungeon generation  
+- Constrains all zone generation  
 
 Owns:
 - Asset/tileset sets  
@@ -88,7 +88,7 @@ Responsible for turning “floors” into rule layers, not places.
 Responsibilities:
 - Tracks run progression  
 - Selects floor rule sets  
-- Mutates dungeon generation  
+- Mutates zone generation  
 - Injects global mechanics  
 - Triggers systemic events  
 
@@ -115,17 +115,17 @@ The Floor Director is the core behavioral engine.
 Thin translation layer between DCC systems and game engine internals.
 
 Responsibilities:
-- Intercept dungeon generation  
+- Intercept zone generation  
 - Apply region constraints  
 - Apply floor mutations  
-- Inject special rooms/events  
+- Inject special zones/events  
 - Register system hooks  
 
 Owns:
 - Engine hook bindings (currently ToME hooks)
-- Generator adapters  
-- Spawn interception  
-- Room tagging system  
+- Zone generator adapters  
+- Actor spawn interception  
+- Zone tagging system  
 
 This is the only module that should deeply depend on engine-specific APIs.
 
@@ -189,7 +189,7 @@ ShowState
 - achievement_flags  
 - run_mutations  
 
-The Meta Layer can affect future floors, contestant evolution, dungeon rules, and reward quality. It never directly generates rooms.
+The Meta Layer can affect future floors, contestant evolution, zone rules, and reward quality. It never directly generates zones.
 
 ---
 
@@ -217,10 +217,10 @@ Start Run
 
 For each Floor:  
 → Determine Floor Rules  
-→ Mutate Generators  
-→ Generate Dungeon Chunks  
+→ Mutate Zone Generators  
+→ Generate Zone Level  
 → Inject Events  
-→ Run Dungeon  
+→ Run Floor  
 → Resolve Meta Effects  
 → Evolve Contestants  
 
@@ -230,16 +230,36 @@ Floors represent system transitions, not biomes.
 
 ## 7. Verticality Strategy
 
-Verticality is first-class.
+Verticality is first-class in DCC-B, but expressed through **systemic depth and layered spatial rules** rather than literal 3D geometry.
 
-Used for:
-- layered traversal  
-- risk/reward structures  
-- dominance mechanics  
-- spectacle spaces  
-- forced movement rules  
+In a 2D zone-based engine like ToME, verticality manifests as:
 
-The generator must support stacked rooms, drops and climbs, overwatch spaces, vertical hazards, and multi-layer arenas.
+### 7.1 Multi-Level Zones
+- Floors represent distinct zone levels with inter-level connections
+- Each level can have different rule sets, enemy pools, and environmental properties
+- Vertical progression through stairs, portals, shafts, or zone transitions
+
+### 7.2 Positional Dominance
+- Chokepoints and line-of-sight advantages in 2D space
+- Terrain height represented abstractly through modifiers (elevation tags, cover bonuses)
+- Tactical positioning creates "high ground" effects without true 3D rendering
+
+### 7.3 Layered Risk via Zone Rules
+- Floor-to-floor rule layering creates escalating challenge
+- Environmental pressure increases through zone-specific hazards, not stacked rooms
+- Generator parameter shifts between levels create vertical variety
+
+### 7.4 Spectacle Spaces
+- Arena zones with special connection rules
+- Multi-exit zones that branch or converge
+- Event zones that modify subsequent zone generation
+
+### 7.5 Forced Movement
+- Zone transition mechanics (falling through trap doors = forced zone change)
+- Teleportation and displacement effects
+- One-way passages and locked progression paths
+
+**Core principle:** Verticality in DCC-B means systemic depth—floors that feel mechanically distinct and progression that creates layered spatial complexity—not necessarily 3D geometry or physics simulation.
 
 ---
 
@@ -258,13 +278,13 @@ The generator must support stacked rooms, drops and climbs, overwatch spaces, ve
 ## 9. Prototype Phases
 
 Phase 1 – Skeleton  
-- Hook dungeon generation  
+- Hook zone generation  
 - Region stub  
 - Floor counter  
 - Announcer console output  
 
 Phase 2 – Control  
-- Region-filtered spawns  
+- Region-filtered actor spawns  
 - Floor rule injection  
 - NPC contestant generator  
 

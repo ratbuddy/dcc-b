@@ -118,7 +118,7 @@ Notes:
 - Run mutations that affect future floors
 
 **Does NOT own**
-- Generating rooms
+- Generating zones
 - Direct engine hooks
 
 ### 2.5 Integration Layer (`/integration/*`)
@@ -228,14 +228,14 @@ This section defines the expected integration points. Names are conceptual; actu
 6. Contestant System generates initial roster
 7. Floor Director sets floor=1 and activates rules
 
-### 6.2 Before dungeon generation (each floor / chunk)
+### 6.2 Before zone generation (each floor level)
 1. Integration receives “about to generate level” callback
 2. Region constraints applied (tileset, props, allowed factions)
 3. Floor mutations applied (generation knobs, hazards, modifiers)
-4. Tag generated rooms with metadata (region/floor/rules)
+4. Tag generated zones with metadata (region/floor/rules)
 
-### 6.3 On spawn decision
-1. Integration intercepts spawn request (enemy/item/prop)
+### 6.3 On actor spawn decision
+1. Integration intercepts spawn request (actor/item/prop)
 2. Region Director filters/weights allowed pools
 3. Floor Director applies rule-based weights/mutations
 4. Meta Layer may apply sponsor bias (loot only)
@@ -263,8 +263,8 @@ All key events must go through `/core/events.lua` dispatch.
 - `RUN_START`
 - `FLOOR_START`
 - `FLOOR_END`
-- `CHUNK_START`
-- `CHUNK_END`
+- `ZONE_SECTION_START`
+- `ZONE_SECTION_END`
 - `SPAWN_REQUEST` (pre)
 - `SPAWN_FINALIZED` (post)
 - `REWARD_OPEN`
@@ -337,12 +337,12 @@ All spawned entities should be taggable with:
 - `dccb.spawn_source` (enemy_pool / event / reward / scripted)
 - `dccb.rng_stream`
 
-### 9.2 Room/area tagging
-Generated rooms/chunks should be taggable with:
+### 9.2 Zone/area tagging
+Generated zones/areas should be taggable with:
 - region + floor
-- chunk index
+- zone section index
 - hazard flags
-- “special room” tags (sponsor room, arena pocket, etc.)
+- “special zone” tags (sponsor zone, arena pocket, etc.)
 
 ---
 
