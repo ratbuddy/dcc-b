@@ -1,4 +1,4 @@
--- /mod/tome_addon_harness/loader.lua
+-- /mod/tome_addon_harness/mod/tome_addon_harness/loader.lua
 -- ToME Addon Harness - Runtime Loader Logic
 -- Phase-2 Task 2.2: Extracted from init.lua to separate descriptor from runtime
 --
