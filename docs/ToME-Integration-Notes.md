@@ -69,7 +69,7 @@ Where exact ToME function/event names are unknown, they are marked **TBD** with 
 | ToME Concept | Candidate Hook Surface | When It Runs | Inputs Available | Outputs We Can Affect | Risks/Unknowns | Maps to DCCB Hook |
 |--------------|------------------------|--------------|------------------|----------------------|----------------|-------------------|
 | **Addon Load** | **VERIFIED: `ToME:load` via `class:bindHook`** | **Engine fires during addon load** | **`function(self, data)` - `self` = addon context, `data` = table payload** | **Can initialize systems, register additional hooks** | **VERIFIED: Fire timing logged** | **`Hooks.install()` - VERIFIED** |
-| **Game Load / New Game** | TBD: Game lifecycle hook | Player starts new game or loads save | Game state, player object | Can initialize DCCB state | Unknown: save/load persistence | `Hooks.on_run_start()` |
+| **Game Load / New Game** | **TESTING: `Player:birth` and `Game:loaded` via `class:bindHook`** | **Player starts new game (birth) or loads save (loaded)** | **`function(self, data)` - `self` = context, `data` = hook payload** | **Can initialize DCCB state** | **Hooks registered, awaiting verification of fire timing** | **`Hooks.on_run_start()` - Task 2.3** |
 | **Zone Generation** | TBD: Zone generator hooks | Before/during zone level creation | Zone definition, level number, zone params | Can modify generation params (size, features, spawns) | Unknown: generator param format, what's mutable | `Hooks.on_pre_generate()` |
 | **Actor Spawn** | TBD: Actor creation/placement | When actor is created/spawned | Actor definition, spawn location, zone context | Can modify actor stats, equipment, faction, tags | Unknown: at what point can we intercept, what's mutable | `Hooks.on_spawn_request()` (via actor_adapter) |
 | **Item Generation** | TBD: Item generation hooks | When loot/rewards spawn | Item definition, rarity, location | Can modify rarity, affixes (egos), quantity | Unknown: how ToME selects base items vs affixes | `Hooks.on_spawn_request()` (spawn_type="loot") |
@@ -362,7 +362,8 @@ This section lists concrete research tasks. Each item should be marked **TBD** u
 - [x] **VERIFIED:** ToME hook registration: `class:bindHook("HookName", function(self, data) ... end)`
 - [x] **VERIFIED:** First verified hook: `ToME:load` (registered via `class:bindHook`)
 - [x] **VERIFIED:** Hook callback signature: `function(self, data)` where `self` is context, `data` is payload
-- [ ] **TBD:** Additional available hook names (beyond `ToME:load`)
+- [x] **TESTING:** Run-start hooks: `Player:birth` and `Game:loaded` (registered, awaiting verification)
+- [ ] **TBD:** Additional available hook names (beyond those registered)
 - [ ] **TBD:** Complete hook payload formats (what fields are in `data` for each hook)
 - [ ] **TBD:** Can we register custom events?
 - [ ] **TBD:** Event timing and order (synchronous? queued?)
@@ -382,6 +383,17 @@ The `ToME:load` hook is verified and proven:
 - **Fire timing:** During addon load sequence, after `hooks/load.lua` file execution completes
 - **Use case:** Addon initialization, loading integration hooks, setup
 - **Status:** VERIFIED - confirmed via "FIRED: ToME:load" log output in Phase-2 Task 2.2.1
+
+**Phase-2 Task 2.3 Findings:**
+
+Run-start hooks registered (awaiting verification):
+- **Hook names:** `Player:birth` (new game) and `Game:loaded` (load save)
+- **Registration method:** `class:bindHook(hookName, callback)` inside `Hooks.install()`
+- **Callback signature:** `function(self, data)` - standard ToME hook signature
+- **Idempotence:** Single-use flag prevents duplicate `on_run_start()` calls
+- **Run context:** `{ engine="tome", hook=hookName, timestamp=os.time(), source="engine_hook", ... }`
+- **Use case:** Trigger DCCB initialization when gameplay begins
+- **Status:** TESTING - hooks registered, awaiting gameplay verification (see §8.6)
 
 ### 5.3 Zone Generation
 
@@ -907,6 +919,184 @@ This implementation verifies the **ToME:load engine hook only**. Additional hook
 
 ---
 
+## 8.6 Phase-2 Task 2.3: Run Start Event Binding (Log-Only)
+
+**Status:** IMPLEMENTED  
+**Date:** 2026-01-19 (Task 2.3)
+
+### Implementation Summary
+
+Phase-2 Task 2.3 implements run-start hook binding to prove the lifecycle seam exists and is stable. This is a **log-only** implementation focused on verifying hook timing and callback signatures.
+
+### Run-Start Hooks Registered
+
+Two candidate hooks are attempted for run-start detection:
+
+1. **`Player:birth`**
+   - **Purpose:** Fires when a new character is created
+   - **When:** New game start, after character creation completes
+   - **Status:** TESTING (registered, awaiting verification)
+   
+2. **`Game:loaded`**
+   - **Purpose:** Fires when a save game is loaded
+   - **When:** Load game, after save data is restored
+   - **Status:** TESTING (registered, awaiting verification)
+
+### Registration Location
+
+All run-start hooks are registered inside `Hooks.install()` in `/mod/dccb/integration/tome_hooks.lua`.
+
+### Hook Callback Signature
+
+Both hooks use the standard ToME hook signature:
+```lua
+function(self, data)
+  -- self: ToME context object (addon, player, or game)
+  -- data: Hook payload table (structure TBD, logged on fire)
+end
+```
+
+### Idempotence Guard
+
+To prevent duplicate initialization if multiple hooks fire:
+
+- **Flag:** `module_state.run_started` (boolean)
+- **Behavior:** 
+  - First hook to fire: sets flag to `true`, invokes `Hooks.on_run_start()`
+  - Subsequent hooks: log "run_start suppressed (already started)" and return
+- **Tracking:** `module_state.first_hook` records which hook fired first
+
+### Run Context Structure
+
+When a run-start hook fires, the callback constructs a `run_ctx` table:
+
+```lua
+{
+  engine = "tome",
+  hook = "<HOOK_NAME>",  -- "Player:birth" or "Game:loaded"
+  timestamp = os.time(),
+  source = "engine_hook",
+  -- Additional scalar fields from hook data (if available)
+}
+```
+
+Large objects or non-scalar values are NOT included to keep context minimal.
+
+### Logging Output
+
+Expected log sequence when run-start hook fires:
+
+```
+========================================
+DCCB: run-start hook fired: Player:birth
+========================================
+  Hook data type: table
+  Hook data keys: (key1, key2, ...)
+DCCB: run_start accepted
+  Triggered by: Player:birth
+DCCB: on_run_start invoked
+  run_ctx.engine: tome
+  run_ctx.hook: Player:birth
+  run_ctx.timestamp: 1234567890
+========================================
+DCCB: Run Start
+========================================
+Run seed: 1234567890
+Step 1/7: Loading configuration and data
+[... full 7-step initialization ...]
+========================================
+DCCB Run Started - Summary
+========================================
+Seed: 1234567890
+Region: [region_id]
+[... summary output ...]
+========================================
+DCCB: on_run_start completed successfully
+========================================
+```
+
+If a second hook fires after the first:
+```
+========================================
+DCCB: run-start hook fired: Game:loaded
+========================================
+  Hook data type: table
+DCCB: run_start suppressed (already started)
+  First start was via: Player:birth
+```
+
+### Hook Registration Logging
+
+During `Hooks.install()`:
+
+```
+========================================
+DCCB: Binding run-start hooks
+========================================
+DCCB: bound run-start hook: Player:birth
+DCCB: bound run-start hook: Game:loaded
+========================================
+Hooks.install: installation complete
+  Verified hook: ADDON_LOAD (proven by this execution)
+  Run-start hooks: attempted registration (see logs above)
+  Waiting for run-start hooks to fire...
+```
+
+If a hook fails to register (unlikely):
+```
+DCCB: failed to bind Player:birth hook: [error message]
+```
+
+### Files Modified
+
+1. **`/mod/dccb/integration/tome_hooks.lua`**
+   - Added `run_started` flag to `module_state`
+   - Added `_handle_run_start_hook()` internal callback
+   - Updated `Hooks.install()` to bind `Player:birth` and `Game:loaded`
+   - Added crisp logging at all key points
+
+2. **`/docs/ToME-Integration-Notes.md`**
+   - Updated Hook Inventory Table (§2) with TESTING status for run-start hooks
+   - Added this section (§8.6) documenting Task 2.3 implementation
+   - Updated Change Log (§9)
+
+### Verification Status
+
+**Hooks Registered:** ✅ Yes (via `class:bindHook` in `Hooks.install()`)  
+**Hooks Fired:** ⏳ Awaiting gameplay test (new game or load save)  
+**Callback Signature:** 📋 Will be logged when hooks fire  
+**Idempotence Guard:** ✅ Implemented and ready  
+**Logging:** ✅ Crisp, single-line markers at all key points
+
+### Known Limitations
+
+- **Hook names unverified:** `Player:birth` and `Game:loaded` are educated guesses based on common ToME/T-Engine4 patterns. Actual hook names will be confirmed during gameplay testing.
+- **Hook payload structure:** Unknown until hooks fire. Logging will reveal available keys.
+- **Log-only:** This implementation does NOT modify DCCB system initialization. The full 7-step init still runs (as implemented in `Hooks.on_run_start()`), but this task focuses on proving the hook binding works.
+- **No save/load persistence:** DCCB state is NOT persisted across save/load (Phase 3+).
+
+### Acceptance Criteria Met
+
+- [x] Run-start hooks registered (`Player:birth` and `Game:loaded`)
+- [x] Idempotence guard implemented (single-use flag)
+- [x] `_handle_run_start_hook()` callback invokes `Hooks.on_run_start(run_ctx)`
+- [x] Crisp logging at all key points (bound, fired, invoked, suppressed)
+- [x] Hook data logged safely (type + keys, no full dump)
+- [x] Documentation updated with hook details and callback signature
+- [ ] Hooks verified firing (requires gameplay test - pending)
+
+### Next Steps
+
+**Validation:** Test in ToME by:
+1. Enabling addon
+2. Starting a new character (should fire `Player:birth`)
+3. Confirming logs show hook fired and `on_run_start` invoked
+4. Optional: Load an existing save (should fire `Game:loaded` or be suppressed)
+
+**If hooks don't fire:** Revise hook names based on ToME documentation/source research and retry.
+
+---
+
 ## 9. Maintenance and Updates
 
 ### This Document is Living
@@ -932,6 +1122,7 @@ When updating this document:
 - **2026-01-19 - v0.1 - Initial creation** (Phase-2 planning document)
 - **2026-01-19 - v0.2 - Task 2.2 complete** (First verified hook: ADDON_LOAD, §5.1/§5.2/§8.5 marked VERIFIED)
 - **2026-01-19 - v0.2.1 - Task 2.2.1 complete** (Real ToME engine hook: `ToME:load` via `class:bindHook`, proper addon descriptor, distinguished file execution vs engine hook)
+- **2026-01-19 - v0.3 - Task 2.3 complete** (Run-start hooks: `Player:birth` and `Game:loaded` registered, idempotence guard implemented, log-only binding, §2/§8.6 added)
 
 ---
 

@@ -27,15 +27,95 @@ local Hooks = {}
 -- Private module state
 local module_state = {
   installed = false,
+  run_started = false,  -- Phase-2 Task 2.3: Idempotence guard for run start
   state = nil,
   data = nil,
   rng = nil
 }
 
 -------------------------------------------------------------------------------
+-- _handle_run_start_hook (private)
+-- Phase-2 Task 2.3: Internal callback for run-start hooks
+-- Enforces idempotence and invokes Hooks.on_run_start() exactly once
+-------------------------------------------------------------------------------
+local function _handle_run_start_hook(hook_name, self, data)
+  log.info("========================================")
+  log.info("DCCB: run-start hook fired:", hook_name)
+  log.info("========================================")
+  
+  -- Log hook data type (don't dump entire table)
+  log.info("  Hook data type:", data and type(data) or "nil")
+  if data and type(data) == "table" then
+    local keys = {}
+    for k, _ in pairs(data) do
+      table.insert(keys, tostring(k))
+    end
+    if #keys > 0 and #keys <= 10 then
+      log.info("  Hook data keys:", table.concat(keys, ", "))
+    elseif #keys > 10 then
+      log.info("  Hook data keys: (", #keys, "keys, truncated)")
+    else
+      log.info("  Hook data: empty table")
+    end
+  end
+  
+  -- Idempotence guard: check if already started
+  if module_state.run_started then
+    log.info("DCCB: run_start suppressed (already started)")
+    log.info("  First start was via:", module_state.first_hook or "unknown")
+    return
+  end
+  
+  -- Mark as started and record which hook fired first
+  module_state.run_started = true
+  module_state.first_hook = hook_name
+  log.info("DCCB: run_start accepted")
+  log.info("  Triggered by:", hook_name)
+  
+  -- Build run context
+  local run_ctx = {
+    engine = "tome",
+    hook = hook_name,
+    timestamp = os.time(),
+    source = "engine_hook"
+  }
+  
+  -- Add small identifiers from data if available (don't include large objects)
+  if data and type(data) == "table" then
+    -- Safely extract scalar values only
+    for k, v in pairs(data) do
+      local vtype = type(v)
+      if vtype == "string" or vtype == "number" or vtype == "boolean" then
+        run_ctx[k] = v
+      end
+    end
+  end
+  
+  -- Invoke Hooks.on_run_start() with run context
+  log.info("DCCB: on_run_start invoked")
+  log.info("  run_ctx.engine:", run_ctx.engine)
+  log.info("  run_ctx.hook:", run_ctx.hook)
+  log.info("  run_ctx.timestamp:", run_ctx.timestamp)
+  
+  -- Call on_run_start (wrapped in pcall for safety)
+  local ok, err = pcall(function()
+    Hooks.on_run_start(run_ctx)
+  end)
+  
+  if not ok then
+    log.error("DCCB: on_run_start failed:", err)
+  else
+    log.info("DCCB: on_run_start completed successfully")
+  end
+  
+  log.info("========================================")
+end
+
+-------------------------------------------------------------------------------
 -- Hooks.install()
 -- Initialize the integration layer and register ToME hooks
 -- Phase-2 Task 2.2: Register first verified engine hook (ADDON_LOAD)
+-- Phase-2 Task 2.3: Register run-start hooks
 -------------------------------------------------------------------------------
 function Hooks.install()
   log.info("========================================")
@@ -58,16 +138,43 @@ function Hooks.install()
   log.info("  Callback: Harness loader executes → Hooks.install() called")
   log.info("  Status: VERIFIED (firing now)")
   
-  -- Phase-2: Additional ToME hook registration deferred
-  log.warn("TODO: Additional ToME hook registration not yet implemented")
-  log.warn("  Pending research:")
-  log.warn("  - ToME lifecycle hooks (on_run_start equivalent)")
-  log.warn("  - ToME zone generation hooks (pre-generate equivalent)")
-  log.warn("  - ToME spawn interception hooks (spawn_request equivalent)")
-  log.warn("  - ToME event system integration (event forwarding)")
+  -- Phase-2 Task 2.3: Bind run-start hooks
+  -- Attempt to bind ToME lifecycle hooks for gameplay start
+  log.info("========================================")
+  log.info("DCCB: Binding run-start hooks")
+  log.info("========================================")
+  
+  -- Try to bind Player:birth hook (fires when new character is created)
+  local birth_ok, birth_err = pcall(function()
+    class:bindHook("Player:birth", function(self, data)
+      _handle_run_start_hook("Player:birth", self, data)
+    end)
+  end)
+  
+  if birth_ok then
+    log.info("DCCB: bound run-start hook: Player:birth")
+  else
+    log.warn("DCCB: failed to bind Player:birth hook:", birth_err)
+  end
+  
+  -- Try to bind Game:loaded hook (fires when save is loaded)
+  local loaded_ok, loaded_err = pcall(function()
+    class:bindHook("Game:loaded", function(self, data)
+      _handle_run_start_hook("Game:loaded", self, data)
+    end)
+  end)
+  
+  if loaded_ok then
+    log.info("DCCB: bound run-start hook: Game:loaded")
+  else
+    log.warn("DCCB: failed to bind Game:loaded hook:", loaded_err)
+  end
+  
+  log.info("========================================")
   log.info("Hooks.install: installation complete")
-  log.info("  First verified hook: ADDON_LOAD (proven by this execution)")
-  log.info("  Call Hooks.on_run_start() manually to initialize DCCB systems")
+  log.info("  Verified hook: ADDON_LOAD (proven by this execution)")
+  log.info("  Run-start hooks: attempted registration (see logs above)")
+  log.info("  Waiting for run-start hooks to fire...")
 end
 
 -------------------------------------------------------------------------------
