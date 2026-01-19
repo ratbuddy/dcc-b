@@ -16,8 +16,9 @@ hlog.info("Registering ToME engine hooks via class:bindHook...")
 -- Load the harness loader module
 local Loader = require("mod.tome_addon_harness.loader")
 
--- Check for DEV_AUTORUN setting from init.lua
-local dev_autorun = _G.DCCB_HARNESS_DEV_AUTORUN or false
+-- DEV_AUTORUN: set to false for production (ToME will trigger via hooks)
+-- This is no longer read from init.lua to keep init.lua descriptor-only
+local dev_autorun = false
 
 -------------------------------------------------------------------------------
 -- Register ToME:load hook (first verified engine hook)
