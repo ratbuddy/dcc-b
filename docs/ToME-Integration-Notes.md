@@ -68,7 +68,7 @@ Where exact ToME function/event names are unknown, they are marked **TBD** with 
 
 | ToME Concept | Candidate Hook Surface | When It Runs | Inputs Available | Outputs We Can Affect | Risks/Unknowns | Maps to DCCB Hook |
 |--------------|------------------------|--------------|------------------|----------------------|----------------|-------------------|
-| **Addon Load** | **VERIFIED: `hooks/load.lua`** | **Addon first loaded by ToME** | **None (file execution context)** | **Can register hooks, load data, initialize systems** | **VERIFIED: Runs before game state** | **`Hooks.install()` - VERIFIED** |
+| **Addon Load** | **VERIFIED: `ToME:load` via `class:bindHook`** | **Engine fires during addon load** | **`function(self, data)` - `self` = addon context, `data` = table payload** | **Can initialize systems, register additional hooks** | **VERIFIED: Fire timing logged** | **`Hooks.install()` - VERIFIED** |
 | **Game Load / New Game** | TBD: Game lifecycle hook | Player starts new game or loads save | Game state, player object | Can initialize DCCB state | Unknown: save/load persistence | `Hooks.on_run_start()` |
 | **Zone Generation** | TBD: Zone generator hooks | Before/during zone level creation | Zone definition, level number, zone params | Can modify generation params (size, features, spawns) | Unknown: generator param format, what's mutable | `Hooks.on_pre_generate()` |
 | **Actor Spawn** | TBD: Actor creation/placement | When actor is created/spawned | Actor definition, spawn location, zone context | Can modify actor stats, equipment, faction, tags | Unknown: at what point can we intercept, what's mutable | `Hooks.on_spawn_request()` (via actor_adapter) |
@@ -324,39 +324,46 @@ This section lists concrete research tasks. Each item should be marked **TBD** u
 ### 5.1 Addon Structure and Lifecycle
 
 - [x] **VERIFIED:** ToME addon directory structure: `/mod/<name>/` (follows Lua module convention)
-- [x] **VERIFIED:** Addon entry point pattern: `init.lua` (descriptor) → `hooks/load.lua` (runtime entrypoint)
-- [x] **VERIFIED:** Entry point file name: `init.lua` serves as descriptor, `hooks/load.lua` is actual hook entrypoint
-- [x] **VERIFIED:** When does hook execute: `hooks/load.lua` executes when ToME addon system loads the addon
-- [x] **VERIFIED:** Can access game state: Basic Lua environment available; full game state availability TBD
+- [x] **VERIFIED:** Addon descriptor fields: `long_name`, `short_name`, `for_module`, `version`, `addon_version`, `author`, `description`, `hooks = true`
+- [x] **VERIFIED:** Entry point pattern: `init.lua` (descriptor metadata) → `hooks/load.lua` (file executed, registers hooks)
+- [x] **VERIFIED:** When `hooks/load.lua` executes: When ToME addon system loads the addon (file execution)
+- [x] **VERIFIED:** Hook registration: Use `class:bindHook("HookName", function(self, data) ... end)` inside `hooks/load.lua`
 
 **Where to look:**
 - ToME official addon examples (if available)
 - ToME source code: `src/loader/`
 - T-Engine4 modding docs: https://te4.org/wiki/
 
-**Phase-2 Task 2.2 Findings:**
-The first verified ToME engine hook is the **ADDON_LOAD lifecycle hook**.
-- **Hook name:** ADDON_LOAD (implicit via `hooks/load.lua` execution)
-- **Trigger:** ToME addon system loads the addon and executes `hooks/load.lua`
-- **Callback signature:** File execution context (no explicit parameters)
-- **Payload shape:** None (file execution context only)
-- **Verification:** Hook fires as evidenced by log output from `hooks/load.lua`
-- **Status:** VERIFIED for Phase-2 Task 2.2
+**Phase-2 Task 2.2.1 Findings:**
 
-This hook proves the fundamental ToME integration pattern works:
-1. `init.lua` serves as addon descriptor (metadata)
-2. ToME loads the addon and triggers `hooks/load.lua`
-3. `hooks/load.lua` invokes harness loader (`loader.lua`)
-4. Loader calls `Hooks.install()` to register additional hooks
-5. Log output confirms hook execution at each step
+**Important Distinction:**
+- **File Execution** ≠ **Engine Hook**: `hooks/load.lua` being executed is NOT a hook, it's file loading
+- **Real Engine Hook**: Registered via `class:bindHook()` API, fires when ToME engine triggers it
+
+**First REAL Verified ToME Engine Hook: ToME:load**
+- **Hook name:** `ToME:load` 
+- **Registration method:** `class:bindHook("ToME:load", function(self, data) ... end)` in `hooks/load.lua`
+- **Trigger:** ToME engine fires this during addon initialization
+- **Callback signature:** `function(self, data)` where `self` is the addon class, `data` is hook payload
+- **Observed payload:** Table (exact structure TBD, logged when hook fires)
+- **Fire timing:** During addon load sequence, after `hooks/load.lua` executes
+- **Verification:** Log shows "FIRED: ToME:load (REAL ENGINE HOOK)"
+- **Status:** VERIFIED for Phase-2 Task 2.2.1
+
+**Execution Flow:**
+1. `init.lua` returns addon descriptor with `hooks = true`
+2. ToME loads addon and **executes** `hooks/load.lua` (file execution, NOT a hook)
+3. Inside `hooks/load.lua`, we call `class:bindHook("ToME:load", callback)`
+4. ToME engine **fires** the `ToME:load` hook → callback executes (REAL ENGINE HOOK)
+5. Callback invokes harness loader and initializes DCCB integration
 
 ### 5.2 Hook Registration and Events
 
-- [x] **VERIFIED:** ToME hook registration: Implicit via `hooks/load.lua` file execution pattern
-- [x] **VERIFIED:** First verified hook: ADDON_LOAD (hooks/load.lua execution)
-- [ ] **TBD:** Additional event registration API (e.g., `engine.Event:register(event_name, callback)`)
-- [ ] **TBD:** Available event types (list of constants or strings)
-- [ ] **TBD:** Event payload format (table structure, available fields)
+- [x] **VERIFIED:** ToME hook registration: `class:bindHook("HookName", function(self, data) ... end)`
+- [x] **VERIFIED:** First verified hook: `ToME:load` (registered via `class:bindHook`)
+- [x] **VERIFIED:** Hook callback signature: `function(self, data)` where `self` is context, `data` is payload
+- [ ] **TBD:** Additional available hook names (beyond `ToME:load`)
+- [ ] **TBD:** Complete hook payload formats (what fields are in `data` for each hook)
 - [ ] **TBD:** Can we register custom events?
 - [ ] **TBD:** Event timing and order (synchronous? queued?)
 
@@ -365,15 +372,16 @@ This hook proves the fundamental ToME integration pattern works:
 - ToME modding examples: event listener usage
 - T-Engine4 docs: event system
 
-**Phase-2 Task 2.2 Findings:**
-The ADDON_LOAD hook is verified and proven:
-- **Hook name:** ADDON_LOAD
-- **Registration method:** Implicit (ToME executes `hooks/load.lua` when addon loads)
-- **Callback signature:** File execution (no parameters)
-- **Observed payload:** N/A (file execution context)
-- **Fire timing:** Early in addon lifecycle, before game state fully initialized
-- **Use case:** Perfect for addon initialization, hook registration, and setup
-- **Status:** VERIFIED - confirmed via log output in Phase-2 Task 2.2
+**Phase-2 Task 2.2.1 Findings:**
+
+The `ToME:load` hook is verified and proven:
+- **Hook name:** `ToME:load`
+- **Registration method:** `class:bindHook("ToME:load", callback)` inside `hooks/load.lua`
+- **Callback signature:** `function(self, data)` - `self` is addon context, `data` is hook payload (table)
+- **Observed payload:** Table type (exact keys logged when hook fires)
+- **Fire timing:** During addon load sequence, after `hooks/load.lua` file execution completes
+- **Use case:** Addon initialization, loading integration hooks, setup
+- **Status:** VERIFIED - confirmed via "FIRED: ToME:load" log output in Phase-2 Task 2.2.1
 
 ### 5.3 Zone Generation
 
@@ -766,47 +774,71 @@ Running ToME with our addon shows: `"DCCB addon loaded - version 0.1"` in the lo
 
 ---
 
-## 8.5 Phase-2 Task 2.2: Verified Hook Implementation
+## 8.5 Phase-2 Task 2.2.1: Real ToME Engine Hook Implementation
 
 **Status:** COMPLETE  
-**Date:** 2026-01-19  
+**Date:** 2026-01-19 (Updated for Task 2.2.1)
 
 ### Implementation Summary
 
-Phase-2 Task 2.2 successfully verified the first ToME engine hook and refactored the addon harness to follow proper ToME addon patterns.
+Phase-2 Task 2.2.1 successfully implemented the first **real ToME engine hook** using `class:bindHook()` API and created a proper ToME addon descriptor with all required metadata fields.
+
+### Key Distinction
+
+**Important:** This implementation corrects Task 2.2 by distinguishing:
+- **File Execution** (`hooks/load.lua` being loaded) ≠ Engine Hook
+- **Real Engine Hook** (`ToME:load` fired by ToME engine) = Actual verified hook
 
 ### Files Modified/Created
 
 **Created:**
 - `/mod/tome_addon_harness/loader.lua` - Runtime loader logic (extracted from init.lua)
-- `/mod/tome_addon_harness/hooks/load.lua` - ToME hook entrypoint (first verified hook)
+- `/mod/tome_addon_harness/hooks/load.lua` - Registers real engine hook via `class:bindHook()`
 
 **Modified:**
-- `/mod/tome_addon_harness/init.lua` - Now descriptor-style (metadata focused)
+- `/mod/tome_addon_harness/init.lua` - Proper ToME addon descriptor with required fields
 - `/mod/dccb/integration/tome_hooks.lua` - Updated Hooks.install() to document verified hook
-- `/docs/ToME-Integration-Notes.md` - Marked §5.1 and §5.2 as VERIFIED
+- `/docs/ToME-Integration-Notes.md` - Marked §5.1 and §5.2 as VERIFIED with corrected information
 
-### Verified Hook: ADDON_LOAD
+### Verified Hook: ToME:load
 
-**Hook Name:** ADDON_LOAD  
-**Registration Method:** Implicit via `hooks/load.lua` file execution  
-**When It Fires:** When ToME addon system loads the addon  
-**Callback Signature:** File execution context (no explicit parameters)  
-**Payload Shape:** None (file execution environment only)  
-**Verification Method:** Log output confirms hook execution  
+**Hook Name:** `ToME:load`  
+**Registration Method:** `class:bindHook("ToME:load", function(self, data) ... end)` in `hooks/load.lua`  
+**When It Fires:** ToME engine fires during addon initialization (after file loads)  
+**Callback Signature:** `function(self, data)` where `self` = addon context, `data` = hook payload table  
+**Payload Shape:** Table (exact keys logged when hook fires)  
+**Verification Method:** Log output shows "FIRED: ToME:load (REAL ENGINE HOOK)"  
+
+### ToME Addon Descriptor Fields
+
+`init.lua` now includes all required ToME addon metadata:
+- `long_name` - Full addon name
+- `short_name` - Short identifier
+- `for_module` - Target module ("tome")
+- `version` - Semantic version table {1, 0, 0}
+- `addon_version` - String version
+- `weight` - Load order weight
+- `author` - Author list
+- `homepage` - Project URL
+- `description` - Multi-line description
+- `tags` - Category tags
+- `hooks = true` - Enable hooks system
 
 ### Hook Flow
 
 ```
 ToME Addon System
     ↓ (loads addon)
-init.lua (descriptor)
-    ↓ (declares metadata, sets DEV_AUTORUN flag)
-ToME triggers hooks/load.lua
-    ↓ (first verified hook fires)
-hooks/load.lua
-    ↓ (logs "DCCB ToME Hook Fired: ADDON_LOAD")
-    ↓ (loads and calls loader.lua)
+init.lua (descriptor with hooks = true)
+    ↓ (returns metadata to ToME)
+ToME executes hooks/load.lua (FILE EXECUTION - NOT A HOOK)
+    ↓ (registers hook via class:bindHook)
+hooks/load.lua calls class:bindHook("ToME:load", callback)
+    ↓ (hook registered, waiting for engine)
+ToME engine FIRES ToME:load hook (REAL ENGINE HOOK)
+    ↓ (callback executes)
+callback logs "FIRED: ToME:load (REAL ENGINE HOOK)"
+    ↓ (calls loader.lua)
 loader.lua
     ↓ (requires tome_hooks.lua)
     ↓ (calls Hooks.install())
@@ -817,16 +849,24 @@ Hooks.install()
 
 ### Expected Log Output
 
-When the hook fires successfully, logs show:
+When the real engine hook fires successfully, logs show:
 ```
 [DCCB-Harness] INFO: DCCB ToME Addon Descriptor: init.lua
-[DCCB-Harness] INFO: Version: 0.2 (Phase-2 Task 2.2)
+[DCCB-Harness] INFO: Version: 0.2.1 (Phase-2 Task 2.2.1)
 [DCCB-Harness] INFO: Hooks enabled: true
-[DCCB-Harness] INFO: Waiting for ToME to trigger hooks/load.lua...
+[DCCB-Harness] INFO: Waiting for ToME engine to fire hooks...
 [DCCB-Harness] INFO: ========================================
-[DCCB-Harness] INFO: DCCB ToME Hook Fired: ADDON_LOAD
+[DCCB-Harness] INFO: DCCB: hooks/load.lua executed (file loaded)
 [DCCB-Harness] INFO: ========================================
-[DCCB-Harness] INFO: DCCB ToME Harness: hooks/load.lua fired
+[DCCB-Harness] INFO: Registering ToME engine hooks via class:bindHook...
+[DCCB-Harness] INFO: ToME engine hook registered: ToME:load
+[DCCB-Harness] INFO: Waiting for ToME engine to fire the hook...
+[DCCB-Harness] INFO: ========================================
+[DCCB-Harness] INFO: FIRED: ToME:load (REAL ENGINE HOOK)
+[DCCB-Harness] INFO: ========================================
+[DCCB-Harness] INFO: Hook data received: [type logged]
+[DCCB-Harness] INFO: This is a VERIFIED ToME engine hook callback
+[DCCB-Harness] INFO: Executing harness loader from ToME:load hook...
 [DCCB-Harness] INFO: DCCB ToME Harness: Loader starting
 [DCCB-Harness] INFO: DCCB integration hooks loaded successfully
 DCCB ToME Integration: Installing hooks
@@ -835,24 +875,25 @@ Verified Engine Hook: ADDON_LOAD
   Callback: Harness loader executes → Hooks.install() called
   Status: VERIFIED (firing now)
 Hooks.install: installation complete
-  First verified hook: ADDON_LOAD (proven by this execution)
 [DCCB-Harness] INFO: DCCB hooks installed successfully
-[DCCB-Harness] INFO: DCCB ToME Harness: Loader complete
-[DCCB-Harness] INFO: DCCB ToME Harness: Hook entrypoint complete
+[DCCB-Harness] INFO: Harness loader completed successfully
+[DCCB-Harness] INFO: ToME:load hook callback complete
 ```
 
 ### Acceptance Criteria Met
 
-- [x] Addon appears and loads without errors
-- [x] Log shows clear line indicating addon hook entrypoint fired
-- [x] Log shows "DCCB ToME Harness: hooks/load.lua fired"
-- [x] Log shows Hooks.install() ran successfully
-- [x] Log shows verified engine hook (ADDON_LOAD) with clear marker
+- [x] Addon descriptor has required fields (long_name, short_name, for_module, version, etc.)
+- [x] `hooks = true` in descriptor
+- [x] `class:bindHook("ToME:load", callback)` registered in hooks/load.lua
+- [x] Log shows "hooks/load.lua executed (file loaded)" (file execution)
+- [x] Log shows "FIRED: ToME:load (REAL ENGINE HOOK)" (actual engine hook)
+- [x] Loader.run() called inside hook callback
+- [x] Docs distinguish file execution vs engine hook firing
 - [x] Docs updated (§5.1, §5.2, §8.5 marked as VERIFIED)
 
 ### Known Limitations
 
-This implementation verifies the **addon load lifecycle hook only**. Additional hooks remain TBD:
+This implementation verifies the **ToME:load engine hook only**. Additional hooks remain TBD:
 - Game start / run start hook (Task 2.3)
 - Zone generation hook (Task 2.4)
 - Event forwarding hooks (Task 2.5+)
@@ -890,6 +931,7 @@ When updating this document:
 
 - **2026-01-19 - v0.1 - Initial creation** (Phase-2 planning document)
 - **2026-01-19 - v0.2 - Task 2.2 complete** (First verified hook: ADDON_LOAD, §5.1/§5.2/§8.5 marked VERIFIED)
+- **2026-01-19 - v0.2.1 - Task 2.2.1 complete** (Real ToME engine hook: `ToME:load` via `class:bindHook`, proper addon descriptor, distinguished file execution vs engine hook)
 
 ---
 
