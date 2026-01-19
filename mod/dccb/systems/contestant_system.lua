@@ -124,16 +124,21 @@ function ContestantSystem.generate_roster(state, rng)
     
     -- Create contestant object
     local contestant_id = "contestant-" .. string.format("%02d", i)
+    
+    -- Generate varied personality traits using RNG for diversity
+    -- This prevents all contestants from having identical behavior
+    local personality_profile = {
+      risk = rng_stream:next() * 0.4 + 0.3,        -- 0.3 to 0.7 range
+      teamplay = rng_stream:next() * 0.4 + 0.3,    -- 0.3 to 0.7 range
+      greed = rng_stream:next() * 0.4 + 0.3,       -- 0.3 to 0.7 range
+      aggression = rng_stream:next() * 0.4 + 0.3   -- 0.3 to 0.7 range
+    }
+    
     local contestant = {
       id = contestant_id,
       name = "Contestant-" .. string.format("%02d", i),
       archetype_id = archetype_id,
-      personality_profile = {
-        risk = 0.5,
-        teamplay = 0.5,
-        greed = 0.5,
-        aggression = 0.5
-      },
+      personality_profile = personality_profile,
       build_path = {}, -- Stub: will be populated in later phases
       utility_role = "generic", -- Stub: will be refined in later phases
       meta = {
@@ -189,7 +194,13 @@ function ContestantSystem.on_event(state, event)
     error("ContestantSystem.on_event: call init() first")
   end
   
-  local event_name = event.event_id or "UNKNOWN"
+  local event_name = event.event_id
+  
+  -- Validate event has an event_id
+  if not event_name then
+    log.warn("ContestantSystem: received event without event_id field")
+    return
+  end
   
   if event_name == "CONTESTANT_DIED" then
     -- Handle contestant death
@@ -210,10 +221,9 @@ function ContestantSystem.on_event(state, event)
     else
       log.warn("ContestantSystem: CONTESTANT_DIED event missing contestant_id")
     end
-  else
-    -- Ignore other events with debug log
-    log.debug("ContestantSystem: ignoring event", event_name)
   end
+  -- Note: Other events are silently ignored (no log spam)
+  -- Events like FLOOR_START, FLOOR_END, etc. don't need handling in Phase-1
 end
 
 -- Get party policy (Phase-1: stub implementation)
