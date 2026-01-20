@@ -1,4 +1,4 @@
--- /mod/tome_addon_harness/hooks/loader.lua
+-- /mod/tome_addon_harness/hooks/dccb/loader.lua
 -- ToME Addon Harness - Runtime Loader Logic
 -- Phase-2 Task 2.2: Extracted from init.lua to separate descriptor from runtime
 --
@@ -6,8 +6,8 @@
 -- in init.lua. It is now called from hooks/load.lua at the appropriate time
 -- in ToME's addon lifecycle.
 
--- Load harness logger
-local hlog = require("dccb.logging")
+-- Load harness logger using dofile
+local hlog = dofile("/hooks/dccb/logging.lua")
 
 local Loader = {}
 
