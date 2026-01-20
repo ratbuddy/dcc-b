@@ -10,7 +10,6 @@ local run_started = false
 -- Handle run-start hook with idempotence
 local function handle_run_start(hook_name)
     print("[DCCB] FIRED: " .. hook_name)
-    
     if not run_started then
         run_started = true
         print("[DCCB] run-start accepted")
@@ -20,6 +19,7 @@ local function handle_run_start(hook_name)
 end
 
 -- Bind the ToME:load engine hook (fires when addon loads)
+-- Note: This is NOT a run-start hook, it fires during addon initialization
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
 end)
