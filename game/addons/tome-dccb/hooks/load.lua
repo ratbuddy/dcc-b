@@ -28,6 +28,7 @@ local function get_zone_info()
         
         -- Detect worldmap hint
         if zone_name:lower():find("world") or 
+           zone_name:lower():find("wilderness") or
            zone_short:lower():find("world") or
            zone_short:lower():find("wilderness") then
             zone_type_hint = "worldmap/wilderness"
