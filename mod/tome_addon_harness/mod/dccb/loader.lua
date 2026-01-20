@@ -1,4 +1,4 @@
--- /mod/tome_addon_harness/hooks/dccb/loader.lua
+-- /mod/tome_addon_harness/mod/dccb/loader.lua
 -- ToME Addon Harness - Runtime Loader Logic
 -- Phase-2 Task 2.2: Extracted from init.lua to separate descriptor from runtime
 --
@@ -7,8 +7,8 @@
 -- in ToME's addon lifecycle.
 
 -- Load harness logger (safe logging helper)
--- Using dofile with VFS path instead of require
-local hlog = dofile("/hooks/dccb/logging.lua")
+-- Using standard require now that files are in mod/dccb/
+local hlog = require("mod.dccb.logging")
 
 local Loader = {}
 
