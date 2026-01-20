@@ -1,82 +1,72 @@
--- /mod/tome_addon_harness/hooks/load.lua
+-- /mod/tome_addon_harness/hooks/dccb/load.lua
 -- ToME Addon Hook Registration
--- Phase-2 Task 2.2.1: Register real ToME engine hook via class:bindHook
+-- Phase-2 Task 2.2.4: Absolute addon_root package.path patch
 --
 -- This file is executed by ToME when the addon loads. It registers
 -- actual engine hooks using ToME's class:bindHook() API.
 
 -------------------------------------------------------------------------------
--- Phase-2 Task 2.2.3: Compute addon_root and fix package.path deterministically
+-- Phase-2 Task 2.2.4: Compute absolute addon_root and fix package.path
 -------------------------------------------------------------------------------
-if not _G.__DCCB_ADDON_PATH_PATCHED then
-  _G.__DCCB_ADDON_PATH_PATCHED = true
-  
-  -- Get the path of this executing file
-  local source = debug.getinfo(1, "S").source
-  
-  -- Strip leading @ if present
-  if source and source:sub(1, 1) == "@" then
-    source = source:sub(2)
+-- Get the path of this executing file
+local info = debug.getinfo(1, "S")
+local src = info and info.source or ""
+if src:sub(1, 1) == "@" then
+  src = src:sub(2)
+end
+src = src:gsub("\\", "/")
+
+-- Derive addon_root by stripping known suffixes
+local addon_root = nil
+local function strip_suffix(path, suffix)
+  if path:sub(-#suffix) == suffix then
+    return path:sub(1, #path - #suffix)
   end
+  return nil
+end
+
+addon_root = strip_suffix(src, "/hooks/dccb/load.lua") or strip_suffix(src, "/hooks/load.lua")
+
+-- Ensure addon_root ends with /
+if addon_root and addon_root ~= "" and addon_root:sub(-1) ~= "/" then
+  addon_root = addon_root .. "/"
+end
+
+if addon_root then
+  -- Prepend absolute patterns
+  local extra =
+    addon_root .. "?.lua;" ..
+    addon_root .. "?/init.lua;" ..
+    addon_root .. "?/?.lua;" ..
+    addon_root .. "mod/?.lua;" ..
+    addon_root .. "mod/?/init.lua;" ..
+    addon_root .. "mod/?/?.lua;"
   
-  -- Normalize backslashes to forward slashes
-  if source then
-    source = source:gsub("\\", "/")
-  end
+  package.path = extra .. package.path
   
-  -- Derive addon_root by removing trailing hooks/load.lua or hooks/dccb/load.lua
-  local addon_root = nil
-  if source then
-    -- Try to match hooks/dccb/load.lua first, then hooks/load.lua
-    -- pattern1: captures everything before <dir1>/<dir2>/load.lua (e.g., hooks/dccb/load.lua)
-    -- pattern2: captures everything before <dir>/load.lua (e.g., hooks/load.lua)
-    local pattern1 = "(.*/)[^/]*/[^/]*/load%.lua$"
-    local pattern2 = "(.*/)[^/]*/load%.lua$"
-    
-    addon_root = source:match(pattern1) or source:match(pattern2)
+  -- Add one-time prints guarded by global
+  if not _G.__DCCB_ADDON_PATH_PATCHED then
+    _G.__DCCB_ADDON_PATH_PATCHED = true
+    print("[DCCB] hook src=" .. tostring(src))
+    print("[DCCB] addon_root=" .. tostring(addon_root))
+    print("[DCCB] package.path(head)=" .. package.path:sub(1, 200))
   end
-  
-  if addon_root then
-    -- Prepend deterministic patterns to package.path
-    local patterns = {
-      addon_root .. "?.lua",
-      addon_root .. "?/init.lua",
-      addon_root .. "?/?.lua",
-      addon_root .. "mod/?.lua",
-      addon_root .. "mod/?/init.lua",
-      addon_root .. "mod/?/?.lua",
-    }
-    
-    -- Prepend patterns (put them BEFORE existing package.path)
-    local new_patterns = table.concat(patterns, ";")
-    package.path = new_patterns .. ";" .. package.path
-    
-    -- Print one-time markers with [DCCB] prefix
-    print("[DCCB] addon_root=" .. addon_root)
-    
-    -- Truncate package.path to ~200 chars for logging
-    local path_preview = package.path
-    if #path_preview > 200 then
-      path_preview = path_preview:sub(1, 200) .. "..."
-    end
-    print("[DCCB] package.path=" .. path_preview)
-  else
-    -- Fail safe: addon_root could not be determined
-    print("[DCCB] addon_root unresolved")
-  end
+else
+  -- Fail safe: addon_root could not be resolved
+  print("[DCCB] addon_root unresolved; src=" .. tostring(src))
 end
 
 -- Load harness logger
--- Note: Using addon-relative require paths
-local hlog = require("dccb.logging")
+-- Note: Using addon-relative require paths with mod namespace
+local hlog = require("mod.dccb.logging")
 
 hlog.info("========================================")
-hlog.info("DCCB: hooks/load.lua executed (file loaded)")
+hlog.info("DCCB: hooks/dccb/load.lua executed (file loaded)")
 hlog.info("========================================")
 hlog.info("Registering ToME engine hooks via class:bindHook...")
 
 -- Load the harness loader module
-local Loader = require("dccb.loader")
+local Loader = require("mod.dccb.loader")
 
 -- DEV_AUTORUN: set to false for production (ToME will trigger via hooks)
 -- This is no longer read from init.lua to keep init.lua descriptor-only
