@@ -1,4 +1,4 @@
--- /mod/tome_addon_harness/mod/dccb/logging.lua
+-- /mod/tome_addon_harness/hooks/dccb/logging.lua
 -- Tiny defensive logging helper for ToME Addon Harness
 -- Tries ToME logger first, falls back to print()
 
