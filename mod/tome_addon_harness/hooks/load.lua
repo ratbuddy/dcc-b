@@ -101,14 +101,15 @@ local function on_first_zone_observed(hook_name)
         -- TODO: Confirm safest placeholder zone from base ToME
         local target_zone_short = "wilderness"
         
+        -- Check if redirect is enabled by configuration
         if not DCCB_ENABLE_REDIRECT then
-            -- DRY RUN: Log what would happen without actually redirecting
+            -- DRY RUN: Redirect disabled by configuration
             print("[DCCB] redirect decision: dry-run")
             print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
             print("[DCCB] (redirect disabled by DCCB_ENABLE_REDIRECT=false)")
         else
-            -- ENABLED: Attempt actual redirect
-            print("[DCCB] redirect decision: redirecting")
+            -- Redirect is enabled, but safe API needs confirmation
+            print("[DCCB] redirect decision: redirecting (pending API)")
             print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
             
             -- TODO: Implement safe zone change API call
@@ -119,9 +120,10 @@ local function on_first_zone_observed(hook_name)
             --   - game.zone:changeLevel(level, ...)
             --   - game.player:move(x, y, true) with zone change
             --
-            -- For now, log a TODO and keep as dry-run to avoid crashes
-            print("[DCCB] TODO: Actual redirect requires confirmed safe ToME zone change API")
-            print("[DCCB] Redirect remains dry-run until API is verified")
+            -- Until API is confirmed safe, log warning and skip actual redirect
+            print("[DCCB] WARNING: Redirect enabled but safe ToME zone change API not yet confirmed")
+            print("[DCCB] Skipping actual redirect to avoid potential crashes")
+            print("[DCCB] TODO: Implement confirmed safe zone transition API")
         end
         
         print("[DCCB] redirect decision complete (once per run)")
