@@ -7,8 +7,8 @@
 -- in ToME's addon lifecycle.
 
 -- Load harness logger (safe logging helper)
--- Note: Using addon-relative require paths
-local hlog = require("dccb.logging")
+-- Note: Using mod namespace require paths
+local hlog = require("mod.dccb.logging")
 
 local Loader = {}
 
