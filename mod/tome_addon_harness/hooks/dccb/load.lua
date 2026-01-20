@@ -1,19 +1,17 @@
--- /mod/tome_addon_harness/hooks/load.lua
+-- /mod/tome_addon_harness/hooks/dccb/load.lua
 -- ToME Addon Hook Registration
--- Phase-2 Task 2.2.7: Align harness hook layout with real ToME addon convention
---
--- This file is executed by ToME when the addon loads. It registers
--- actual engine hooks using ToME's class:bindHook() API.
+-- This file is executed by ToME when the addon loads via short_name="dccb"
+-- Using dofile with VFS paths instead of require for harness files
 
--- Load harness logger
-local hlog = require("mod.dccb.logging")
+-- Load harness logger using dofile with VFS path
+local hlog = dofile("/hooks/dccb/logging.lua")
 
 hlog.info("========================================")
-hlog.info("[DCCB] hooks/load.lua executed")
+hlog.info("[DCCB] hooks/dccb/load.lua executed")
 hlog.info("========================================")
 
--- Load the harness loader module
-local Loader = require("mod.dccb.loader")
+-- Load the harness loader module using dofile with VFS path
+local Loader = dofile("/hooks/dccb/loader.lua")
 
 -- DEV_AUTORUN: set to false for production (ToME will trigger via hooks)
 local dev_autorun = false
