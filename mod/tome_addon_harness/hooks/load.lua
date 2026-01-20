@@ -27,9 +27,10 @@ class:bindHook("ToME:load", function(self, data)
   hlog.info("========================================")
   
   -- Run the harness loader inside the hook callback
-  local success, err = pcall(function()
-    local ok, Hooks = Loader.run(dev_autorun)
-    
+  local success, ok, Hooks = pcall(Loader.run, dev_autorun)
+  
+  if success then
+    -- pcall succeeded, check Loader.run result
     if ok then
       hlog.info("Harness loader completed successfully")
       -- Store Hooks module in global for access if needed
@@ -37,11 +38,10 @@ class:bindHook("ToME:load", function(self, data)
     else
       hlog.error("Harness loader failed - check logs above")
     end
-  end)
-  
-  if not success then
+  else
+    -- pcall itself failed
     hlog.error("Error running harness loader:")
-    hlog.error(tostring(err))
+    hlog.error(tostring(ok))  -- ok contains the error message when pcall fails
   end
   
   hlog.info("========================================")
