@@ -4,10 +4,18 @@
 
 print("[DCCB] hooks/load.lua executed")
 
+-- ========================================
+-- Configuration: Redirect Toggle
+-- ========================================
+-- When false: logs "DRY RUN: would redirect" (default, safe)
+-- When true: attempts actual zone redirect (requires confirmed safe API)
+local DCCB_ENABLE_REDIRECT = false
+
 -- Idempotence guards
 local run_started = false
 local bootstrap_done = false
 local first_zone_observed = false
+local redirect_attempted = false
 
 -- Handle run-start hook with idempotence
 local function handle_run_start(hook_name)
@@ -82,6 +90,42 @@ local function on_first_zone_observed(hook_name)
     print("[DCCB] current zone short_name: " .. zone_short)
     print("[DCCB] zone type hint: " .. zone_type_hint)
     print("[DCCB] ========================================")
+    
+    -- ========================================
+    -- Redirect Decision Point
+    -- ========================================
+    if not redirect_attempted then
+        redirect_attempted = true
+        
+        -- Placeholder target zone (safe base ToME zone for testing)
+        -- TODO: Confirm safest placeholder zone from base ToME
+        local target_zone_short = "wilderness"
+        
+        if not DCCB_ENABLE_REDIRECT then
+            -- DRY RUN: Log what would happen without actually redirecting
+            print("[DCCB] redirect decision: dry-run")
+            print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
+            print("[DCCB] (redirect disabled by DCCB_ENABLE_REDIRECT=false)")
+        else
+            -- ENABLED: Attempt actual redirect
+            print("[DCCB] redirect decision: redirecting")
+            print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
+            
+            -- TODO: Implement safe zone change API call
+            -- Research needed: What is the safest ToME API for zone transitions?
+            -- Candidate APIs to investigate:
+            --   - game:changeLevel(levelnum, zone_short_name)
+            --   - game.party:move(x, y, true)
+            --   - game.zone:changeLevel(level, ...)
+            --   - game.player:move(x, y, true) with zone change
+            --
+            -- For now, log a TODO and keep as dry-run to avoid crashes
+            print("[DCCB] TODO: Actual redirect requires confirmed safe ToME zone change API")
+            print("[DCCB] Redirect remains dry-run until API is verified")
+        end
+        
+        print("[DCCB] redirect decision complete (once per run)")
+    end
 end
 
 -- Bind the ToME:load engine hook (fires when addon loads)
