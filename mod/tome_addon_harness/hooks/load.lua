@@ -5,9 +5,12 @@
 -- This file is executed by ToME when the addon loads. It registers
 -- actual engine hooks using ToME's class:bindHook() API.
 
+-- Fix package.path for addon-relative module loading
+package.path = package.path .. ";./?.lua;./?/init.lua;./?/?.lua;./mod/?.lua;./mod/?/?.lua"
+
 -- Load harness logger
--- Note: require paths follow ToME module search paths
-local hlog = require("mod.dccb.logging")
+-- Note: Using addon-relative require paths
+local hlog = require("dccb.logging")
 
 hlog.info("========================================")
 hlog.info("DCCB: hooks/load.lua executed (file loaded)")
@@ -15,7 +18,7 @@ hlog.info("========================================")
 hlog.info("Registering ToME engine hooks via class:bindHook...")
 
 -- Load the harness loader module
-local Loader = require("mod.dccb.loader")
+local Loader = require("dccb.loader")
 
 -- DEV_AUTORUN: set to false for production (ToME will trigger via hooks)
 -- This is no longer read from init.lua to keep init.lua descriptor-only
