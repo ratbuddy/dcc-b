@@ -4,8 +4,9 @@
 
 print("[DCCB] hooks/load.lua executed")
 
--- Idempotence guard: track if run has started
+-- Idempotence guards
 local run_started = false
+local bootstrap_done = false
 
 -- Handle run-start hook with idempotence
 local function handle_run_start(hook_name)
@@ -18,10 +19,26 @@ local function handle_run_start(hook_name)
     end
 end
 
+-- Handle bootstrap hook with idempotence
+local function handle_bootstrap(hook_name)
+    print("[DCCB] FIRED: " .. hook_name)
+    if not bootstrap_done then
+        bootstrap_done = true
+        print("[DCCB] bootstrap accepted (" .. hook_name .. ")")
+    else
+        print("[DCCB] bootstrap suppressed (" .. hook_name .. ")")
+    end
+end
+
 -- Bind the ToME:load engine hook (fires when addon loads)
 -- Note: This is NOT a run-start hook, it fires during addon initialization
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
+    
+    -- Bind bootstrap hook (ToME:run - runs before module starts)
+    class:bindHook("ToME:run", function(self, data)
+        handle_bootstrap("ToME:run")
+    end)
     
     -- Bind run-start hooks from inside ToME:load for verifiable order
     print("[DCCB] binding run-start hooks now")
