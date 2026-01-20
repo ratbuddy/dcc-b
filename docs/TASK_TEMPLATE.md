@@ -1,14 +1,14 @@
 # TASK_TEMPLATE.md
-Version: 0.1
+Version: 0.2
 
-This template is used to define agentic or human tasks in a way that minimizes drift and maximizes reviewability.
+This template is used to define agentic or human tasks in a way that minimizes drift and maximizes reviewability. **Do not leave any angle brackets in the completed template, they cause llm parsers to fail**
 
 Copy this file when creating a new task description.
 
 ---
 
 ## Task Title
-<Short, concrete, implementation-scoped title>
+Short, concrete, implementation-scoped title
 
 ---
 
@@ -25,9 +25,10 @@ Example:
 
 List the exact sections of canonical docs this task implements.
 
-- DCC-Spec.md: <section>
-- DCC-Engineering.md: <section>
-- DCC-DataSchemas.md: <section if relevant>
+- DCC-Spec.md: section
+- DCC-Engineering.md: section
+- DCC-DataSchemas.md: section if relevant
+- ToME-Integration-Notes.md: section if relevant
 
 ---
 
@@ -36,20 +37,28 @@ List the exact sections of canonical docs this task implements.
 List the only files/directories this task may modify.
 
 Example:
-- /mod/dccb/core/rng.lua
-- /mod/dccb/core/log.lua
-- /docs/DCC-Engineering.md (if doc update required)
+- /game/addons/tome-dccb/hooks/load.lua
+- /docs/ToME-Integration-Notes.md
+
+If a file or folder is not listed here, it is out of scope.
 
 ---
 
-## Forbidden Files
+## Forbidden Files / Changes
 
 List files/directories that must NOT be touched.
+
+Also list categories of changes that are explicitly forbidden, even if they would be made
+inside otherwise allowed files.
 
 Example:
 - /mod/dccb/systems/*
 - /mod/dccb/integration/*
 - /mod/dccb/data/*
+- No addon restructuring
+- No new loaders, harnesses, or logging frameworks unless explicitly stated
+- No speculative engine hooks
+- No gameplay systems or architecture work
 
 ---
 
@@ -58,8 +67,8 @@ Example:
 What data, events, or assumptions does this task rely on?
 
 Example:
-- run seed available at bootstrap
-- logging system initialized
+- ToME successfully loads addon and executes hooks/load.lua
+- te4_log.txt is available for verification
 
 ---
 
@@ -68,8 +77,8 @@ Example:
 What concrete outputs should exist after completion?
 
 Example:
-- rng:stream(name) returns deterministic generator
-- logs print stream seed derivation
+- A real ToME hook fires and prints a confirmation line
+- te4_log.txt contains expected output
 
 ---
 
@@ -78,8 +87,8 @@ Example:
 Objective, human-verifiable conditions.
 
 Example:
-- With seed 12345, region stream produces same first 3 values across runs
-- Startup log includes base seed and derived stream seeds
+- te4_log.txt shows "[DCCB] FIRED: ToME:load"
+- te4_log.txt shows "[DCCB] FIRED: Player:birth"
 
 ---
 
@@ -88,11 +97,9 @@ Example:
 Exact steps a human takes to verify correctness.
 
 Example:
-1. Launch game with fixed seed 12345
-2. Start new run
-3. Confirm log output includes:
-   - DCCB seed: 12345
-   - RNG stream region seed: <value>
+1. Launch ToME with addon enabled
+2. Start a new run
+3. Confirm te4_log.txt contains expected hook output
 
 ---
 
@@ -100,9 +107,13 @@ Example:
 
 Explicitly list what this task must not attempt.
 
+Any PR that advances a non-goal is invalid, even if acceptance criteria pass.
+
 Example:
 - No gameplay logic
-- No engine hook exploration
+- No engine hook exploration beyond what is explicitly listed
+- No architecture or framework work
+- No logging system introduction
 
 ---
 
@@ -120,6 +131,7 @@ Every submission must include:
 - Why these changes exist
 - Validation checklist
 - Known limitations / TODOs
+- Files touched
 
 ---
 
