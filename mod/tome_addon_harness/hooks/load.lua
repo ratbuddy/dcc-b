@@ -28,8 +28,10 @@ if not _G.__DCCB_ADDON_PATH_PATCHED then
   local addon_root = nil
   if source then
     -- Try to match hooks/dccb/load.lua first, then hooks/load.lua
-    local pattern1 = "(.*/)[^/]*/[^/]*/load%.lua$"  -- matches hooks/dccb/load.lua
-    local pattern2 = "(.*/)[^/]*/load%.lua$"        -- matches hooks/load.lua
+    -- pattern1: captures everything before <dir1>/<dir2>/load.lua (e.g., hooks/dccb/load.lua)
+    -- pattern2: captures everything before <dir>/load.lua (e.g., hooks/load.lua)
+    local pattern1 = "(.*/)[^/]*/[^/]*/load%.lua$"
+    local pattern2 = "(.*/)[^/]*/load%.lua$"
     
     addon_root = source:match(pattern1) or source:match(pattern2)
   end
