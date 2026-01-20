@@ -6,12 +6,14 @@
 
 ## Purpose
 
-This minimal ToME addon detects when gameplay becomes active and logs the current zone information. It helps determine the exact lifecycle point where DCCB must intercept the flow.
+This minimal ToME addon observes the first zone entered after bootstrap and logs its information. It helps determine the exact lifecycle point where DCCB must intercept the flow.
+
+Note: This addon does not assume all characters start on the worldmap. It observes whatever zone is first encountered after bootstrap.
 
 ## What It Does
 
-- Detects when gameplay is active (player movement or actor turns)
-- Logs the current zone name and short_name
+- Detects when the first zone is observed (player movement or actor turns)
+- Logs the zone name and short_name for comparison across starts
 - Identifies whether the zone is worldmap/wilderness or dungeon/location
 - Logs only once per run (idempotent)
 
@@ -48,7 +50,7 @@ After starting a new character and taking the first action (move or wait):
 [DCCB] ========================================
 
 [DCCB] ========================================
-[DCCB] gameplay active detected
+[DCCB] first zone observed after bootstrap
 [DCCB] ========================================
 [DCCB] triggered by hook: Actor:move
 [DCCB] current zone: <zone name>

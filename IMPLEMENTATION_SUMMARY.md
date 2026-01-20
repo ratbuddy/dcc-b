@@ -2,7 +2,9 @@
 
 ## Task Completed
 
-**Goal:** Identify and log worldmap/zone entry timing to determine where DCCB must intercept the flow.
+**Goal:** Identify and log first zone entry timing after bootstrap to determine where DCCB must intercept the flow.
+
+**Note:** Does not assume characters start on worldmap - observes whatever zone is first encountered.
 
 **Status:** ✅ Complete (pending runtime verification in ToME)
 
@@ -27,8 +29,9 @@ Main implementation file with:
 #### Key Features
 - **Idempotence Guards**: `gameplay_detected` and `run_started` flags prevent spam
 - **Safe Zone Detection**: Extracts zone name, short_name, and type hint from `game.zone`
-- **Worldmap Detection**: Checks for "world" or "wilderness" in zone names
-- **Single-Log Guarantee**: Only logs gameplay detection once per addon load
+- **Zone Type Hint**: Checks for "world" or "wilderness" in zone names (does not assume worldmap is first)
+- **Single-Log Guarantee**: Only logs first zone observation once per addon load
+- **Complete Zone Info**: Always logs both zone name and short_name for comparison across starts
 
 ### 3. `/game/addons/tome-dccb/README.md`
 Complete documentation including:
@@ -62,7 +65,7 @@ When a player starts a new character and takes the first action:
 [DCCB] ========================================
 
 [DCCB] ========================================
-[DCCB] gameplay active detected
+[DCCB] first zone observed after bootstrap
 [DCCB] ========================================
 [DCCB] triggered by hook: Actor:move
 [DCCB] current zone: Wilderness
@@ -73,11 +76,12 @@ When a player starts a new character and takes the first action:
 
 ## Acceptance Criteria Met
 
-- ✅ Hook that fires when gameplay is active (Actor:move, Actor:actBase:Effects)
-- ✅ Logs gameplay active detection
-- ✅ Logs current zone name
-- ✅ Logs current zone short_name (if different from name)
+- ✅ Hook that fires when first zone is observed (Actor:move, Actor:actBase:Effects)
+- ✅ Logs "first zone observed after bootstrap"
+- ✅ Logs current zone name (always)
+- ✅ Logs current zone short_name (always, for comparison across starts)
 - ✅ Logs zone type hint (worldmap/wilderness vs dungeon/location)
+- ✅ Does not assume worldmap is first zone
 - ✅ Idempotence guard prevents repeated spam
 - ✅ No gameplay modifications
 - ✅ No Lua errors introduced

@@ -44,9 +44,9 @@ local function get_zone_info()
 end
 
 -- ========================================
--- Gameplay Detection Callback
+-- First Zone Detection Callback
 -- ========================================
-local function on_gameplay_active(hook_name)
+local function on_first_zone_observed(hook_name)
     if gameplay_detected then
         return -- Already logged, suppress
     end
@@ -54,16 +54,14 @@ local function on_gameplay_active(hook_name)
     gameplay_detected = true
     
     print("[DCCB] ========================================")
-    print("[DCCB] gameplay active detected")
+    print("[DCCB] first zone observed after bootstrap")
     print("[DCCB] ========================================")
     print("[DCCB] triggered by hook: " .. hook_name)
     
     local zone_name, zone_short, zone_type_hint = get_zone_info()
     
     print("[DCCB] current zone: " .. zone_name)
-    if zone_short ~= zone_name then
-        print("[DCCB] current zone short_name: " .. zone_short)
-    end
+    print("[DCCB] current zone short_name: " .. zone_short)
     print("[DCCB] zone type hint: " .. zone_type_hint)
     print("[DCCB] ========================================")
 end
@@ -101,7 +99,7 @@ class:bindHook("ToME:load", function(self, data)
     class:bindHook("Actor:move", function(self, data)
         -- Only trigger on first actor move
         if not gameplay_detected then
-            on_gameplay_active("Actor:move")
+            on_first_zone_observed("Actor:move")
         end
     end)
     
@@ -111,7 +109,7 @@ class:bindHook("ToME:load", function(self, data)
     class:bindHook("Actor:actBase:Effects", function(self, data)
         -- Only trigger on first actor action
         if not gameplay_detected then
-            on_gameplay_active("Actor:actBase:Effects")
+            on_first_zone_observed("Actor:actBase:Effects")
         end
     end)
     
