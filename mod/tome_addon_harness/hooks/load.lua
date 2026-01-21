@@ -91,8 +91,9 @@ local function on_first_zone_observed(hook_name)
     print("[DCCB] zone type hint: " .. zone_type_hint)
     
     -- Check if we've entered the DCCB stub zone
-    if zone_short == "dccb-start" then
-        print("[DCCB] entered DCCB stub zone: dccb-start")
+    -- Addon zones use format: {addon_short_name}+{zone_name}
+    if zone_short == "dccb+dccb-start" or zone_short == "dccb-start" then
+        print("[DCCB] entered DCCB stub zone: " .. zone_short)
     end
     
     print("[DCCB] ========================================")
@@ -107,7 +108,8 @@ local function on_first_zone_observed(hook_name)
         -- This is a minimal custom zone owned by the addon (DCCB stub start zone)
         -- for scaffolding and testing addon-owned zones
         -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
-        local target_zone_short = "dccb-start"
+        -- Zone reference format: {addon_short_name}+{zone_name} for addon zones
+        local target_zone_short = "dccb+dccb-start"
         
         -- Loop prevention: check if already at target zone
         if zone_short == target_zone_short then
