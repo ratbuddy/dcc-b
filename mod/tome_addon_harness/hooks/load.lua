@@ -123,78 +123,65 @@ local function on_first_zone_observed(hook_name)
             print("[DCCB] redirect decision: redirecting")
             print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
             
-            -- TODO: Implement safe zone change API call
+            -- IMPLEMENTATION TODO: Replace dry-run with actual zone transition
             -- 
-            -- RESEARCH COMPLETE (2026-01-21): Authoritative T-Engine4 source code analysis
-            -- See /docs/ToME-Integration-Notes.md §2.4 for comprehensive zone transition API documentation.
+            -- RESEARCH STATUS: ✓ COMPLETE (2026-01-21)
+            -- Authoritative T-Engine4 source code analysis documented in:
+            -- → /docs/ToME-Integration-Notes.md §2.4 "Confirmed Safe Zone-Transition API"
             --
-            -- Source Code References:
+            -- This section provides the complete implementation recipe including:
+            --   • Exact API functions with source file paths and line numbers
+            --   • Required parameters and preconditions
+            --   • Timing safety matrix (when safe to call)
+            --   • Minimal implementation recipe
+            --   • Validation checklist for testing
+            --   • Known pitfalls and error handling
+            --
+            -- Primary Source References:
             --   - T-Engine4 GitHub: CliffsDover/t-engine4 repository
-            --   - Primary API: game/modules/tome/class/Game.lua lines 812+ (changeLevel)
+            --   - Primary API: game/modules/tome/class/Game.lua lines 812-848 (changeLevel)
             --   - Safety checks: game/modules/tome/class/Game.lua lines 790-811 (changeLevelCheck)
+            --   - Core implementation: game/modules/tome/class/Game.lua lines 919+ (changeLevelReal)
             --
-            -- Recommended API: game:changeLevel(lev, zone, params)
-            --   - lev: target level index (number or nil for default)
-            --   - zone: target zone short_name (string, e.g., "wilderness") or Zone object, or nil for same zone
-            --   - params: optional table with keys:
-            --       x, y: spawn coordinates (optional)
-            --       direct_switch: skip transmo dialog (boolean)
-            --       force: force transition even if restricted (boolean)
+            -- RECOMMENDED IMPLEMENTATION (from §2.4.2 Minimal Safe Redirect Recipe):
             --
-            -- Preconditions (verified from source):
-            --   1. game.player.can_change_level must be true/nil
-            --   2. game.player.can_change_zone must be true/nil for zone changes
-            --   3. No recent kills (10 turn cooldown, unless cheat mode)
-            --   4. No paradox clone effects active
+            --   game:changeLevel(lev, zone, params)
+            --     - lev: target level index (number) or nil for zone's default entry level
+            --     - zone: target zone short_name string (e.g., "wilderness") or Zone object, or nil for same zone
+            --     - params: optional table with keys:
+            --         x, y: spawn coordinates (optional, ToME picks safe spawn if omitted)
+            --         direct_switch: skip transmo dialog (boolean)
+            --         force: force transition even if restricted (boolean)
             --
-            -- Example implementation:
-            --   game:changeLevel(nil, "wilderness")
+            -- PRECONDITIONS (verified from changeLevelCheck source):
+            --   1. game.player.can_change_level must be true or nil
+            --   2. game.player.can_change_zone must be true or nil (for cross-zone transitions)
+            --   3. Player must not have recently killed an enemy (10 turn cooldown, unless cheat mode)
+            --   4. Player must not have EFF_PARADOX_CLONE or EFF_IMMINENT_PARADOX_CLONE effects
             --
-            -- VALIDATION REQUIRED before enabling:
-            --   1. In-engine testing with actual ToME instance
-            --   2. Verify no crashes or state corruption
-            --   3. Test save/load cycles post-redirect
-            --   4. Confirm party/follower state preservation
-            --   5. Check quest/inventory state intact
+            -- MINIMAL EXAMPLE (safest pattern):
+            --   if game and game.zone and game.zone.short_name ~= "wilderness" then
+            --       game:changeLevel(nil, "wilderness")  -- nil = use zone's default entry level
+            --   end
             --
-            -- Original candidate APIs (see docs for full analysis):
-            -- 
-            -- Research needed: What is the safest ToME API for zone transitions?
-            -- 
-            -- Candidate APIs to investigate (from ToME/T-Engine4 source):
-            --   1. game:changeLevel(level_num, zone_short_name) 
-            --      - May be for same-zone level transitions only
-            --      - Need to verify: Does this work across different zones?
-            --      - Parameters: level_num (int), zone_short_name (string or nil)
-            --      - Return: unknown, Side effects: unknown
+            -- REQUIRED VALIDATION after implementation (from §2.4.7):
+            --   1. In-engine testing with actual ToME instance (no dry-run)
+            --   2. Verify game.zone.short_name matches expected zone
+            --   3. Verify player position is within bounds and on passable terrain
+            --   4. Verify no Lua errors in te4_log.txt
+            --   5. Test save/load cycles to ensure state persistence
+            --   6. Confirm party/follower state preservation (if party active)
+            --   7. Check quest/inventory state remains intact
+            --   8. Verify no eternal loading screen (level renders correctly)
             --
-            --   2. game.party:moveLevel(level_num, zone_short_name, x, y)
-            --      - Possibly handles party/followers correctly
-            --      - Parameters: level_num (int), zone_short_name (string), x (int), y (int)
-            --      - Need to verify: Valid spawn coordinates, party state preservation
-            --      - Return: unknown, Side effects: may affect party members
+            -- NOTE: Implementation timing must follow §2.4.5 timing safety matrix.
+            --       Current location (Actor:move hook after first action) is SAFE for calling game:changeLevel.
             --
-            --   3. game.player:move(x, y, force_move_flag) with zone change
-            --      - Simple move API, may not handle zones
-            --      - Parameters: x (int), y (int), force (bool)
-            --      - Limitation: Likely only works within current zone
-            --      - Return: unknown, Side effects: position change only
+            -- For complete details, pitfalls, and alternative APIs, see documentation §2.4.
             --
-            --   4. require("engine.interface.WorldMap").display()
-            --      - Opens world map UI for player selection
-            --      - May be the safest approach (player-driven)
-            --      - Parameters: none (or worldmap state object)
-            --      - Side effects: Shows UI, allows player to choose destination
-            --
-            -- Required verification steps before implementation:
-            --   1. Verify target zone identifier exists in base ToME (e.g., "wilderness", "trollmire", "old-forest")
-            --   2. Obtain valid spawn coordinates (x, y) for target zone - consult ToME zone data files
-            --   3. Test that chosen API handles player/party/follower state correctly without corruption
-            --   4. Verify save/load cycles work correctly after redirect
-            --   5. Test that inventory, quest state, and other game state persists correctly
-            --
-            -- Until API is confirmed safe through research and testing, remain in dry-run mode
-            print("[DCCB] redirect enabled but no safe zone-transition API confirmed; leaving dry-run")
+            
+            -- Fallback to dry-run (research complete, awaiting implementation task)
+            print("[DCCB] redirect enabled but implementation deferred to next task")
             print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
         end
         
