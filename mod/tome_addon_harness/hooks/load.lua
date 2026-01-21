@@ -123,13 +123,27 @@ local function on_first_zone_observed(hook_name)
             
             -- TODO: Implement safe zone change API call
             -- 
-            -- RESEARCH COMPLETE: See /docs/ToME-Integration-Notes.md §2.4
-            -- for comprehensive zone transition API documentation.
+            -- RESEARCH COMPLETE (2026-01-21): Authoritative T-Engine4 source code analysis
+            -- See /docs/ToME-Integration-Notes.md §2.4 for comprehensive zone transition API documentation.
             --
-            -- Recommended API: game:changeLevel(level, zone, config)
-            --   - level: target level index (number or nil for default)
-            --   - zone: target zone short_name (string, e.g., "wilderness")
-            --   - config: optional {x=num, y=num, force=bool} table
+            -- Source Code References:
+            --   - T-Engine4 GitHub: CliffsDover/t-engine4 repository
+            --   - Primary API: game/modules/tome/class/Game.lua lines 812+ (changeLevel)
+            --   - Safety checks: game/modules/tome/class/Game.lua lines 790-811 (changeLevelCheck)
+            --
+            -- Recommended API: game:changeLevel(lev, zone, params)
+            --   - lev: target level index (number or nil for default)
+            --   - zone: target zone short_name (string, e.g., "wilderness") or Zone object, or nil for same zone
+            --   - params: optional table with keys:
+            --       x, y: spawn coordinates (optional)
+            --       direct_switch: skip transmo dialog (boolean)
+            --       force: force transition even if restricted (boolean)
+            --
+            -- Preconditions (verified from source):
+            --   1. game.player.can_change_level must be true/nil
+            --   2. game.player.can_change_zone must be true/nil for zone changes
+            --   3. No recent kills (10 turn cooldown, unless cheat mode)
+            --   4. No paradox clone effects active
             --
             -- Example implementation:
             --   game:changeLevel(nil, "wilderness")
