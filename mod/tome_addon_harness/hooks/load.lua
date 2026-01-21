@@ -126,25 +126,23 @@ local function on_first_zone_observed(hook_name)
             -- Verify game object is available (safety check)
             if not game then
                 print("[DCCB] redirect failed: game object not available")
-                print("[DCCB] redirect decision complete (once per run)")
-                return
-            end
-            
-            -- Execute zone transition using confirmed safe API
-            -- API: game:changeLevel(lev, zone, params)
-            -- Source: /docs/ToME-Integration-Notes.md §2.4.1
-            -- Parameters:
-            --   lev: nil (use zone's default entry level)
-            --   zone: target_zone_short (string, e.g., "wilderness")
-            --   params: nil (ToME picks safe spawn point automatically)
-            local success, error_msg = pcall(function()
-                game:changeLevel(nil, target_zone_short)
-            end)
-            
-            if success then
-                print("[DCCB] redirect succeeded")
             else
-                print("[DCCB] redirect failed: " .. tostring(error_msg))
+                -- Execute zone transition using confirmed safe API
+                -- API: game:changeLevel(lev, zone, params)
+                -- Source: /docs/ToME-Integration-Notes.md §2.4.1
+                -- Parameters:
+                --   lev: nil (use zone's default entry level)
+                --   zone: target_zone_short (string, e.g., "wilderness")
+                --   params: nil (ToME picks safe spawn point automatically)
+                local success, error_msg = pcall(function()
+                    game:changeLevel(nil, target_zone_short)
+                end)
+                
+                if success then
+                    print("[DCCB] redirect succeeded")
+                else
+                    print("[DCCB] redirect failed: " .. tostring(error_msg))
+                end
             end
         end
         
