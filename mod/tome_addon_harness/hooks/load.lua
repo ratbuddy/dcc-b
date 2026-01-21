@@ -162,13 +162,11 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Load Zone module for explicit zone registration
-    local Zone = require "engine.Zone"
-    
-    -- Explicitly load our custom zone definition
-    -- This ensures ToME knows about our addon zone
-    print("[DCCB] Loading custom zone definition: /data-dccb/zones/dccb-start/zone.lua")
-    Zone.new_default_list[#Zone.new_default_list+1] = "/data-dccb/zones/dccb-start/zone.lua"
+    -- Note: Zones in data/zones/ directory are auto-discovered by ToME
+    -- No explicit registration needed - ToME will find our zone at:
+    -- Physical: data/zones/dccb-start/zone.lua
+    -- Virtual: /data-dccb/zones/dccb-start/zone.lua
+    print("[DCCB] Zone auto-discovery enabled for: /data-dccb/zones/dccb-start/")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
