@@ -101,6 +101,15 @@ local function on_first_zone_observed(hook_name)
         -- TODO: Confirm safest placeholder zone from base ToME
         local target_zone_short = "wilderness"
         
+        -- Loop prevention: check if already at target zone
+        if zone_short == target_zone_short then
+            print("[DCCB] redirect decision: already at target zone")
+            print("[DCCB] current zone: " .. zone_short .. " == target: " .. target_zone_short)
+            print("[DCCB] skipping redirect (idempotent guard)")
+            print("[DCCB] redirect decision complete (once per run)")
+            return
+        end
+        
         -- Check if redirect is enabled by configuration
         if not DCCB_ENABLE_REDIRECT then
             -- DRY RUN: Redirect disabled by configuration
@@ -108,22 +117,30 @@ local function on_first_zone_observed(hook_name)
             print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
             print("[DCCB] (redirect disabled by DCCB_ENABLE_REDIRECT=false)")
         else
-            -- Redirect is enabled, but safe API needs confirmation
-            print("[DCCB] redirect decision: redirecting (pending API)")
+            -- Redirect is enabled, attempt to redirect or fallback to dry-run if API unavailable
+            print("[DCCB] redirect decision: redirecting")
             print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
             
             -- TODO: Implement safe zone change API call
             -- Research needed: What is the safest ToME API for zone transitions?
             -- Candidate APIs to investigate:
-            --   - game:changeLevel(levelnum, zone_short_name)
-            --   - game.party:move(x, y, true)
-            --   - game.zone:changeLevel(level, ...)
-            --   - game.player:move(x, y, true) with zone change
+            --   - game:changeLevel(level_num, zone_short_name)
+            --   - game.party:moveLevel(level_num, zone_short_name, x, y)
+            --   - game.player:move(x, y, true) with zone parameter
+            --   - require("engine.interface.WorldMap").display()
             --
-            -- Until API is confirmed safe, log warning and skip actual redirect
-            print("[DCCB] WARNING: Redirect enabled but safe ToME zone change API not yet confirmed")
-            print("[DCCB] Skipping actual redirect to avoid potential crashes")
-            print("[DCCB] TODO: Implement confirmed safe zone transition API")
+            -- Required for safe implementation:
+            --   1. Verify zone identifier exists in base ToME (e.g., "wilderness", "trollmire")
+            --   2. Confirm valid x,y coordinates for spawn point in target zone
+            --   3. Ensure API handles player/party state correctly without corruption
+            --   4. Test that save/load cycles work correctly after redirect
+            --
+            -- Until API is confirmed safe, log warning and remain in dry-run mode
+            print("[DCCB] redirect enabled but no safe zone-transition API confirmed; leaving dry-run")
+            print("[DCCB] TODO: Research and confirm safe ToME zone transition API")
+            print("[DCCB] TODO: Verify target zone identifier exists in base game")
+            print("[DCCB] TODO: Obtain valid spawn coordinates for target zone")
+            print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
         end
         
         print("[DCCB] redirect decision complete (once per run)")
