@@ -91,8 +91,8 @@ local function on_first_zone_observed(hook_name)
     print("[DCCB] zone type hint: " .. zone_type_hint)
     
     -- Check if we've entered the DCCB stub zone
-    if zone_short == "dccb-start" then
-        print("[DCCB] entered DCCB stub zone: dccb-start")
+    if zone_short == "dccb" then
+        print("[DCCB] entered DCCB stub zone: dccb")
     end
     
     print("[DCCB] ========================================")
@@ -106,7 +106,8 @@ local function on_first_zone_observed(hook_name)
         -- Target zone: DCCB stub start zone
         -- This is a minimal custom zone owned by the addon (DCCB stub start zone)
         -- for scaffolding and testing addon-owned zones
-        local target_zone_short = "dccb-start"
+        -- Zone directory must match addon short_name for ToME's virtual path system
+        local target_zone_short = "dccb"
         
         -- Loop prevention: check if already at target zone
         if zone_short == target_zone_short then

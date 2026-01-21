@@ -1,10 +1,10 @@
--- /mod/tome_addon_harness/data/zones/dccb-start/zone.lua
+-- /mod/tome_addon_harness/data/zones/dccb/zone.lua
 -- DCCB Stub Start Zone - Minimal Custom Zone for Testing
 -- Phase-2: Scaffolding task, no procedural generation yet
 
 return {
   name = "DCCB Start",
-  short_name = "dccb-start",
+  short_name = "dccb",
   level_range = {1, 1},
   max_level = 1,
   decay = {300, 800},
