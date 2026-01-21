@@ -164,13 +164,15 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Create and register zone programmatically using Zone.new()
-    -- This bypasses file loading and directly registers with ToME's zone system
-    local Zone = require "engine.Zone"
-    print("[DCCB] Registering zone: dccb-start")
+    -- Create and register zone programmatically in game.zones table
+    -- This makes the zone available to game:changeLevel() without file loading
+    print("[DCCB] Registering zone in game.zones: dccb-start")
     
-    Zone.new("dccb-start", {
+    -- Add zone definition directly to game.zones table
+    -- This is where game:changeLevel() looks for zone definitions
+    game.zones["dccb-start"] = {
         name = "DCCB Start",
+        short_name = "dccb-start",
         level_range = {1, 1},
         max_level = 1,
         width = 30,
@@ -198,8 +200,8 @@ class:bindHook("ToME:load", function(self, data)
                 },
             },
         },
-    })
-    print("[DCCB] Zone registered successfully")
+    }
+    print("[DCCB] Zone registered in game.zones table successfully")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
