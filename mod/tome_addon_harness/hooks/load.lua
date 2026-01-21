@@ -164,11 +164,42 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Explicitly load our zone definition
-    -- ToME's virtual path: /data-dccb/zones/dccb-start/zone.lua
-    -- This ensures ToME registers the zone before it's referenced
-    print("[DCCB] Loading zone definition: /data-dccb/zones/dccb-start/zone.lua")
-    load("/data-dccb/zones/dccb-start/zone.lua")
+    -- Create and register zone programmatically using Zone.new()
+    -- This bypasses file loading and directly registers with ToME's zone system
+    local Zone = require "engine.Zone"
+    print("[DCCB] Registering zone: dccb-start")
+    
+    Zone.new("dccb-start", {
+        name = "DCCB Start",
+        level_range = {1, 1},
+        max_level = 1,
+        width = 30,
+        height = 30,
+        all_remembered = true,
+        all_lited = true,
+        persistent = "zone",
+        generator = {
+            map = {
+                class = "engine.generator.map.Roomer",
+                nb_rooms = 1,
+                rooms = {"simple"},
+                lite_room_chance = 100,
+            },
+        },
+        levels = {
+            [1] = {
+                generator = {
+                    map = {
+                        class = "engine.generator.map.Roomer",
+                        nb_rooms = 1,
+                        rooms = {"simple"},
+                        lite_room_chance = 100,
+                    },
+                },
+            },
+        },
+    })
+    print("[DCCB] Zone registered successfully")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
