@@ -1,8 +1,8 @@
 # ToME-Integration-Notes.md
 
-Version: 0.1  
-Status: Phase-2 Research + Plan (Authoritative)  
-Date: 2026-01-19  
+Version: 0.4  
+Status: Phase-2 Verified + Minimal Addon Baseline (Authoritative)  
+Date: 2026-01-21  
 
 This document is the authoritative Phase-2 research and planning document for integrating DCC-B with Tales of Maj'Eyal (ToME / T-Engine4).
 
@@ -69,7 +69,9 @@ Where exact ToME function/event names are unknown, they are marked **TBD** with 
 | ToME Concept | Candidate Hook Surface | When It Runs | Inputs Available | Outputs We Can Affect | Risks/Unknowns | Maps to DCCB Hook |
 |--------------|------------------------|--------------|------------------|----------------------|----------------|-------------------|
 | **Addon Load** | **VERIFIED: `ToME:load` via `class:bindHook`** | **Engine fires during addon load** | **`function(self, data)` - `self` = addon context, `data` = table payload** | **Can initialize systems, register additional hooks** | **VERIFIED: Fire timing logged** | **`Hooks.install()` - VERIFIED** |
-| **Game Load / New Game** | **TESTING: `Player:birth` and `Game:loaded` via `class:bindHook`** | **Player starts new game (birth) or loads save (loaded)** | **`function(self, data)` - `self` = context, `data` = hook payload** | **Can initialize DCCB state** | **Hooks registered, awaiting verification of fire timing** | **`Hooks.on_run_start()` - Task 2.3** |
+| **Bootstrap** | **VERIFIED: `ToME:run` via `class:bindHook`** | **Pre-flow bootstrap, runs once before module starts** | **`function(self, data)` - `self` = context, `data` = hook payload** | **Can accept bootstrap once, set up pre-game state** | **VERIFIED: Single execution confirmed** | **Bootstrap anchor - VERIFIED** |
+| **First Zone Observation** | **VERIFIED: `Actor:move` and `Actor:actBase:Effects` via `class:bindHook`** | **First gameplay action triggers zone identification** | **`function(self, data)` - `self` = actor context, `data` = hook payload** | **Can detect first zone entry, log zone name/short_name** | **VERIFIED: First-zone detection works** | **First gameplay activity anchor - VERIFIED** |
+| **~~Game Load / New Game~~** | **~~DEPRECATED: `Player:birth` and `Game:loaded`~~** | **~~Player starts new game (birth) or loads save (loaded)~~** | **~~`function(self, data)`~~** | **~~Can initialize DCCB state~~** | **Did not fire in ToME context; hooks registered but never triggered** | **~~`Hooks.on_run_start()`~~ - REMOVED** |
 | **Zone Generation** | TBD: Zone generator hooks | Before/during zone level creation | Zone definition, level number, zone params | Can modify generation params (size, features, spawns) | Unknown: generator param format, what's mutable | `Hooks.on_pre_generate()` |
 | **Actor Spawn** | TBD: Actor creation/placement | When actor is created/spawned | Actor definition, spawn location, zone context | Can modify actor stats, equipment, faction, tags | Unknown: at what point can we intercept, what's mutable | `Hooks.on_spawn_request()` (via actor_adapter) |
 | **Item Generation** | TBD: Item generation hooks | When loot/rewards spawn | Item definition, rarity, location | Can modify rarity, affixes (egos), quantity | Unknown: how ToME selects base items vs affixes | `Hooks.on_spawn_request()` (spawn_type="loot") |
@@ -87,13 +89,105 @@ Where exact ToME function/event names are unknown, they are marked **TBD** with 
 
 **Critical unknowns that block implementation:**
 
-1. **Addon initialization**: Where/when to call `Hooks.install()` in ToME's addon lifecycle
+1. ~~**Addon initialization**: Where/when to call `Hooks.install()` in ToME's addon lifecycle~~ **RESOLVED: ToME:load hook verified**
 2. **Zone generation hooks**: How to intercept zone creation and modify parameters
 3. **Actor spawn interception**: Where in actor creation pipeline can we inject logic
 4. **Event system**: ToME's event registration mechanism and available event types
 5. **Data formats**: How ToME represents zones, actors, items in Lua (tables, metatables, classes)
 
-**These unknowns are the focus of Phase-2 research.**
+**Note:** Research focus has shifted to zone generation and actor spawning. Core lifecycle anchors are now verified.
+
+### 2.2 Verified Hook Lifecycle (Current State)
+
+**Minimal Addon Baseline - No Loader Framework, No Custom Logging Framework**
+
+The current verified ToME integration operates with a minimal hook-first approach:
+
+#### File Execution vs Real Engine Hooks
+
+**Important distinction:**
+- **File execution** (e.g., `hooks/load.lua` being loaded by ToME) is NOT a hook—it's simply file loading
+- **Real engine hooks** are registered via `class:bindHook()` and are fired by the ToME engine when specific events occur
+
+#### Verified Hook Sequence
+
+1. **ToME:load** (Engine hook - addon initialization)
+   - **When:** ToME engine fires during addon load sequence
+   - **Registration:** `class:bindHook("ToME:load", callback)` in `hooks/load.lua`
+   - **Purpose:** Register additional hooks, set up hook infrastructure
+   - **Status:** VERIFIED ✅
+
+2. **ToME:run** (Engine hook - bootstrap anchor)
+   - **When:** Pre-flow, runs once before module starts
+   - **Registration:** `class:bindHook("ToME:run", callback)` from within `ToME:load`
+   - **Purpose:** Bootstrap operations, idempotent "run started" anchor
+   - **Idempotence:** Single-use guard (`bootstrap_done` flag) prevents duplicate execution
+   - **Status:** VERIFIED ✅
+
+3. **Actor:move / Actor:actBase:Effects** (Engine hooks - first zone observation)
+   - **When:** First gameplay action/movement triggers zone identification
+   - **Registration:** `class:bindHook("Actor:move", callback)` and `class:bindHook("Actor:actBase:Effects", callback)` from within `ToME:load`
+   - **Purpose:** Detect when gameplay is active, identify current zone
+   - **Zone info extracted:** `game.zone.name`, `game.zone.short_name`
+   - **Idempotence:** Single-use guard (`first_zone_observed` flag) prevents duplicate logging
+   - **Status:** VERIFIED ✅
+
+#### Run-Start Detection Strategy
+
+**Current approach:** "First zone observed after bootstrap" (not Player:birth/Game:loaded)
+
+- Bootstrap accepted via `ToME:run` (pre-flow anchor)
+- First zone identification via `Actor:move` or `Actor:actBase:Effects` (first gameplay action)
+- This strategy replaces the deprecated Player:birth/Game:loaded approach which did not fire in our ToME context
+
+#### Deprecated/Invalid Hooks in Our ToME Context
+
+- **Player:birth** - Registered but never fired; removed from lifecycle
+- **Game:loaded** - Registered but never fired; removed from lifecycle
+
+These hooks were registered during early research but were found to not trigger in the actual ToME addon environment. The bootstrap and first-zone observation pattern is the verified replacement.
+
+### 2.3 Redirect Plumbing Status
+
+The addon includes redirect plumbing with safety-first behavior:
+
+#### Default Behavior: Dry-Run Only
+
+- **Configuration:** `DCCB_ENABLE_REDIRECT = false` (default in `hooks/load.lua`)
+- **Behavior:** Logs "DRY RUN: would redirect from [zone] to [target]" but does not attempt actual redirect
+- **Purpose:** Safe exploration of hook lifecycle without risk of game state corruption
+
+#### Enabled Mode: Safety Fallback
+
+- **Configuration:** `DCCB_ENABLE_REDIRECT = true` (opt-in)
+- **Behavior:** Attempts redirect but safely falls back to dry-run mode
+- **Reason for fallback:** Safe zone-transition API not yet confirmed through research
+- **Current status:** Remains in dry-run even when enabled until API is validated
+
+#### Idempotence + Loop Prevention
+
+- **Single execution:** Redirect decision runs once per session via `redirect_attempted` flag
+- **Loop prevention:** Checks if already at target zone (`zone_short == target_zone_short`)
+- **Target zone:** Currently set to `"wilderness"` as placeholder (requires verification)
+
+#### Zone Transition API Research (TODO)
+
+**Candidate APIs requiring verification:**
+
+1. `game:changeLevel(level_num, zone_short_name)` - May be for same-zone level transitions only
+2. `game.party:moveLevel(level_num, zone_short_name, x, y)` - May handle party/followers correctly
+3. `game.player:move(x, y, force)` - Likely only works within current zone
+4. `require("engine.interface.WorldMap").display()` - Player-driven UI approach (safest?)
+
+**Required validation steps before implementing actual redirect:**
+
+1. Verify target zone identifier exists in base ToME (e.g., "wilderness", "trollmire", "old-forest")
+2. Obtain valid spawn coordinates (x, y) for target zone from ToME zone data files
+3. Test that chosen API handles player/party/follower state correctly without corruption
+4. Verify save/load cycles work correctly after redirect
+5. Test that inventory, quest state, and other game state persists correctly
+
+**Explicit TODO:** Confirm safe zone-transition API through ToME source research and testing. Until confirmed, all redirect attempts remain in dry-run mode as a safety measure.
 
 ---
 
@@ -120,46 +214,28 @@ This section proposes the smallest runnable binding that proves the integration 
 - ToME addon metadata file (if any)
 - ToME log output mechanism
 
-### 3.2 Hooks.install() Registers Callbacks
+### 3.2 ~~Hooks.install() Registers Callbacks~~ OBSOLETE - No Loader Framework
 
-**Goal:** Call `Hooks.install()` from `init.lua` and register at least one ToME callback
+**OBSOLETE:** This section described a now-deprecated approach using a harness loader framework.
 
-**Implementation:**
-- From `init.lua`, require `integration/tome_hooks.lua`
-- Call `Hooks.install()`
-- Inside `Hooks.install()`, register one verified ToME hook (TBD: which one)
-- Log success/failure clearly
+**Current minimal approach:**
+- Hooks registered directly in `hooks/load.lua` via `class:bindHook()` API
+- No separate loader or harness framework required
+- No custom `Hooks.install()` orchestration needed
+- Clean, direct hook registration pattern
 
-**Acceptance:**
-- "DCCB ToME Integration: Installing hooks" message appears
-- At least one ToME callback registration succeeds
-- No errors during hook installation
+See §2.2 for the current verified hook lifecycle.
 
-**Research needed:**
-- ToME hook registration API (e.g., `engine.Event:register()`, other mechanism)
-- What callbacks are safe to register at addon load time
-- Callback signature format
+### 3.3 ~~Hooks.on_run_start() Executes~~ DEPRECATED - No Player:birth/Game:loaded
 
-### 3.3 Hooks.on_run_start() Executes
+**DEPRECATED:** This section described run-start detection via `Player:birth` and `Game:loaded` hooks, which did not fire in our ToME context.
 
-**Goal:** Trigger `Hooks.on_run_start()` at game start and initialize DCCB systems
+**Current verified approach:**
+- **Bootstrap anchor:** `ToME:run` hook (pre-flow, idempotent)
+- **First zone observation:** `Actor:move` / `Actor:actBase:Effects` hooks (first gameplay action)
+- No DCCB system initialization at this stage (minimal addon baseline)
 
-**Implementation:**
-- Register ToME callback for "new game" or "game load" event
-- Callback invokes `Hooks.on_run_start(run_ctx)`
-- Extract seed from ToME game state (TBD: how)
-- Allow all seven initialization steps to run (Bootstrap, State, RNG, RegionDirector, MetaLayer, ContestantSystem, FloorDirector)
-- Log startup summary as defined in `tome_hooks.lua`
-
-**Acceptance:**
-- "DCCB Run Started - Summary" appears with seed, region, floor rules
-- No errors during initialization
-- DCCB state is populated
-
-**Research needed:**
-- ToME game start hook (when is game state ready?)
-- How to extract seed from ToME (or generate one)
-- How to access ToME player object (if needed for run_ctx)
+See §2.2 for the current verified hook lifecycle.
 
 ### 3.4 Hooks.on_pre_generate() Receives Parameters
 
@@ -350,19 +426,22 @@ This section lists concrete research tasks. Each item should be marked **TBD** u
 - **Verification:** Log shows "FIRED: ToME:load (REAL ENGINE HOOK)"
 - **Status:** VERIFIED for Phase-2 Task 2.2.1
 
-**Execution Flow:**
+**Execution Flow (Current Verified):**
 1. `init.lua` returns addon descriptor with `hooks = true`
 2. ToME loads addon and **executes** `hooks/load.lua` (file execution, NOT a hook)
 3. Inside `hooks/load.lua`, we call `class:bindHook("ToME:load", callback)`
 4. ToME engine **fires** the `ToME:load` hook → callback executes (REAL ENGINE HOOK)
-5. Callback invokes harness loader and initializes DCCB integration
+5. Callback registers additional hooks (ToME:run, Actor:move, Actor:actBase:Effects)
 
 ### 5.2 Hook Registration and Events
 
 - [x] **VERIFIED:** ToME hook registration: `class:bindHook("HookName", function(self, data) ... end)`
-- [x] **VERIFIED:** First verified hook: `ToME:load` (registered via `class:bindHook`)
+- [x] **VERIFIED:** Hook: `ToME:load` (addon initialization)
+- [x] **VERIFIED:** Hook: `ToME:run` (bootstrap anchor, pre-flow)
+- [x] **VERIFIED:** Hook: `Actor:move` (first gameplay action / zone observation)
+- [x] **VERIFIED:** Hook: `Actor:actBase:Effects` (first gameplay action / zone observation)
 - [x] **VERIFIED:** Hook callback signature: `function(self, data)` where `self` is context, `data` is payload
-- [x] **TESTING:** Run-start hooks: `Player:birth` and `Game:loaded` (registered, awaiting verification)
+- [x] **DEPRECATED:** ~~`Player:birth` and `Game:loaded`~~ (registered but never fired; removed from lifecycle)
 - [ ] **TBD:** Additional available hook names (beyond those registered)
 - [ ] **TBD:** Complete hook payload formats (what fields are in `data` for each hook)
 - [ ] **TBD:** Can we register custom events?
@@ -381,19 +460,32 @@ The `ToME:load` hook is verified and proven:
 - **Callback signature:** `function(self, data)` - `self` is addon context, `data` is hook payload (table)
 - **Observed payload:** Table type (exact keys logged when hook fires)
 - **Fire timing:** During addon load sequence, after `hooks/load.lua` file execution completes
-- **Use case:** Addon initialization, loading integration hooks, setup
-- **Status:** VERIFIED - confirmed via "FIRED: ToME:load" log output in Phase-2 Task 2.2.1
+- **Use case:** Addon initialization, register additional hooks
+- **Status:** VERIFIED - confirmed via "FIRED: ToME:load" log output
 
-**Phase-2 Task 2.3 Findings:**
+**Updated Findings (Current Verified State):**
 
-Run-start hooks registered (awaiting verification):
-- **Hook names:** `Player:birth` (new game) and `Game:loaded` (load save)
-- **Registration method:** `class:bindHook(hookName, callback)` inside `Hooks.install()`
-- **Callback signature:** `function(self, data)` - standard ToME hook signature
-- **Idempotence:** Single-use flag prevents duplicate `on_run_start()` calls
-- **Run context:** `{ engine="tome", hook=hookName, timestamp=os.time(), source="engine_hook", ... }`
-- **Use case:** Trigger DCCB initialization when gameplay begins
-- **Status:** TESTING - hooks registered, awaiting gameplay verification (see §8.6)
+Bootstrap and first-zone observation hooks verified:
+- **Hook name:** `ToME:run` (bootstrap anchor)
+  - **Registration method:** `class:bindHook("ToME:run", callback)` from within `ToME:load`
+  - **When:** Pre-flow, runs once before module starts
+  - **Idempotence:** Single-use guard (`bootstrap_done` flag)
+  - **Status:** VERIFIED ✅
+
+- **Hook names:** `Actor:move` and `Actor:actBase:Effects` (first-zone observation)
+  - **Registration method:** `class:bindHook(hookName, callback)` from within `ToME:load`
+  - **When:** First gameplay action/movement
+  - **Zone info:** Extracts `game.zone.name` and `game.zone.short_name`
+  - **Idempotence:** Single-use guard (`first_zone_observed` flag)
+  - **Status:** VERIFIED ✅
+
+~~**Phase-2 Task 2.3 Findings:**~~ **OBSOLETE - Player:birth/Game:loaded did not fire**
+
+~~Run-start hooks registered (awaiting verification):~~
+- ~~**Hook names:** `Player:birth` (new game) and `Game:loaded` (load save)~~
+- ~~**Status:** TESTING - hooks registered, awaiting gameplay verification~~
+
+**Updated status:** These hooks were registered but never fired in the ToME addon environment. They have been deprecated and removed from the lifecycle. See §2.2 for the verified replacement pattern.
 
 ### 5.3 Zone Generation
 
@@ -786,46 +878,72 @@ Running ToME with our addon shows: `"DCCB addon loaded - version 0.1"` in the lo
 
 ---
 
-## 8.5 Phase-2 Task 2.2.1: Real ToME Engine Hook Implementation
+## 8.5 Current Verified Hook Implementation (Minimal Addon Baseline)
 
-**Status:** COMPLETE  
-**Date:** 2026-01-19 (Updated for Task 2.2.1)
+**Status:** VERIFIED  
+**Date:** 2026-01-21 (Updated to reflect current minimal baseline)
 
 ### Implementation Summary
 
-Phase-2 Task 2.2.1 successfully implemented the first **real ToME engine hook** using `class:bindHook()` API and created a proper ToME addon descriptor with all required metadata fields.
+The current implementation uses a **minimal addon baseline** approach:
+- No loader framework
+- No custom logging framework  
+- Direct hook registration in `hooks/load.lua`
+- Clean, straightforward pattern
 
 ### Key Distinction
 
-**Important:** This implementation corrects Task 2.2 by distinguishing:
-- **File Execution** (`hooks/load.lua` being loaded) ≠ Engine Hook
-- **Real Engine Hook** (`ToME:load` fired by ToME engine) = Actual verified hook
+**Important:** File execution ≠ Engine Hook
+- **File Execution** (`hooks/load.lua` being loaded) = NOT a hook
+- **Real Engine Hook** (e.g., `ToME:load` fired by ToME engine) = Actual engine event
 
-### Files Modified/Created
+### Current Files
 
-**Created:**
-- `/mod/tome_addon_harness/loader.lua` - Runtime loader logic (extracted from init.lua)
-- `/mod/tome_addon_harness/hooks/load.lua` - Registers real engine hook via `class:bindHook()`
+**Key file:**
+- `/mod/tome_addon_harness/hooks/load.lua` - Direct hook registration via `class:bindHook()`
 
-**Modified:**
-- `/mod/tome_addon_harness/init.lua` - Proper ToME addon descriptor with required fields
-- `/mod/dccb/integration/tome_hooks.lua` - Updated Hooks.install() to document verified hook
-- `/docs/ToME-Integration-Notes.md` - Marked §5.1 and §5.2 as VERIFIED with corrected information
+**Addon descriptor:**
+- `/mod/tome_addon_harness/init.lua` - Proper ToME addon metadata
 
-### Verified Hook: ToME:load
+~~**REMOVED:**~~
+- ~~`/mod/tome_addon_harness/loader.lua`~~ - No longer using loader framework
+- ~~`/mod/dccb/integration/tome_hooks.lua`~~ - No longer using DCCB systems at this minimal stage
 
-**Hook Name:** `ToME:load`  
-**Registration Method:** `class:bindHook("ToME:load", function(self, data) ... end)` in `hooks/load.lua`  
-**When It Fires:** ToME engine fires during addon initialization (after file loads)  
-**Callback Signature:** `function(self, data)` where `self` = addon context, `data` = hook payload table  
-**Payload Shape:** Table (exact keys logged when hook fires)  
-**Verification Method:** Log output shows "FIRED: ToME:load (REAL ENGINE HOOK)"  
+### Verified Hooks
 
-### ToME Addon Descriptor Fields
+**1. ToME:load** (Addon initialization)
+- **Registration:** `class:bindHook("ToME:load", callback)` in `hooks/load.lua`
+- **When:** ToME engine fires during addon initialization
+- **Purpose:** Register additional hooks
+- **Status:** VERIFIED ✅
 
-`init.lua` now includes all required ToME addon metadata:
-- `long_name` - Full addon name
-- `short_name` - Short identifier
+**2. ToME:run** (Bootstrap anchor)
+- **Registration:** `class:bindHook("ToME:run", callback)` from within `ToME:load`
+- **When:** Pre-flow, runs once before module starts
+- **Purpose:** Bootstrap operations, idempotent run-started marker
+- **Idempotence:** `bootstrap_done` flag prevents duplicate execution
+- **Status:** VERIFIED ✅
+
+**3. Actor:move** (First gameplay action)
+- **Registration:** `class:bindHook("Actor:move", callback)` from within `ToME:load`
+- **When:** Actor/player movement
+- **Purpose:** Detect first zone entry after bootstrap
+- **Zone info:** Extracts `game.zone.name`, `game.zone.short_name`
+- **Idempotence:** `first_zone_observed` flag prevents duplicate logging
+- **Status:** VERIFIED ✅
+
+**4. Actor:actBase:Effects** (First gameplay action alternative)
+- **Registration:** `class:bindHook("Actor:actBase:Effects", callback)` from within `ToME:load`
+- **When:** Actor turn/effects processing
+- **Purpose:** Alternative first-zone detection point
+- **Idempotence:** Shares `first_zone_observed` flag with Actor:move
+- **Status:** VERIFIED ✅
+
+**~~DEPRECATED:~~**
+- ~~`Player:birth`~~ - Registered but never fired
+- ~~`Game:loaded`~~ - Registered but never fired
+
+These hooks were attempted during research but did not trigger in the ToME addon environment.
 - `for_module` - Target module ("tome")
 - `version` - Semantic version table {1, 0, 0}
 - `addon_version` - String version
@@ -919,85 +1037,16 @@ This implementation verifies the **ToME:load engine hook only**. Additional hook
 
 ---
 
-## 8.6 Phase-2 Task 2.3: Run Start Event Binding (Log-Only)
+## 8.6 ~~Phase-2 Task 2.3: Run Start Event Binding~~ OBSOLETE
 
-**Status:** IMPLEMENTED  
-**Date:** 2026-01-19 (Task 2.3)
+**Status:** OBSOLETE - Player:birth and Game:loaded did not fire  
+**Date:** 2026-01-21 (Marked obsolete)
 
-### Implementation Summary
+This section described an approach using `Player:birth` and `Game:loaded` hooks for run-start detection. These hooks were registered but never fired in the ToME addon environment.
 
-Phase-2 Task 2.3 implements run-start hook binding to prove the lifecycle seam exists and is stable. This is a **log-only** implementation focused on verifying hook timing and callback signatures.
+**Current verified approach:** See §2.2 for the verified hook lifecycle using ToME:run (bootstrap) and Actor:move/Actor:actBase:Effects (first-zone observation).
 
-### Run-Start Hooks Registered
-
-Two candidate hooks are attempted for run-start detection:
-
-1. **`Player:birth`**
-   - **Purpose:** Fires when a new character is created
-   - **When:** New game start, after character creation completes
-   - **Status:** TESTING (registered, awaiting verification)
-   
-2. **`Game:loaded`**
-   - **Purpose:** Fires when a save game is loaded
-   - **When:** Load game, after save data is restored
-   - **Status:** TESTING (registered, awaiting verification)
-
-### Registration Location
-
-All run-start hooks are registered inside `Hooks.install()` in `/mod/dccb/integration/tome_hooks.lua`.
-
-### Hook Callback Signature
-
-Both hooks use the standard ToME hook signature:
-```lua
-function(self, data)
-  -- self: ToME context object (addon, player, or game)
-  -- data: Hook payload table (structure TBD, logged on fire)
-end
-```
-
-### Idempotence Guard
-
-To prevent duplicate initialization if multiple hooks fire:
-
-- **Flag:** `module_state.run_started` (boolean)
-- **Behavior:** 
-  - First hook to fire: sets flag to `true`, invokes `Hooks.on_run_start()`
-  - Subsequent hooks: log "run_start suppressed (already started)" and return
-- **Tracking:** `module_state.first_hook` records which hook fired first
-
-### Run Context Structure
-
-When a run-start hook fires, the callback constructs a `run_ctx` table:
-
-```lua
-{
-  engine = "tome",
-  hook = "<HOOK_NAME>",  -- "Player:birth" or "Game:loaded"
-  timestamp = os.time(),
-  source = "engine_hook",
-  -- Additional scalar fields from hook data (if available)
-}
-```
-
-Large objects or non-scalar values are NOT included to keep context minimal.
-
-### Logging Output
-
-Expected log sequence when run-start hook fires:
-
-```
-========================================
-DCCB: run-start hook fired: Player:birth
-========================================
-  Hook data type: table
-  Hook data keys: (key1, key2, ...)
-DCCB: run_start accepted
-  Triggered by: Player:birth
-DCCB: on_run_start invoked
-  run_ctx.engine: tome
-  run_ctx.hook: Player:birth
-  run_ctx.timestamp: 1234567890
+---
 ========================================
 DCCB: Run Start
 ========================================
@@ -1123,6 +1172,7 @@ When updating this document:
 - **2026-01-19 - v0.2 - Task 2.2 complete** (First verified hook: ADDON_LOAD, §5.1/§5.2/§8.5 marked VERIFIED)
 - **2026-01-19 - v0.2.1 - Task 2.2.1 complete** (Real ToME engine hook: `ToME:load` via `class:bindHook`, proper addon descriptor, distinguished file execution vs engine hook)
 - **2026-01-19 - v0.3 - Task 2.3 complete** (Run-start hooks: `Player:birth` and `Game:loaded` registered, idempotence guard implemented, log-only binding, §2/§8.6 added)
+- **2026-01-21 - v0.4 - Minimal addon baseline verified** (Updated to reflect verified hooks: ToME:run, Actor:move, Actor:actBase:Effects; deprecated Player:birth/Game:loaded; documented redirect plumbing; removed loader/harness framework references)
 
 ---
 
