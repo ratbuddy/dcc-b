@@ -20,4 +20,8 @@ This addon integrates the DCCB procedural generation and meta-layer systems
 with ToME's dungeon generation and gameplay mechanics.]]
 tags = {"dungeon", "procedural", "integration"}
 
+-- Addon capabilities
+overload = false
+superload = false
 hooks = true
+data = true
