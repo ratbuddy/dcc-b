@@ -98,7 +98,9 @@ local function on_first_zone_observed(hook_name)
         redirect_attempted = true
         
         -- Placeholder target zone (safe base ToME zone for testing)
-        -- TODO: Confirm safest placeholder zone from base ToME
+        -- CONFIRMED (2026-01-21): "wilderness" is safest redirect target per §2.4.3
+        -- See /docs/ToME-Integration-Notes.md §2.4.3 "Valid Zone Identifiers"
+        -- Wilderness is always accessible and has safe spawn points
         local target_zone_short = "wilderness"
         
         -- Loop prevention: check if already at target zone
