@@ -219,6 +219,16 @@ Use named RNG streams to prevent cross-system interference:
 
 This section defines the expected integration points. Names are conceptual; actual hook names depend on the target engine's APIs (currently ToME).
 
+**Current ToME Integration Status (Minimal Baseline):**
+
+The engine integration currently uses a minimal hook-first approach:
+- **Bootstrap anchor:** `ToME:run` (pre-flow, runs once before module starts)
+- **First-zone detection:** `Actor:move` and `Actor:actBase:Effects` (first gameplay action triggers zone identification)
+- **Zone transition API:** TBD - intentionally not implemented yet (safety-first approach)
+- **Integration layer:** Remains thin and direct, no loader frameworks
+
+The full DCCB system initialization described below (§6.1) is not currently active at this minimal baseline stage. The verified hooks provide lifecycle anchors for future integration work.
+
 ### 6.1 Run start
 1. `DCCB.bootstrap()`
 2. Load config + data
@@ -227,6 +237,8 @@ This section defines the expected integration points. Names are conceptual; actu
 5. Meta Layer initializes show state
 6. Contestant System generates initial roster
 7. Floor Director sets floor=1 and activates rules
+
+*Note: This describes the intended DCCB initialization flow. Current minimal baseline does not execute full system initialization.*
 
 ### 6.2 Before zone generation (each floor level)
 1. Integration receives “about to generate level” callback
