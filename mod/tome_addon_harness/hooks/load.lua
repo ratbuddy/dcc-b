@@ -131,11 +131,11 @@ local function on_first_zone_observed(hook_name)
                 -- API: game:changeLevel(lev, zone, params)
                 -- Source: /docs/ToME-Integration-Notes.md §2.4.1
                 -- Parameters:
-                --   lev: nil (use zone's default entry level)
+                --   lev: 1 (level 1 of target zone, nil caused crash in Zone.lua:925)
                 --   zone: target_zone_short (string, e.g., "wilderness")
                 --   params: nil (ToME picks safe spawn point automatically)
                 local success, error_msg = pcall(function()
-                    game:changeLevel(nil, target_zone_short)
+                    game:changeLevel(1, target_zone_short)
                 end)
                 
                 if success then
