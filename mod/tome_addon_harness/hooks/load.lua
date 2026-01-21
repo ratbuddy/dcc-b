@@ -164,11 +164,11 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Note: Zones in data/zones/ directory are auto-discovered by ToME
-    -- No explicit registration needed - ToME will find our zone at:
-    -- Physical: data/zones/dccb-start/zone.lua
-    -- Virtual: /data-dccb/zones/dccb-start/zone.lua
-    print("[DCCB] Zone auto-discovery enabled for: /data-dccb/zones/dccb-start/")
+    -- Explicitly load our zone definition
+    -- ToME's virtual path: /data-dccb/zones/dccb-start/zone.lua
+    -- This ensures ToME registers the zone before it's referenced
+    print("[DCCB] Loading zone definition: /data-dccb/zones/dccb-start/zone.lua")
+    load("/data-dccb/zones/dccb-start/zone.lua")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
