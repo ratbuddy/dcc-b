@@ -89,6 +89,12 @@ local function on_first_zone_observed(hook_name)
     print("[DCCB] current zone: " .. zone_name)
     print("[DCCB] current zone short_name: " .. zone_short)
     print("[DCCB] zone type hint: " .. zone_type_hint)
+    
+    -- Check if we've entered the DCCB stub zone
+    if zone_short == "dccb-start" then
+        print("[DCCB] entered DCCB stub zone: dccb-start")
+    end
+    
     print("[DCCB] ========================================")
     
     -- ========================================
@@ -97,11 +103,10 @@ local function on_first_zone_observed(hook_name)
     if not redirect_attempted then
         redirect_attempted = true
         
-        -- Placeholder target zone (safe base ToME zone for testing)
-        -- CONFIRMED (2026-01-21): "wilderness" is safest redirect target per §2.4.3
-        -- See /docs/ToME-Integration-Notes.md §2.4.3 "Valid Zone Identifiers"
-        -- Wilderness is always accessible and has safe spawn points
-        local target_zone_short = "wilderness"
+        -- Target zone: DCCB stub start zone
+        -- This is a minimal custom zone owned by the addon (DCCB stub start zone)
+        -- for scaffolding and testing addon-owned zones
+        local target_zone_short = "dccb-start"
         
         -- Loop prevention: check if already at target zone
         if zone_short == target_zone_short then
@@ -155,6 +160,35 @@ end
 -- Note: This is NOT a run-start hook, it fires during addon initialization
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
+    
+    -- ========================================
+    -- Register DCCB Custom Zone
+    -- ========================================
+    -- Custom zones must be registered programmatically in game.zones table
+    -- Source: /docs/ToME-Integration-Notes.md §2.4.8
+    print("[DCCB] Registering DCCB custom zone: dccb-start")
+    
+    -- Load zone definition from our data directory
+    local zone_def_path = "/data/zones/dccb_start/zone.lua"
+    local success, zone_def = pcall(function()
+        -- Try to load the zone definition file
+        -- ToME addons can access their own data files via paths relative to addon root
+        return require("mod.tome_addon_harness.data.zones.dccb_start.zone")
+    end)
+    
+    if success and zone_def then
+        -- Register zone in game.zones table
+        if game and game.zones then
+            game.zones["dccb-start"] = zone_def
+            print("[DCCB] Zone registered successfully: dccb-start")
+        else
+            print("[DCCB] Warning: game.zones not available, zone registration deferred")
+            -- Zone will need to be registered later when game object is available
+        end
+    else
+        print("[DCCB] Warning: Failed to load zone definition")
+        print("[DCCB] Error: " .. tostring(zone_def))
+    end
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
