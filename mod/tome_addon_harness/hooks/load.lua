@@ -142,6 +142,7 @@ local function on_first_zone_observed(hook_name)
                     print("[DCCB] redirect succeeded")
                 else
                     print("[DCCB] redirect failed: " .. tostring(error_msg))
+                    print("[DCCB] (failed to change level to " .. target_zone_short .. ")")
                 end
             end
         end
