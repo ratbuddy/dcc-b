@@ -133,7 +133,7 @@ local function on_first_zone_observed(hook_name)
             --
             --   2. game.party:moveLevel(level_num, zone_short_name, x, y)
             --      - Possibly handles party/followers correctly
-            --      - Parameters: level (int), zone (string), x (int), y (int)
+            --      - Parameters: level_num (int), zone_short_name (string), x (int), y (int)
             --      - Need to verify: Valid spawn coordinates, party state preservation
             --      - Return: unknown, Side effects: may affect party members
             --
