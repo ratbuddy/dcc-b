@@ -1,6 +1,10 @@
 -- DCCB Start Zone - Static Map (30x30)
 -- Simple rectangular room with floor tiles
 -- # = Wall, . = Floor, + = Player spawn point
+--
+-- NOTE: This file is kept as reference documentation only.
+-- The actual zone uses a Roomer generator (defined inline in hooks/load.lua)
+-- instead of this static map for better reliability.
 
 defineTile('#', "HARDWALL")
 defineTile('.', "FLOOR")

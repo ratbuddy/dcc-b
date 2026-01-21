@@ -1,6 +1,10 @@
 -- /mod/tome_addon_harness/data/zones/dccb_start/zone.lua
 -- DCCB Stub Start Zone - Minimal Custom Zone for Testing
 -- Phase-2: Scaffolding task, no procedural generation yet
+--
+-- NOTE: This file is kept as reference documentation only.
+-- The actual zone definition used by the addon is inlined in hooks/load.lua
+-- for better reliability and to avoid path resolution issues.
 
 return {
   name = "DCCB Start",

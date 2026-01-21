@@ -190,10 +190,6 @@ class:bindHook("ToME:load", function(self, data)
                 nb_rooms = 1,
                 rooms = {"simple"},
                 lite_room_chance = 100,
-                [2] = {
-                    class = "engine.generator.map.Heightmap",
-                    seed = 1234,
-                },
             },
         },
         
