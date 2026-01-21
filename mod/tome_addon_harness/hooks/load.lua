@@ -161,60 +161,9 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- ========================================
-    -- Register DCCB Custom Zone
-    -- ========================================
-    -- Custom zones must be registered programmatically in game.zones table
-    -- Source: /docs/ToME-Integration-Notes.md §2.4.8
-    print("[DCCB] Registering DCCB custom zone: dccb-start")
-    
-    -- Define zone inline for maximum compatibility
-    -- This avoids path resolution issues between dev and deployed environments
-    local zone_def = {
-        name = "DCCB Start",
-        short_name = "dccb-start",
-        level_range = {1, 1},
-        max_level = 1,
-        decay = {300, 800},
-        width = 30,
-        height = 30,
-        persistent = "zone",
-        all_remembered = true,
-        all_lited = true,
-        
-        -- Use minimal procedural generator for now
-        -- This is more reliable than static maps for addon zones
-        generator = {
-            map = {
-                class = "engine.generator.map.Roomer",
-                nb_rooms = 1,
-                rooms = {"simple"},
-                lite_room_chance = 100,
-            },
-        },
-        
-        levels = {
-            [1] = {
-                generator = {
-                    map = {
-                        class = "engine.generator.map.Roomer",
-                        nb_rooms = 1,
-                        rooms = {"simple"},
-                        lite_room_chance = 100,
-                    },
-                },
-            },
-        },
-    }
-    
-    -- Register zone in game.zones table
-    if game and game.zones then
-        game.zones["dccb-start"] = zone_def
-        print("[DCCB] Zone registered successfully: dccb-start")
-    else
-        print("[DCCB] Warning: game.zones not available during ToME:load")
-        print("[DCCB] This is expected - zone will be available when game starts")
-    end
+    -- Note: Zone files are loaded by ToME via its virtual path system
+    -- ToME will find zones in addon data/zones/ directories automatically
+    -- Our zone at data/zones/dccb-start/zone.lua will be discovered by ToME
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)

@@ -1,10 +1,6 @@
 -- /mod/tome_addon_harness/data/zones/dccb_start/zone.lua
 -- DCCB Stub Start Zone - Minimal Custom Zone for Testing
 -- Phase-2: Scaffolding task, no procedural generation yet
---
--- NOTE: This file is kept as reference documentation only.
--- The actual zone definition used by the addon is inlined in hooks/load.lua
--- for better reliability and to avoid path resolution issues.
 
 return {
   name = "DCCB Start",
@@ -18,11 +14,14 @@ return {
   all_remembered = true,
   all_lited = true,
   
-  -- No random generation for now - we'll use a static map
+  -- Use minimal procedural generator
+  -- Simple single room with Roomer generator
   generator = {
     map = {
-      class = "engine.generator.map.Static",
-      map = "dccb_start_1",
+      class = "engine.generator.map.Roomer",
+      nb_rooms = 1,
+      rooms = {"simple"},
+      lite_room_chance = 100,
     },
   },
   
@@ -31,13 +30,12 @@ return {
     [1] = {
       generator = {
         map = {
-          class = "engine.generator.map.Static",
-          map = "dccb_start_1",
+          class = "engine.generator.map.Roomer",
+          nb_rooms = 1,
+          rooms = {"simple"},
+          lite_room_chance = 100,
         },
       },
     },
   },
-  
-  -- Safe spawn point (will be in the center of our static map)
-  default_spawn_point = {15, 15},
 }
