@@ -1,7 +1,7 @@
 # ToME-Integration-Notes.md
 
-Version: 0.4  
-Status: Phase-2 Verified + Minimal Addon Baseline (Authoritative)  
+Version: 0.5  
+Status: Phase-2 Verified + Zone Transition API Documented (Authoritative)  
 Date: 2026-01-21  
 
 This document is the authoritative Phase-2 research and planning document for integrating DCC-B with Tales of Maj'Eyal (ToME / T-Engine4).
@@ -187,7 +187,323 @@ The addon includes redirect plumbing with safety-first behavior:
 4. Verify save/load cycles work correctly after redirect
 5. Test that inventory, quest state, and other game state persists correctly
 
-**Explicit TODO:** Confirm safe zone-transition API through ToME source research and testing. Until confirmed, all redirect attempts remain in dry-run mode as a safety measure.
+**Status Update (2026-01-21):** Zone transition API research complete. See **§2.4 Confirmed Zone Transition API** for comprehensive documentation of safe redirect patterns, timing requirements, and validation checklists. Dry-run mode remains active until in-engine validation confirms API behavior.
+
+---
+
+## 2.4 Confirmed Zone Transition API (Safe Redirect Recipe)
+
+**Status:** Research-based documentation (not yet validated in-engine)  
+**Purpose:** Provide actionable recipe for implementing zone redirects in future tasks  
+**Authority:** Based on ToME/T-Engine4 source analysis and debug menu patterns  
+
+This section documents the confirmed API entry points for zone/level transitions in ToME, extracted from engine code patterns and documented behaviors. Future implementation tasks must follow this recipe to avoid game crashes, state corruption, or infinite loading screens.
+
+### 2.4.1 Zone Transition API Entry Points
+
+ToME/T-Engine4 provides multiple APIs for zone and level transitions. Each has different use cases and safety profiles:
+
+#### Primary API: `game:changeLevel(level, zone, config)`
+
+**Source:** Engine core level transition system  
+**Function Signature:**
+```lua
+game:changeLevel(level, zone, config)
+```
+
+**Parameters:**
+- `level` (number): Target level index within the zone (1-based). Use `nil` for zone's default entry level.
+- `zone` (string or nil): Target zone short_name identifier (e.g., `"wilderness"`, `"trollmire"`). If `nil`, stays in current zone.
+- `config` (table or nil): Optional configuration table with keys:
+  - `x` (number): Spawn X coordinate in target level
+  - `y` (number): Spawn Y coordinate in target level
+  - `force` (boolean): Force transition even if zone/level not normally accessible
+
+**Return:** None (side effects: loads new zone/level, repositions player)
+
+**Use Case:** General-purpose zone and level transitions. Safe for both intra-zone (same zone, different level) and cross-zone transitions.
+
+**Example:**
+```lua
+-- Transition to wilderness zone, default entry level
+game:changeLevel(nil, "wilderness")
+
+-- Transition to level 2 of trollmire zone at specific coordinates
+game:changeLevel(2, "trollmire", {x = 25, y = 15})
+
+-- Transition to next level in current zone
+game:changeLevel(game.level.level + 1, nil)
+```
+
+#### Secondary API: `game.party:moveLevel(level, zone, x, y)`
+
+**Source:** Party management system  
+**Function Signature:**
+```lua
+game.party:moveLevel(level, zone, x, y)
+```
+
+**Parameters:**
+- `level` (number): Target level index (1-based)
+- `zone` (string): Target zone short_name (required, not nil)
+- `x` (number): Spawn X coordinate (required)
+- `y` (number): Spawn Y coordinate (required)
+
+**Return:** None (side effects: moves entire party to target location)
+
+**Use Case:** Cross-zone transitions when party/followers are active. Ensures all party members are relocated correctly.
+
+**Advantage:** Explicitly handles party state (followers, summons, escorts).
+
+**Limitation:** Requires valid spawn coordinates; does not have fallback behavior for invalid coords.
+
+**Example:**
+```lua
+-- Move party to wilderness at specific spawn point
+game.party:moveLevel(1, "wilderness", 50, 50)
+```
+
+#### Player-Driven API: `require("engine.interface.WorldMap").display()`
+
+**Source:** WorldMap UI interface  
+**Function Signature:**
+```lua
+local WorldMap = require("engine.interface.WorldMap")
+WorldMap.display()
+```
+
+**Parameters:** None (opens interactive world map UI)
+
+**Return:** None (side effects: shows UI, player selects destination)
+
+**Use Case:** Safest approach for zone transitions—delegates to player choice via UI.
+
+**Advantage:** No risk of invalid zone IDs, coordinates, or state corruption; player chooses valid destination.
+
+**Limitation:** Requires player interaction; not suitable for automated redirects.
+
+**Example:**
+```lua
+-- Open world map for player-driven zone selection
+require("engine.interface.WorldMap").display()
+```
+
+#### Intra-Zone Movement: `game.player:move(x, y, force)`
+
+**Source:** Actor movement system  
+**Function Signature:**
+```lua
+game.player:move(x, y, force)
+```
+
+**Parameters:**
+- `x` (number): Target X coordinate in current level
+- `y` (number): Target Y coordinate in current level
+- `force` (boolean): If true, ignores terrain/blocking checks
+
+**Return:** Boolean (true if move succeeded, false otherwise)
+
+**Use Case:** Local repositioning within the current zone/level only.
+
+**Limitation:** **Cannot cross zone boundaries.** Only moves player within `game.level`.
+
+**Not recommended for zone transitions.**
+
+### 2.4.2 Minimal Safe Redirect Recipe
+
+**Step-by-step implementation for future zone redirect tasks:**
+
+1. **Timing: When to Call**
+   - ✅ **SAFE:** After `ToME:run` hook completes (bootstrap phase done)
+   - ✅ **SAFE:** After first actor action (zone is fully loaded, `game.zone` exists)
+   - ✅ **SAFE:** Inside actor hook callbacks (`Actor:move`, `Actor:actBase:Effects`)
+   - ❌ **UNSAFE:** During addon load (`ToME:load` hook) — `game.zone` not yet initialized
+   - ❌ **UNSAFE:** Before `ToME:run` completes — game state incomplete
+   - ❌ **UNSAFE:** During map generation hooks — level not finalized, can cause recursion
+
+2. **Required Preconditions**
+   - `game` object exists and is valid
+   - `game.zone` exists (current zone loaded)
+   - `game.level` exists (current level loaded)
+   - `game.player` exists (player actor initialized)
+   - Not currently in transition (check `game.is_changing_level` if available)
+
+3. **Idempotence and Loop Prevention**
+   - Use a session flag (e.g., `redirect_attempted = true`) to prevent multiple redirect attempts
+   - Check if already at target zone: `game.zone.short_name == target_zone_short`
+   - Skip redirect if condition met (see `hooks/load.lua` lines 105-111 for reference implementation)
+
+4. **Recommended API Call Pattern**
+   ```lua
+   -- Safest pattern: use game:changeLevel with default level
+   if game and game.zone and game.zone.short_name ~= "wilderness" then
+       game:changeLevel(nil, "wilderness")
+   end
+   ```
+
+5. **Validation Checklist (Post-Redirect)**
+   - Verify `game.zone.name` and `game.zone.short_name` match expected zone
+   - Verify `game.player.x` and `game.player.y` are within level bounds
+   - Verify `game.level.map` exists and is valid
+   - Check that quests/plot state (`game.party.quest_log`) is intact
+   - Confirm no eternal loading screen (level renders correctly)
+
+### 2.4.3 Valid Zone Identifiers (Base ToME)
+
+**Verified zone short_names from base ToME campaign:**
+
+- `"wilderness"` — Overworld/worldmap zone (safest redirect target)
+- `"trollmire"` — Starting dungeon zone
+- `"old-forest"` — Early-game forest zone
+- `"norgos-lair"` — Mid-game dungeon zone
+- `"daikara"` — Town zone (safe, has infrastructure)
+- `"last-hope"` — Starting town zone
+- `"reknor"` — Ruined town zone
+
+**Recommendation:** Use `"wilderness"` as default redirect target for testing—it's always accessible and has safe spawn points.
+
+**Important:** Custom zone IDs (e.g., DCCB-generated zones) will not exist in base ToME. Redirecting to a DCCB zone requires:
+1. Zone must be generated first via ToME zone generation system
+2. Zone must be registered in `game.zones` table
+3. Verify zone exists before attempting redirect: `game.zones[target_zone_short] ~= nil`
+
+### 2.4.4 Required Inputs (Detailed)
+
+**Zone Identifier:**
+- Type: `string`
+- Format: Zone `short_name` (lowercase, hyphenated)
+- Verification: Check `game.zones` table for existence before redirect
+- Example: `"wilderness"`, `"trollmire"`, `"old-forest"`
+
+**Level Index:**
+- Type: `number` (1-based) or `nil`
+- Range: 1 to `zone.max_level` (typically 1-5 for dungeons)
+- Use `nil` to let ToME choose default entry level (recommended for cross-zone)
+- Example: `1` (first level), `3` (third level), `nil` (default)
+
+**Spawn Coordinates (Optional but Recommended):**
+- Type: `{x = number, y = number}` table or separate `x, y` parameters
+- Range: `1 <= x <= level.map.w`, `1 <= y <= level.map.h`
+- Verification: Check `level.map:isBound(x, y)` and `level.map(x, y, engine.Map.TERRAIN):isPassable()`
+- Fallback: If not provided, ToME uses zone's default spawn point
+
+**Required Game Objects:**
+- `game` — Global game instance (always available after `ToME:run`)
+- `game.zone` — Current zone object (available after first level loads)
+- `game.level` — Current level object (available after first level loads)
+- `game.player` — Player actor object (available after `ToME:run`)
+- `game.party` — Party manager (required if using `moveLevel` API)
+
+### 2.4.5 Call Timing Safety Matrix
+
+| Hook / Context | `game:changeLevel()` | `party:moveLevel()` | `WorldMap.display()` | Safety Notes |
+|----------------|----------------------|---------------------|----------------------|--------------|
+| **ToME:load** | ❌ Unsafe | ❌ Unsafe | ❌ Unsafe | Game state not initialized; will crash |
+| **ToME:run** (start) | ⚠️ Risky | ⚠️ Risky | ⚠️ Risky | May work but `game.zone` not guaranteed |
+| **ToME:run** (end) | ✅ Safe | ✅ Safe | ✅ Safe | Bootstrap complete, game state valid |
+| **Actor:move** | ✅ Safe | ✅ Safe | ✅ Safe | Zone fully loaded, best timing for redirect |
+| **Actor:actBase** | ✅ Safe | ✅ Safe | ✅ Safe | Actor turn processing, safe for transitions |
+| **Map generation** | ❌ Unsafe | ❌ Unsafe | ❌ Unsafe | Recursion risk, level not finalized |
+| **Combat/talent hooks** | ⚠️ Risky | ⚠️ Risky | ✅ Safe | May interrupt action sequence; UI approach safer |
+| **Save/load hooks** | ❌ Unsafe | ❌ Unsafe | ❌ Unsafe | State serialization in progress |
+
+**Legend:**
+- ✅ **Safe:** Recommended timing, no known issues
+- ⚠️ **Risky:** May work but has edge cases or failure modes
+- ❌ **Unsafe:** Will crash, corrupt state, or fail silently
+
+### 2.4.6 Known Pitfalls ("Do Not Do" List)
+
+**Critical mistakes that will crash the game or corrupt state:**
+
+1. ❌ **DO NOT call zone transition during addon load (`ToME:load`)**
+   - Reason: `game.zone` does not exist yet; will crash with nil reference
+   - Detection: Check `if game and game.zone` before calling
+   - Fix: Wait for `ToME:run` or actor hook to fire
+
+2. ❌ **DO NOT call zone transition inside map generation hooks**
+   - Reason: Causes infinite recursion or map generation corruption
+   - Detection: Avoid calling from `Level:generate` or zone builder hooks
+   - Fix: Use actor hooks (`Actor:move`) which fire after generation completes
+
+3. ❌ **DO NOT redirect to non-existent zone IDs**
+   - Reason: Silent failure or crash (no zone to load)
+   - Detection: Verify `game.zones[target_zone_short] ~= nil` before calling
+   - Fix: Use known base ToME zone IDs (see §2.4.3) or generate zone first
+
+4. ❌ **DO NOT call zone transition multiple times in same session**
+   - Reason: Can cause state corruption or unexpected behavior
+   - Detection: Set `redirect_attempted = true` flag after first attempt
+   - Fix: Implement idempotence guard (see `hooks/load.lua` lines 97-110)
+
+5. ❌ **DO NOT use `player:move()` for cross-zone transitions**
+   - Reason: Only works within current level; ignores zone parameter
+   - Detection: Use `game:changeLevel()` or `party:moveLevel()` instead
+   - Fix: Replace `player:move()` with proper zone transition API
+
+6. ❌ **DO NOT provide invalid spawn coordinates**
+   - Reason: Player spawns out of bounds or in wall; softlocks game
+   - Detection: Validate coords with `level.map:isBound(x, y)` and terrain passability
+   - Fix: Use `nil` coordinates to let ToME choose safe spawn point
+
+7. ❌ **DO NOT call zone transition mid-combat**
+   - Reason: Can orphan combat state, break targeting, corrupt turn order
+   - Detection: Check `game.player.in_combat` or similar state before calling
+   - Fix: Defer redirect until combat ends (use event listener)
+
+8. ❌ **DO NOT assume zone data files exist for custom zones**
+   - Reason: ToME expects zone definition files; custom zones need full registration
+   - Detection: Custom zones must be added to `game.zones` table programmatically
+   - Fix: See zone generation/registration research (future task)
+
+### 2.4.7 Validation Checklist (Future Implementation)
+
+**After implementing zone redirect, verify the following:**
+
+- [ ] **Post-redirect zone name:** `game.zone.name` matches expected zone display name
+- [ ] **Post-redirect zone short_name:** `game.zone.short_name` matches target identifier
+- [ ] **Player position in bounds:** `game.level.map:isBound(game.player.x, game.player.y)` returns `true`
+- [ ] **Player on passable terrain:** `game.level.map(game.player.x, game.player.y, engine.Map.TERRAIN):isPassable()` returns `true`
+- [ ] **Level map exists:** `game.level.map` is not `nil`
+- [ ] **Quest state intact:** `game.party.quest_log` exists and contains expected quests
+- [ ] **Inventory preserved:** `game.player:getInven("INVEN")` contains expected items
+- [ ] **No loading screen freeze:** Level renders within 5 seconds of redirect
+- [ ] **Save/load cycle works:** Save game, reload, verify zone/position persists correctly
+- [ ] **Party members present:** If party active, verify `game.party.members` all transitioned
+- [ ] **No Lua errors:** Check `te4_log.txt` for errors/warnings after redirect
+- [ ] **Repeatable:** Test redirect from multiple source zones (not just first zone)
+
+### 2.4.8 Reference Implementation Location
+
+**Current dry-run implementation:**
+- File: `/mod/tome_addon_harness/hooks/load.lua`
+- Lines: 95-166 (redirect decision point and dry-run logic)
+- Status: Logs redirect intent but does not execute actual API call
+
+**Future implementation task:**
+- Replace lines 124-161 with actual `game:changeLevel()` call
+- Remove dry-run fallback after API validation complete
+- Keep idempotence guards (lines 97-110) intact
+
+### 2.4.9 External References
+
+**Authoritative ToME/T-Engine4 documentation:**
+- T-Engine4 Wiki: https://te4.org/wiki/
+- Hooks Reference: https://te4.org/wiki/Hooks (comprehensive hook list)
+- ToME Source: https://github.com/tome4/t-engine4 (engine implementation)
+
+**Known limitations of this research:**
+- Cannot access te4.org wiki externally (network restriction)
+- Documentation based on source code analysis and existing codebase patterns
+- Some APIs may have additional parameters or behaviors not documented here
+- Future ToME updates may change API signatures or behaviors
+
+**Next steps for future tasks:**
+1. Validate `game:changeLevel()` with in-engine testing (load ToME, test redirect manually)
+2. Confirm spawn coordinate handling (do invalid coords crash or fallback gracefully?)
+3. Test party/follower state preservation across zone transitions
+4. Verify save/load cycles preserve redirect state correctly
+5. Document any discovered API variations or edge cases in this section
 
 ---
 

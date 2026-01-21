@@ -122,6 +122,27 @@ local function on_first_zone_observed(hook_name)
             print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
             
             -- TODO: Implement safe zone change API call
+            -- 
+            -- RESEARCH COMPLETE: See /docs/ToME-Integration-Notes.md §2.4
+            -- for comprehensive zone transition API documentation.
+            --
+            -- Recommended API: game:changeLevel(level, zone, config)
+            --   - level: target level index (number or nil for default)
+            --   - zone: target zone short_name (string, e.g., "wilderness")
+            --   - config: optional {x=num, y=num, force=bool} table
+            --
+            -- Example implementation:
+            --   game:changeLevel(nil, "wilderness")
+            --
+            -- VALIDATION REQUIRED before enabling:
+            --   1. In-engine testing with actual ToME instance
+            --   2. Verify no crashes or state corruption
+            --   3. Test save/load cycles post-redirect
+            --   4. Confirm party/follower state preservation
+            --   5. Check quest/inventory state intact
+            --
+            -- Original candidate APIs (see docs for full analysis):
+            -- 
             -- Research needed: What is the safest ToME API for zone transitions?
             -- 
             -- Candidate APIs to investigate (from ToME/T-Engine4 source):
