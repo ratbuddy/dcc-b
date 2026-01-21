@@ -119,70 +119,32 @@ local function on_first_zone_observed(hook_name)
             print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
             print("[DCCB] (redirect disabled by DCCB_ENABLE_REDIRECT=false)")
         else
-            -- Redirect is enabled, attempt to redirect or fallback to dry-run if API unavailable
+            -- Redirect is enabled, attempt real zone transition
             print("[DCCB] redirect decision: redirecting")
             print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
             
-            -- IMPLEMENTATION TODO: Replace dry-run with actual zone transition
-            -- 
-            -- RESEARCH STATUS: ✓ COMPLETE (2026-01-21)
-            -- Authoritative T-Engine4 source code analysis documented in:
-            -- → /docs/ToME-Integration-Notes.md §2.4 "Confirmed Safe Zone-Transition API"
-            --
-            -- This section provides the complete implementation recipe including:
-            --   • Exact API functions with source file paths and line numbers
-            --   • Required parameters and preconditions
-            --   • Timing safety matrix (when safe to call)
-            --   • Minimal implementation recipe
-            --   • Validation checklist for testing
-            --   • Known pitfalls and error handling
-            --
-            -- Primary Source References:
-            --   - T-Engine4 GitHub: CliffsDover/t-engine4 repository
-            --   - Primary API: game/modules/tome/class/Game.lua lines 812-848 (changeLevel)
-            --   - Safety checks: game/modules/tome/class/Game.lua lines 790-811 (changeLevelCheck)
-            --   - Core implementation: game/modules/tome/class/Game.lua lines 919+ (changeLevelReal)
-            --
-            -- RECOMMENDED IMPLEMENTATION (from §2.4.2 Minimal Safe Redirect Recipe):
-            --
-            --   game:changeLevel(lev, zone, params)
-            --     - lev: target level index (number) or nil for zone's default entry level
-            --     - zone: target zone short_name string (e.g., "wilderness") or Zone object, or nil for same zone
-            --     - params: optional table with keys:
-            --         x, y: spawn coordinates (optional, ToME picks safe spawn if omitted)
-            --         direct_switch: skip transmo dialog (boolean)
-            --         force: force transition even if restricted (boolean)
-            --
-            -- PRECONDITIONS (verified from changeLevelCheck source):
-            --   1. game.player.can_change_level must be true or nil
-            --   2. game.player.can_change_zone must be true or nil (for cross-zone transitions)
-            --   3. Player must not have recently killed an enemy (10 turn cooldown, unless cheat mode)
-            --   4. Player must not have EFF_PARADOX_CLONE or EFF_IMMINENT_PARADOX_CLONE effects
-            --
-            -- MINIMAL EXAMPLE (safest pattern):
-            --   if game and game.zone and game.zone.short_name ~= "wilderness" then
-            --       game:changeLevel(nil, "wilderness")  -- nil = use zone's default entry level
-            --   end
-            --
-            -- REQUIRED VALIDATION after implementation (from §2.4.7):
-            --   1. In-engine testing with actual ToME instance (no dry-run)
-            --   2. Verify game.zone.short_name matches expected zone
-            --   3. Verify player position is within bounds and on passable terrain
-            --   4. Verify no Lua errors in te4_log.txt
-            --   5. Test save/load cycles to ensure state persistence
-            --   6. Confirm party/follower state preservation (if party active)
-            --   7. Check quest/inventory state remains intact
-            --   8. Verify no eternal loading screen (level renders correctly)
-            --
-            -- NOTE: Implementation timing must follow §2.4.5 timing safety matrix.
-            --       Current location (Actor:move hook after first action) is SAFE for calling game:changeLevel.
-            --
-            -- For complete details, pitfalls, and alternative APIs, see documentation §2.4.
-            --
-            
-            -- Fallback to dry-run (research complete, awaiting implementation task)
-            print("[DCCB] redirect enabled but implementation deferred to next task")
-            print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
+            -- Verify game object is available (safety check)
+            if not game then
+                print("[DCCB] redirect failed: game object not available")
+            else
+                -- Execute zone transition using confirmed safe API
+                -- API: game:changeLevel(lev, zone, params)
+                -- Source: /docs/ToME-Integration-Notes.md §2.4.1
+                -- Parameters:
+                --   lev: 1 (level 1 of target zone, nil caused crash in Zone.lua:925)
+                --   zone: target_zone_short (string, e.g., "wilderness")
+                --   params: nil (ToME picks safe spawn point automatically)
+                local success, error_msg = pcall(function()
+                    game:changeLevel(1, target_zone_short)
+                end)
+                
+                if success then
+                    print("[DCCB] redirect succeeded")
+                else
+                    print("[DCCB] redirect failed: " .. tostring(error_msg))
+                    print("[DCCB] (failed to change level to " .. target_zone_short .. ")")
+                end
+            end
         end
         
         print("[DCCB] redirect decision complete (once per run)")
