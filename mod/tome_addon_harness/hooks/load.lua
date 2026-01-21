@@ -164,44 +164,11 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Create and register zone programmatically in game.zones table
-    -- This makes the zone available to game:changeLevel() without file loading
-    print("[DCCB] Registering zone in game.zones: dccb-start")
-    
-    -- Add zone definition directly to game.zones table
-    -- This is where game:changeLevel() looks for zone definitions
-    game.zones["dccb-start"] = {
-        name = "DCCB Start",
-        short_name = "dccb-start",
-        level_range = {1, 1},
-        max_level = 1,
-        width = 30,
-        height = 30,
-        all_remembered = true,
-        all_lited = true,
-        persistent = "zone",
-        generator = {
-            map = {
-                class = "engine.generator.map.Roomer",
-                nb_rooms = 1,
-                rooms = {"simple"},
-                lite_room_chance = 100,
-            },
-        },
-        levels = {
-            [1] = {
-                generator = {
-                    map = {
-                        class = "engine.generator.map.Roomer",
-                        nb_rooms = 1,
-                        rooms = {"simple"},
-                        lite_room_chance = 100,
-                    },
-                },
-            },
-        },
-    }
-    print("[DCCB] Zone registered in game.zones table successfully")
+    -- Zone files are in data/zones/dccb-start/
+    -- ToME should load zones from addon data/zones/ directory
+    -- Zone is referenced as "dccb+dccb-start" in game code to indicate addon ownership
+    print("[DCCB] Zone files located at: data/zones/dccb-start/")
+    print("[DCCB] Virtual path: /data-dccb/zones/dccb-start/zone.lua")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
