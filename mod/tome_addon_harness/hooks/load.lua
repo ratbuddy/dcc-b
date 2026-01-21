@@ -162,9 +162,13 @@ end
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
     
-    -- Note: Zone files are loaded by ToME via its virtual path system
-    -- ToME will find zones in addon data/zones/ directories automatically
-    -- Our zone at data/zones/dccb-start/zone.lua will be discovered by ToME
+    -- Load Zone module for explicit zone registration
+    local Zone = require "engine.Zone"
+    
+    -- Explicitly load our custom zone definition
+    -- This ensures ToME knows about our addon zone
+    print("[DCCB] Loading custom zone definition: /data-dccb/zones/dccb-start/zone.lua")
+    Zone.new_default_list[#Zone.new_default_list+1] = "/data-dccb/zones/dccb-start/zone.lua"
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)
