@@ -123,23 +123,41 @@ local function on_first_zone_observed(hook_name)
             
             -- TODO: Implement safe zone change API call
             -- Research needed: What is the safest ToME API for zone transitions?
-            -- Candidate APIs to investigate:
-            --   - game:changeLevel(level_num, zone_short_name)
-            --   - game.party:moveLevel(level_num, zone_short_name, x, y)
-            --   - game.player:move(x, y, true) with zone parameter
-            --   - require("engine.interface.WorldMap").display()
+            -- 
+            -- Candidate APIs to investigate (from ToME/T-Engine4 source):
+            --   1. game:changeLevel(level_num, zone_short_name) 
+            --      - May be for same-zone level transitions only
+            --      - Need to verify: Does this work across different zones?
+            --      - Parameters: level_num (int), zone_short_name (string or nil)
+            --      - Return: unknown, Side effects: unknown
             --
-            -- Required for safe implementation:
-            --   1. Verify zone identifier exists in base ToME (e.g., "wilderness", "trollmire")
-            --   2. Confirm valid x,y coordinates for spawn point in target zone
-            --   3. Ensure API handles player/party state correctly without corruption
-            --   4. Test that save/load cycles work correctly after redirect
+            --   2. game.party:moveLevel(level_num, zone_short_name, x, y)
+            --      - Possibly handles party/followers correctly
+            --      - Parameters: level (int), zone (string), x (int), y (int)
+            --      - Need to verify: Valid spawn coordinates, party state preservation
+            --      - Return: unknown, Side effects: may affect party members
             --
-            -- Until API is confirmed safe, log warning and remain in dry-run mode
+            --   3. game.player:move(x, y, force_move_flag) with zone change
+            --      - Simple move API, may not handle zones
+            --      - Parameters: x (int), y (int), force (bool)
+            --      - Limitation: Likely only works within current zone
+            --      - Return: unknown, Side effects: position change only
+            --
+            --   4. require("engine.interface.WorldMap").display()
+            --      - Opens world map UI for player selection
+            --      - May be the safest approach (player-driven)
+            --      - Parameters: none (or worldmap state object)
+            --      - Side effects: Shows UI, allows player to choose destination
+            --
+            -- Required verification steps before implementation:
+            --   1. Verify target zone identifier exists in base ToME (e.g., "wilderness", "trollmire", "old-forest")
+            --   2. Obtain valid spawn coordinates (x, y) for target zone - consult ToME zone data files
+            --   3. Test that chosen API handles player/party/follower state correctly without corruption
+            --   4. Verify save/load cycles work correctly after redirect
+            --   5. Test that inventory, quest state, and other game state persists correctly
+            --
+            -- Until API is confirmed safe through research and testing, remain in dry-run mode
             print("[DCCB] redirect enabled but no safe zone-transition API confirmed; leaving dry-run")
-            print("[DCCB] TODO: Research and confirm safe ToME zone transition API")
-            print("[DCCB] TODO: Verify target zone identifier exists in base game")
-            print("[DCCB] TODO: Obtain valid spawn coordinates for target zone")
             print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
         end
         
