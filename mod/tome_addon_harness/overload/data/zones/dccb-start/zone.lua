@@ -20,78 +20,85 @@ function _M:on_enter(lev, old_lev, ...)
   print(string.format("[DCCB-Zone] Entered zone '%s' level %d", self.short_name or "unknown", lev or 0))
 end
 
--- Custom surface map generator
--- Generates overworld-style surface with templates
-local function generateSurfaceMap(level, zone)
+-- Custom map generator class
+local SurfaceGenerator = {}
+SurfaceGenerator.__index = SurfaceGenerator
+
+function SurfaceGenerator:new(zone, level, data)
+  local o = {zone=zone, level=level, data=data}
+  setmetatable(o, self)
+  return o
+end
+
+function SurfaceGenerator:generate(lev, old_lev)
   local Map = require "engine.Map"
-  local grids = level.data.grids
   
   -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
   -- Using ToME's rng for now as a minimal fallback
-  local rng = rng or math.random
+  local rng_func = rng or math.random
   
   -- Select template randomly
   local templates = {"green_fields", "forest_road"}
-  local template_id = templates[rng(#templates)]
+  local template_id = templates[rng_func(#templates)]
   
   -- Initialize map with GRASS
-  for x = 0, zone.width - 1 do
-    for y = 0, zone.height - 1 do
-      Map:addGrid(level, x, y, "GRASS")
+  for x = 0, self.zone.width - 1 do
+    for y = 0, self.zone.height - 1 do
+      Map:addGrid(lev, x, y, "GRASS")
     end
   end
   
   -- Apply template
   if template_id == "green_fields" then
     -- Scatter trees across the field (10-15% density)
-    for x = 0, zone.width - 1 do
-      for y = 0, zone.height - 1 do
-        if rng(100) <= 12 then
-          Map:addGrid(level, x, y, "TREE")
+    for x = 0, self.zone.width - 1 do
+      for y = 0, self.zone.height - 1 do
+        if rng_func(100) <= 12 then
+          Map:addGrid(lev, x, y, "TREE")
         end
       end
     end
   elseif template_id == "forest_road" then
     -- Create a road cutting across the map
-    local road_type = rng(2) -- 1=horizontal, 2=diagonal
+    local road_type = rng_func(2) -- 1=horizontal, 2=diagonal
     
     if road_type == 1 then
       -- Horizontal road in the middle third
-      local road_start = math.floor(zone.height / 3)
-      local road_end = math.floor(zone.height * 2 / 3)
-      for x = 0, zone.width - 1 do
+      local road_start = math.floor(self.zone.height / 3)
+      local road_end = math.floor(self.zone.height * 2 / 3)
+      for x = 0, self.zone.width - 1 do
         for y = road_start, road_end do
-          Map:addGrid(level, x, y, "ROAD")
+          Map:addGrid(lev, x, y, "ROAD")
         end
       end
     else
       -- Diagonal road
       local road_width = 3
-      for x = 0, zone.width - 1 do
-        local center_y = math.floor((x / zone.width) * zone.height)
+      for x = 0, self.zone.width - 1 do
+        local center_y = math.floor((x / self.zone.width) * self.zone.height)
         for dy = -road_width, road_width do
           local y = center_y + dy
-          if y >= 0 and y < zone.height then
-            Map:addGrid(level, x, y, "ROAD")
+          if y >= 0 and y < self.zone.height then
+            Map:addGrid(lev, x, y, "ROAD")
           end
         end
       end
     end
     
     -- Add clustered trees around the road (20-25% density outside road)
-    for x = 0, zone.width - 1 do
-      for y = 0, zone.height - 1 do
+    for x = 0, self.zone.width - 1 do
+      for y = 0, self.zone.height - 1 do
         local g = Map.grids[x][y]
         -- Only place trees on GRASS, not ROAD
-        if g and g.define_as == "GRASS" and rng(100) <= 22 then
-          Map:addGrid(level, x, y, "TREE")
+        if g and g.define_as == "GRASS" and rng_func(100) <= 22 then
+          Map:addGrid(lev, x, y, "TREE")
         end
       end
     end
   end
   
   -- Place 2-4 DOWN stairs on passable tiles
-  local num_stairs = rng(3) + 1 -- 2-4 stairs
+  local num_stairs = rng_func(3) + 1 -- 2-4 stairs
   local stairs_placed = 0
   local min_distance = 8 -- Minimum distance between stairs
   local stair_positions = {}
@@ -102,8 +109,8 @@ local function generateSurfaceMap(level, zone)
   while stairs_placed < num_stairs and attempts < max_attempts do
     attempts = attempts + 1
     
-    local x = rng(zone.width - 1)
-    local y = rng(zone.height - 1)
+    local x = rng_func(self.zone.width - 1)
+    local y = rng_func(self.zone.height - 1)
     local g = Map.grids[x][y]
     
     -- Check if tile is passable (GRASS or ROAD)
@@ -121,7 +128,7 @@ local function generateSurfaceMap(level, zone)
       end
       
       if valid then
-        Map:addGrid(level, x, y, "DOWN")
+        Map:addGrid(lev, x, y, "DOWN")
         table.insert(stair_positions, {x=x, y=y})
         stairs_placed = stairs_placed + 1
       end
@@ -131,21 +138,6 @@ local function generateSurfaceMap(level, zone)
   -- Log the generation result
   print(string.format("[DCCB-Surface] template=%s stairs=%d", template_id, stairs_placed))
   
-  return true
-end
-
--- Custom map generator class
-local SurfaceGenerator = {}
-SurfaceGenerator.__index = SurfaceGenerator
-
-function SurfaceGenerator:new(zone, level, data)
-  local o = {zone=zone, level=level, data=data}
-  setmetatable(o, self)
-  return o
-end
-
-function SurfaceGenerator:generate(lev, old_lev)
-  generateSurfaceMap(lev, self.zone)
   return true
 end
 
