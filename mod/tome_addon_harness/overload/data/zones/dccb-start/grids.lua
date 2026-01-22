@@ -63,13 +63,20 @@ newEntity{
   always_remember = true,
 }
 
--- Define DOWN stair terrain
+-- Define DCCB_ENTRANCE terrain (visual dungeon entrance marker)
+-- Does NOT cause level transitions - placeholder for future dungeon connections
 newEntity{
   base = "FLOOR",
-  define_as = "DOWN",
+  define_as = "DCCB_ENTRANCE",
   type = "floor", subtype = "floor",
-  name = "stairs down",
-  display = '>', color=colors.WHITE,
+  name = "dungeon entrance",
+  display = '>', color=colors.YELLOW,
   always_remember = true,
-  change_level = 1,
+  -- NO change_level or change_zone - this is just a visual marker
+  on_stand = function(self, x, y, who)
+    if who.player and not game.dccb_entrance_warned then
+      game.log("#YELLOW#[DCCB] Dungeon entrance not implemented yet.")
+      game.dccb_entrance_warned = true
+    end
+  end,
 }

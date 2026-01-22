@@ -20,140 +20,132 @@ function _M:on_enter(lev, old_lev, ...)
   print(string.format("[DCCB-Zone] Entered zone '%s' level %d", self.short_name or "unknown", lev or 0))
 end
 
--- Custom map generator class
-local SurfaceGenerator = {}
-SurfaceGenerator.__index = SurfaceGenerator
-
-function SurfaceGenerator:new(zone, level, data)
-  local o = {zone=zone, level=level, data=data}
-  setmetatable(o, self)
-  return o
-end
-
-function SurfaceGenerator:generate(lev, old_lev)
+-- Post-process function to apply surface templates
+local function applySurfaceTemplate(level, zone, data)
   local Map = require "engine.Map"
   
   -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
-  -- Using math.random for now (ToME's rng function may have different signature)
-  local function rng_func(min, max)
-    if max then
-      return math.random(min, max)
-    else
-      return math.random(min)
-    end
-  end
+  -- Using rng.range/rng.table if available, fallback to math.random
+  local rng_range = (rng and rng.range) or function(min, max) return math.random(min, max) end
+  local rng_table = (rng and rng.table) or function(t) return t[math.random(1, #t)] end
   
   -- Constants for map generation
   local ROAD_WIDTH = 3
-  local MIN_STAIR_DISTANCE = 8
-  local MAX_STAIR_PLACEMENT_ATTEMPTS = 1000
+  local MIN_ENTRANCE_DISTANCE = 8
+  local MAX_ENTRANCE_PLACEMENT_ATTEMPTS = 1000
+  local SAFE_CLEARING_MARGIN = 5 -- Keep edges clear for spawning
   
-  -- Select template randomly (1 to #templates)
+  -- Select template randomly
   local templates = {"green_fields", "forest_road"}
-  local template_id = templates[rng_func(1, #templates)]
-  
-  -- Initialize map with GRASS
-  for x = 0, self.zone.width - 1 do
-    for y = 0, self.zone.height - 1 do
-      Map:addGrid(lev, x, y, "GRASS")
-    end
-  end
+  local template_id = rng_table(templates)
   
   -- Apply template
   if template_id == "green_fields" then
-    -- Scatter trees across the field (10-15% density)
-    for x = 0, self.zone.width - 1 do
-      for y = 0, self.zone.height - 1 do
-        if rng_func(1, 100) <= 12 then
-          Map:addGrid(lev, x, y, "TREE")
+    -- Scatter trees across the field (8-15% density)
+    -- Keep a safe clearing around the center
+    local center_x = math.floor(zone.width / 2)
+    local center_y = math.floor(zone.height / 2)
+    local clearing_radius = 8
+    
+    for x = 0, zone.width - 1 do
+      for y = 0, zone.height - 1 do
+        -- Skip safe clearing area
+        local dx = x - center_x
+        local dy = y - center_y
+        local dist_from_center = math.sqrt(dx*dx + dy*dy)
+        
+        if dist_from_center > clearing_radius and rng_range(1, 100) <= 12 then
+          Map:addGrid(level, x, y, "TREE")
         end
       end
     end
+    
   elseif template_id == "forest_road" then
     -- Create a road cutting across the map
-    local road_type = rng_func(1, 2) -- 1=horizontal, 2=diagonal
+    local road_type = rng_range(1, 2) -- 1=horizontal, 2=diagonal
     
     if road_type == 1 then
       -- Horizontal road in the middle third
-      local road_start = math.floor(self.zone.height / 3)
-      local road_end = math.floor(self.zone.height * 2 / 3)
-      for x = 0, self.zone.width - 1 do
+      local road_start = math.floor(zone.height / 3)
+      local road_end = math.floor(zone.height * 2 / 3)
+      for x = 0, zone.width - 1 do
         for y = road_start, road_end do
-          Map:addGrid(lev, x, y, "ROAD")
+          Map:addGrid(level, x, y, "ROAD")
         end
       end
     else
       -- Diagonal road
-      for x = 0, self.zone.width - 1 do
-        local center_y = math.floor((x / self.zone.width) * self.zone.height)
+      for x = 0, zone.width - 1 do
+        local center_y = math.floor((x / zone.width) * zone.height)
         for dy = -ROAD_WIDTH, ROAD_WIDTH do
           local y = center_y + dy
-          if y >= 0 and y < self.zone.height then
-            Map:addGrid(lev, x, y, "ROAD")
+          if y >= 0 and y < zone.height then
+            Map:addGrid(level, x, y, "ROAD")
           end
         end
       end
     end
     
-    -- Add clustered trees around the road (20-25% density outside road)
-    for x = 0, self.zone.width - 1 do
-      for y = 0, self.zone.height - 1 do
+    -- Add clustered trees around the road (15-25% density)
+    -- Keep safe margins around edges
+    for x = SAFE_CLEARING_MARGIN, zone.width - 1 - SAFE_CLEARING_MARGIN do
+      for y = SAFE_CLEARING_MARGIN, zone.height - 1 - SAFE_CLEARING_MARGIN do
         local g = Map.grids[x][y]
         -- Only place trees on GRASS, not ROAD
-        if g and g.define_as == "GRASS" and rng_func(1, 100) <= 22 then
-          Map:addGrid(lev, x, y, "TREE")
+        if g and g.define_as == "GRASS" and rng_range(1, 100) <= 20 then
+          Map:addGrid(level, x, y, "TREE")
         end
       end
     end
   end
   
-  -- Place 2-4 DOWN stairs on passable tiles
-  local num_stairs = rng_func(2, 4)
-  local stairs_placed = 0
-  local stair_positions = {}
+  -- Place 2-4 DCCB_ENTRANCE markers on passable tiles
+  local num_entrances = rng_range(2, 4)
+  local entrances_placed = 0
+  local entrance_positions = {}
   
   local attempts = 0
   
-  while stairs_placed < num_stairs and attempts < MAX_STAIR_PLACEMENT_ATTEMPTS do
+  while entrances_placed < num_entrances and attempts < MAX_ENTRANCE_PLACEMENT_ATTEMPTS do
     attempts = attempts + 1
     
-    -- Generate coordinates (1 to width, 1 to height, then adjust to 0-based)
-    local x = rng_func(1, self.zone.width) - 1
-    local y = rng_func(1, self.zone.height) - 1
+    -- Generate coordinates (avoid edges)
+    local x = rng_range(SAFE_CLEARING_MARGIN, zone.width - 1 - SAFE_CLEARING_MARGIN)
+    local y = rng_range(SAFE_CLEARING_MARGIN, zone.height - 1 - SAFE_CLEARING_MARGIN)
     local g = Map.grids[x][y]
     
     -- Check if tile is passable (GRASS or ROAD)
     if g and (g.define_as == "GRASS" or g.define_as == "ROAD") then
-      -- Check minimum distance from other stairs
+      -- Check minimum distance from other entrances (Manhattan distance)
       local valid = true
-      for _, pos in ipairs(stair_positions) do
-        local dx = x - pos.x
-        local dy = y - pos.y
-        local dist = math.sqrt(dx*dx + dy*dy)
-        if dist < MIN_STAIR_DISTANCE then
+      for _, pos in ipairs(entrance_positions) do
+        local manhattan_dist = math.abs(x - pos.x) + math.abs(y - pos.y)
+        if manhattan_dist < MIN_ENTRANCE_DISTANCE then
           valid = false
           break
         end
       end
       
       if valid then
-        Map:addGrid(lev, x, y, "DOWN")
-        table.insert(stair_positions, {x=x, y=y})
-        stairs_placed = stairs_placed + 1
+        Map:addGrid(level, x, y, "DCCB_ENTRANCE")
+        table.insert(entrance_positions, {x=x, y=y})
+        entrances_placed = entrances_placed + 1
       end
     end
   end
   
   -- Log the generation result
-  print(string.format("[DCCB-Surface] template=%s stairs=%d", template_id, stairs_placed))
-  
-  return true
+  print(string.format("[DCCB-Surface] template=%s entrances=%d", template_id, entrances_placed))
 end
 
--- Generator configuration
+-- Generator configuration using Filled generator
 _M.generator = {
   map = {
-    class = SurfaceGenerator,
+    class = "engine.generator.map.Filled",
+    edge_entrances = {0, 0}, -- No edge entrances
+    zoom = 1,
+    ['#'] = "WALL", -- Not used, but required by Filled
+    ['.'] = "GRASS", -- Fill entire map with GRASS
   },
   -- Explicit zero spawn generators
   actor = {
@@ -170,12 +162,21 @@ _M.generator = {
   },
 }
 
+-- Post-process hook to apply templates
+_M.post_process = function(level)
+  applySurfaceTemplate(level, _M, {})
+end
+
 -- Level-specific configuration
 _M.levels = {
   [1] = {
     generator = {
       map = {
-        class = SurfaceGenerator,
+        class = "engine.generator.map.Filled",
+        edge_entrances = {0, 0},
+        zoom = 1,
+        ['#'] = "WALL",
+        ['.'] = "GRASS",
       },
       actor = {
         class = "engine.generator.actor.Random",
