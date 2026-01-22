@@ -15,6 +15,16 @@ return {
   all_lited = true,
   no_level_connectivity = true,
   
+  -- Debug logging on zone entry (one-time per level)
+  on_enter = function(self, level)
+    local fs = require("engine.utils.FS")
+    local zone_file = "/data-dccb/zones/dccb-start/zone.lua"
+    local exists = fs.exists(zone_file)
+    
+    print(string.format("[DCCB-Zone] Entered zone '%s' level %d", self.short_name or "unknown", level or 0))
+    print(string.format("[DCCB-Zone] Zone file exists: %s (%s)", tostring(exists), zone_file))
+  end,
+  
   -- Use minimal procedural generator
   -- Simple single room with Roomer generator
   generator = {
@@ -23,15 +33,25 @@ return {
       nb_rooms = 1,
       rooms = {"simple"},
       lite_room_chance = 100,
-      -- Terrain mappings as arrays (ToME format)
-      ['#'] = { "WALL" },
-      ['.'] = { "FLOOR" },
+      -- Terrain mappings as strings (correct Roomer format)
+      ['#'] = "WALL",
+      ['.'] = "FLOOR",
       up = "UP",
       down = "DOWN",
       door = "DOOR",
     },
+    -- Explicit zero spawn generators
     actor = {
+      class = "engine.generator.actor.Random",
       nb_npc = {0, 0},
+    },
+    object = {
+      class = "engine.generator.object.Random",
+      nb_object = {0, 0},
+    },
+    trap = {
+      class = "engine.generator.trap.Random",
+      nb_trap = {0, 0},
     },
   },
   
@@ -44,15 +64,25 @@ return {
           nb_rooms = 1,
           rooms = {"simple"},
           lite_room_chance = 100,
-          -- Terrain mappings as arrays (ToME format)
-          ['#'] = { "WALL" },
-          ['.'] = { "FLOOR" },
+          -- Terrain mappings as strings (correct Roomer format)
+          ['#'] = "WALL",
+          ['.'] = "FLOOR",
           up = "UP",
           down = "DOWN",
           door = "DOOR",
         },
+        -- Explicit zero spawn generators
         actor = {
+          class = "engine.generator.actor.Random",
           nb_npc = {0, 0},
+        },
+        object = {
+          class = "engine.generator.object.Random",
+          nb_object = {0, 0},
+        },
+        trap = {
+          class = "engine.generator.trap.Random",
+          nb_trap = {0, 0},
         },
       },
     },
