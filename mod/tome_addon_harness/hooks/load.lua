@@ -7,8 +7,8 @@ print("[DCCB] hooks/load.lua executed")
 -- ========================================
 -- Configuration: Redirect Toggle
 -- ========================================
--- When false: logs "DRY RUN: would redirect" (default, safe)
--- When true: attempts actual zone redirect (requires confirmed safe API)
+-- DEPRECATED: Redirect is now handled by superload/mod/class/Game.lua
+-- This early Actor:move redirect is kept for logging only
 local DCCB_ENABLE_REDIRECT = false
 
 -- Idempotence guards
@@ -101,14 +101,13 @@ local function on_first_zone_observed(hook_name)
     -- ========================================
     -- Redirect Decision Point
     -- ========================================
+    -- DEPRECATED: This Actor:move redirect is disabled
+    -- Redirect now happens earlier via superload/mod/class/Game.lua
+    -- Keep this section for logging/debugging only
     if not redirect_attempted then
         redirect_attempted = true
         
         -- Target zone: DCCB stub start zone
-        -- This is a minimal custom zone owned by the addon (DCCB stub start zone)
-        -- for scaffolding and testing addon-owned zones
-        -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
-        -- Zone reference format: {addon_short_name}+{zone_name} for addon zones
         local target_zone_short = "dccb+dccb-start"
         
         -- Loop prevention: check if already at target zone
@@ -120,41 +119,10 @@ local function on_first_zone_observed(hook_name)
             return
         end
         
-        -- Check if redirect is enabled by configuration
-        if not DCCB_ENABLE_REDIRECT then
-            -- DRY RUN: Redirect disabled by configuration
-            print("[DCCB] redirect decision: dry-run")
-            print("[DCCB] DRY RUN: would redirect from: " .. zone_short .. " to: " .. target_zone_short)
-            print("[DCCB] (redirect disabled by DCCB_ENABLE_REDIRECT=false)")
-        else
-            -- Redirect is enabled, attempt real zone transition
-            print("[DCCB] redirect decision: redirecting")
-            print("[DCCB] redirect from: " .. zone_short .. " to: " .. target_zone_short)
-            
-            -- Verify game object is available (safety check)
-            if not game then
-                print("[DCCB] redirect failed: game object not available")
-            else
-                -- Execute zone transition using confirmed safe API
-                -- API: game:changeLevel(lev, zone, params)
-                -- Source: /docs/ToME-Integration-Notes.md §2.4.1
-                -- Parameters:
-                --   lev: 1 (level 1 of target zone, nil caused crash in Zone.lua:925)
-                --   zone: target_zone_short (string, e.g., "wilderness")
-                --   params: nil (ToME picks safe spawn point automatically)
-                local success, error_msg = pcall(function()
-                    game:changeLevel(1, target_zone_short)
-                end)
-                
-                if success then
-                    print("[DCCB] redirect succeeded")
-                else
-                    print("[DCCB] redirect failed: " .. tostring(error_msg))
-                    print("[DCCB] (failed to change level to " .. target_zone_short .. ")")
-                end
-            end
-        end
-        
+        -- Log only - actual redirect happens earlier via Game:changeLevelReal superload
+        print("[DCCB] redirect decision: Actor:move redirect DISABLED")
+        print("[DCCB] (redirect now handled by superload/mod/class/Game.lua)")
+        print("[DCCB] would have redirected from: " .. zone_short .. " to: " .. target_zone_short)
         print("[DCCB] redirect decision complete (once per run)")
     end
 end

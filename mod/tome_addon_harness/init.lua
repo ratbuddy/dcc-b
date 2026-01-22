@@ -22,6 +22,6 @@ tags = {"dungeon", "procedural", "integration"}
 
 -- Addon capabilities
 overload = true
-superload = false
+superload = true
 hooks = true
 data = true
