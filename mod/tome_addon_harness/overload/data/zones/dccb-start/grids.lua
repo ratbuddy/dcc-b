@@ -1,9 +1,18 @@
 -- ToME4 DCCB addon - Grid Definitions (Overload)
--- DCCB Stub Start Zone - Minimal visible terrains
--- This file provides terrain definitions at /data/zones/dccb-start/ path
+-- DCCB Start Zone terrains
+-- This file provides terrain definitions at /data/zones/dccb-start/ (global zone path)
+
+print("[DCCB] grids.lua loaded: /data/zones/dccb-start/grids.lua")
 
 -- Load base game terrain definitions first for compatibility
 load("/data/general/grids/basic.lua")
+
+-- NOTE:
+-- We intentionally keep these definitions minimal and ASCII-based for stability.
+-- No change_level / change_zone here. No stairs. No randomness.
+-- The zone post_process will paint these terrains using:
+--   local g = zone:makeEntity(level, "terrain", { define_as="GRASS" }, nil, true)
+--   map(x, y, Map.TERRAIN, g)
 
 -- Define WALL terrain (blocks movement and sight)
 newEntity{
@@ -11,9 +20,8 @@ newEntity{
   define_as = "WALL",
   type = "wall", subtype = "wall",
   name = "wall",
-  display = '#', color=colors.LIGHT_UMBER,
+  display = '#', color = colors.LIGHT_UMBER,
   always_remember = true,
-  does_block_move = true,
   block_move = true,
   block_sight = true,
   air_level = -20,
@@ -25,7 +33,7 @@ newEntity{
   define_as = "FLOOR",
   type = "floor", subtype = "floor",
   name = "floor",
-  display = '.', color=colors.WHITE,
+  display = '.', color = colors.WHITE,
   always_remember = true,
 }
 
@@ -35,7 +43,7 @@ newEntity{
   define_as = "GRASS",
   type = "floor", subtype = "grass",
   name = "grass",
-  display = ',', color=colors.LIGHT_GREEN,
+  display = ',', color = colors.LIGHT_GREEN,
   always_remember = true,
 }
 
@@ -45,9 +53,8 @@ newEntity{
   define_as = "TREE",
   type = "wall", subtype = "tree",
   name = "tree",
-  display = 'T', color=colors.GREEN,
+  display = 'T', color = colors.GREEN,
   always_remember = true,
-  does_block_move = true,
   block_move = true,
   block_sight = true,
   air_level = -10,
@@ -59,7 +66,7 @@ newEntity{
   define_as = "ROAD",
   type = "floor", subtype = "road",
   name = "road",
-  display = '=', color=colors.UMBER,
+  display = '=', color = colors.UMBER,
   always_remember = true,
 }
 
@@ -68,19 +75,26 @@ newEntity{
 newEntity{
   base = "FLOOR",
   define_as = "DCCB_ENTRANCE",
-  type = "floor", subtype = "floor",
-  name = "dungeon entrance",
-  display = '>', color=colors.YELLOW,
+  type = "floor", subtype = "marker",
+  name = "sealed dungeon entrance",
+  display = '>', color = colors.YELLOW,
   always_remember = true,
-  -- NO change_level or change_zone - this is just a visual marker
+  notice = true,
+
+  -- Keep this fail-soft: if 'game' isn't ready, do nothing.
   on_stand = function(self, x, y, who)
-    if who.player then
-      -- Use per-entrance tracking via grid coordinates
-      local key = string.format("dccb_entrance_%d_%d", x, y)
-      if not game[key] then
+    if not who or not who.player then return end
+    if not game then return end
+
+    -- One-time message per entrance per run
+    local key = ("dccb_entrance_%d_%d"):format(x, y)
+    if not game[key] then
+      if game.log then
         game.log("#YELLOW#[DCCB] Dungeon entrance not implemented yet.")
-        game[key] = true
+      else
+        print("[DCCB] Dungeon entrance not implemented yet.")
       end
+      game[key] = true
     end
   end,
 }
