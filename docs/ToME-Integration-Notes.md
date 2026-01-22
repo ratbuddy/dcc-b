@@ -1255,7 +1255,8 @@ This section lists concrete research tasks. Each item should be marked **TBD** u
 ### 5.1 Addon Structure and Lifecycle
 
 - [x] **VERIFIED:** ToME addon directory structure: `/mod/<name>/` (follows Lua module convention)
-- [x] **VERIFIED:** Addon descriptor fields: `long_name`, `short_name`, `for_module`, `version`, `addon_version`, `author`, `description`, `hooks = true`
+- [x] **VERIFIED:** Addon descriptor fields: `long_name`, `short_name`, `for_module`, `version`, `addon_version`, `author`, `description`
+- [x] **VERIFIED:** Addon capability flags: `hooks = true` (enables hooks/load.lua), `data = true` (enables data/ resources), `overload = true` (enables overload/ modifications), `superload = true` (enables superload/ modifications)
 - [x] **VERIFIED:** Entry point pattern: `init.lua` (descriptor metadata) → `hooks/load.lua` (file executed, registers hooks)
 - [x] **VERIFIED:** When `hooks/load.lua` executes: When ToME addon system loads the addon (file execution)
 - [x] **VERIFIED:** Hook registration: Use `class:bindHook("HookName", function(self, data) ... end)` inside `hooks/load.lua`
