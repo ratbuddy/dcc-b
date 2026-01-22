@@ -8,12 +8,12 @@ return {
   short_name = "dccb-start",
   level_range = {1, 1},
   max_level = 1,
-  decay = {300, 800},
   width = 30,
   height = 30,
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
+  no_level_connectivity = true,
   
   -- Use minimal procedural generator
   -- Simple single room with Roomer generator
@@ -23,6 +23,11 @@ return {
       nb_rooms = 1,
       rooms = {"simple"},
       lite_room_chance = 100,
+      ['.'] = "FLOOR",
+      ['#'] = "WALL",
+    },
+    actor = {
+      nb_npc = {0, 0},
     },
   },
   
@@ -35,6 +40,11 @@ return {
           nb_rooms = 1,
           rooms = {"simple"},
           lite_room_chance = 100,
+          ['.'] = "FLOOR",
+          ['#'] = "WALL",
+        },
+        actor = {
+          nb_npc = {0, 0},
         },
       },
     },
