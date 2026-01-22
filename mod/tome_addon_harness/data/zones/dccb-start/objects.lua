@@ -1,3 +1,5 @@
 -- ToME4 DCCB addon
 -- Objects for dccb-start zone
--- Loads base game objects (empty stub zone)
+-- Empty - no objects spawn in this zone
+
+return {}

@@ -1,3 +1,5 @@
 -- ToME4 DCCB addon
 -- NPCs for dccb-start zone
--- Loads base game NPCs (empty stub zone)
+-- Empty - no NPCs spawn in this zone
+
+return {}
