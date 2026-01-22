@@ -89,6 +89,13 @@ local function on_first_zone_observed(hook_name)
     print("[DCCB] current zone: " .. zone_name)
     print("[DCCB] current zone short_name: " .. zone_short)
     print("[DCCB] zone type hint: " .. zone_type_hint)
+    
+    -- Check if we've entered the DCCB stub zone
+    -- Addon zones use format: {addon_short_name}+{zone_name}
+    if zone_short == "dccb+dccb-start" or zone_short == "dccb-start" then
+        print("[DCCB] entered DCCB stub zone: " .. zone_short)
+    end
+    
     print("[DCCB] ========================================")
     
     -- ========================================
@@ -97,11 +104,12 @@ local function on_first_zone_observed(hook_name)
     if not redirect_attempted then
         redirect_attempted = true
         
-        -- Placeholder target zone (safe base ToME zone for testing)
-        -- CONFIRMED (2026-01-21): "wilderness" is safest redirect target per §2.4.3
-        -- See /docs/ToME-Integration-Notes.md §2.4.3 "Valid Zone Identifiers"
-        -- Wilderness is always accessible and has safe spawn points
-        local target_zone_short = "wilderness"
+        -- Target zone: DCCB stub start zone
+        -- This is a minimal custom zone owned by the addon (DCCB stub start zone)
+        -- for scaffolding and testing addon-owned zones
+        -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
+        -- Zone reference format: {addon_short_name}+{zone_name} for addon zones
+        local target_zone_short = "dccb+dccb-start"
         
         -- Loop prevention: check if already at target zone
         if zone_short == target_zone_short then
@@ -155,6 +163,12 @@ end
 -- Note: This is NOT a run-start hook, it fires during addon initialization
 class:bindHook("ToME:load", function(self, data)
     print("[DCCB] FIRED: ToME:load")
+    
+    -- Zone files are in data/zones/dccb-start/
+    -- ToME should load zones from addon data/zones/ directory
+    -- Zone is referenced as "dccb+dccb-start" in game code to indicate addon ownership
+    print("[DCCB] Zone files located at: data/zones/dccb-start/")
+    print("[DCCB] Virtual path: /data-dccb/zones/dccb-start/zone.lua")
     
     -- Bind bootstrap hook (ToME:run - runs before module starts)
     class:bindHook("ToME:run", function(self, data)

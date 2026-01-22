@@ -1,0 +1,3 @@
+-- ToME4 DCCB addon
+-- Traps for dccb-start zone
+-- Loads base game traps (empty stub zone)

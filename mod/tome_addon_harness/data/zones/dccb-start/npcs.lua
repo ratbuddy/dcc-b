@@ -1,0 +1,3 @@
+-- ToME4 DCCB addon
+-- NPCs for dccb-start zone
+-- Loads base game NPCs (empty stub zone)
