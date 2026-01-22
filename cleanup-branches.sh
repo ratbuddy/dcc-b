@@ -66,9 +66,12 @@ echo ""
 echo "Total: ${#branches[@]} branches"
 echo ""
 
-read -p "Do you want to proceed with deletion? (yes/no): " confirm
+read -p "Do you want to proceed with deletion? (yes/y/no/n): " confirm
 
-if [ "$confirm" != "yes" ]; then
+# Convert to lowercase for case-insensitive comparison
+confirm_lower=$(echo "$confirm" | tr '[:upper:]' '[:lower:]')
+
+if [ "$confirm_lower" != "yes" ] && [ "$confirm_lower" != "y" ]; then
     echo "Aborted. No branches were deleted."
     exit 0
 fi
@@ -82,11 +85,16 @@ error_count=0
 
 for branch in "${branches[@]}"; do
     echo -n "Deleting $branch... "
-    if git push origin --delete "$branch" 2>/dev/null; then
+    error_output=$(git push origin --delete "$branch" 2>&1)
+    exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
         echo "✓ deleted"
         ((success_count++))
     else
-        echo "✗ failed (may already be deleted)"
+        echo "✗ failed"
+        # Show error details for troubleshooting
+        echo "  Error: $error_output" | head -n 1
         ((error_count++))
     fi
 done

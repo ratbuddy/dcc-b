@@ -103,11 +103,12 @@ git fetch --all
 git branch -r
 ```
 
-Expected result:
+Expected result (after this PR is merged and its branch auto-deleted):
 ```
 origin/main
-origin/copilot/clean-up-old-branches
 ```
+
+**Note**: The `copilot/clean-up-old-branches` branch will also be deleted after this PR is merged, leaving only `main`.
 
 ## Need Help?
 
