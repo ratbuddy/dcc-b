@@ -34,9 +34,14 @@ function SurfaceGenerator:generate(lev, old_lev)
   local Map = require "engine.Map"
   
   -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
-  -- Using ToME's rng for now as a minimal fallback
-  -- Note: Lua's math.random(n) returns 1 to n inclusive
-  local rng_func = rng or math.random
+  -- Using math.random for now (ToME's rng function may have different signature)
+  local function rng_func(min, max)
+    if max then
+      return math.random(min, max)
+    else
+      return math.random(min)
+    end
+  end
   
   -- Constants for map generation
   local ROAD_WIDTH = 3
@@ -112,9 +117,9 @@ function SurfaceGenerator:generate(lev, old_lev)
   while stairs_placed < num_stairs and attempts < MAX_STAIR_PLACEMENT_ATTEMPTS do
     attempts = attempts + 1
     
-    -- Generate coordinates (0 to width-1, 0 to height-1)
-    local x = rng_func(0, self.zone.width - 1)
-    local y = rng_func(0, self.zone.height - 1)
+    -- Generate coordinates (1 to width, 1 to height, then adjust to 0-based)
+    local x = rng_func(1, self.zone.width) - 1
+    local y = rng_func(1, self.zone.height) - 1
     local g = Map.grids[x][y]
     
     -- Check if tile is passable (GRASS or ROAD)
