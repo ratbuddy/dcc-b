@@ -18,6 +18,14 @@ return {
   all_lited = true,
   no_level_connectivity = true,
   
+  -- Explicit zone entity loads (ensures grids/npcs/objects/traps are registered)
+  load = {
+    "/data/zones/dccb-start/grids.lua",
+    "/data/zones/dccb-start/npcs.lua",
+    "/data/zones/dccb-start/objects.lua",
+    "/data/zones/dccb-start/traps.lua",
+  },
+  
   -- Debug logging on zone entry
   on_enter = function(a,b,...)
     local zone, lev
@@ -30,22 +38,34 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Signature-agnostic: detect level argument
+    -- Capability-based detection: find level and zone by their methods
     local level, zone
-    if type(a) == "table" and a.map then
-      level = a
-      zone = level.zone or b
-    elseif type(b) == "table" and b.map then
-      level = b
-      zone = level.zone or a
-    else
-      level = a
-      zone = level and level.zone
+    
+    -- Find level: whichever arg is a table with .map
+    for _, arg in ipairs({a, b, c}) do
+      if type(arg) == "table" and arg.map then
+        level = arg
+        break
+      end
     end
     
-    -- Fallback dimensions if zone is nil
-    if not zone then
-      zone = {width = 30, height = 30, short_name = "dccb-start"}
+    -- Find zone: whichever arg is a table with .makeEntityByName or .makeEntity
+    for _, arg in ipairs({a, b, c}) do
+      if type(arg) == "table" and (arg.makeEntityByName or arg.makeEntity) then
+        zone = arg
+        break
+      end
+    end
+    
+    -- Validate we have both level and zone
+    if not level or not level.map then
+      print("[DCCB-Zone] ERROR: Cannot detect level object (no .map found)")
+      return
+    end
+    
+    if not zone or not (zone.makeEntityByName or zone.makeEntity) then
+      print("[DCCB-Zone] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
+      return
     end
     
     -- Load painter module
@@ -56,16 +76,25 @@ return {
     if not painter_ok or not painter then
       print("[DCCB-Zone] ERROR: Failed to load painter module")
       print(string.format("[DCCB-Zone] Error: %s", tostring(painter)))
-      -- Fall back to minimal inline implementation
-      local fallback_template = {
-        name = "fallback",
-        base = "GRASS",
-        entrances = {count = 1, grid = "DCCB_ENTRANCE"}
-      }
       
-      -- Minimal fallback: just fill with grass
-      for x = 0, zone.width - 1 do
-        for y = 0, zone.height - 1 do
+      -- Safe fallback: verify we have the required capabilities
+      if not zone.makeEntityByName then
+        print("[DCCB-Zone] ERROR: Cannot fallback - zone.makeEntityByName unavailable")
+        return
+      end
+      
+      if not level.map then
+        print("[DCCB-Zone] ERROR: Cannot fallback - level.map unavailable")
+        return
+      end
+      
+      -- Use level.map dimensions (source of truth)
+      local map_w = level.map.w
+      local map_h = level.map.h
+      
+      -- Minimal fallback: fill with GRASS and place 1 entrance
+      for x = 0, map_w - 1 do
+        for y = 0, map_h - 1 do
           local grid = zone:makeEntityByName(level, "grid", "GRASS")
           if grid then
             level.map(x, y, Map.TERRAIN, grid)
@@ -73,9 +102,9 @@ return {
         end
       end
       
-      -- Place one entrance
-      local e_x = math.floor(zone.width / 2)
-      local e_y = math.floor(zone.height / 2)
+      -- Place one entrance in center
+      local e_x = math.floor(map_w / 2)
+      local e_y = math.floor(map_h / 2)
       local entrance_grid = zone:makeEntityByName(level, "grid", "DCCB_ENTRANCE")
       if entrance_grid then
         level.map(e_x, e_y, Map.TERRAIN, entrance_grid)
@@ -134,30 +163,6 @@ return {
     trap = {
       class = "engine.generator.trap.Random",
       nb_trap = {0, 0},
-    },
-  },
-  
-  -- Level 1 configuration
-  levels = {
-    [1] = {
-      generator = {
-        map = {
-          class = "engine.generator.map.Empty",
-          zoom = 1,
-        },
-        actor = {
-          class = "engine.generator.actor.Random",
-          nb_npc = {0, 0},
-        },
-        object = {
-          class = "engine.generator.object.Random",
-          nb_object = {0, 0},
-        },
-        trap = {
-          class = "engine.generator.trap.Random",
-          nb_trap = {0, 0},
-        },
-      },
     },
   },
 }
