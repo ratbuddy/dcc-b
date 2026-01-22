@@ -74,9 +74,13 @@ newEntity{
   always_remember = true,
   -- NO change_level or change_zone - this is just a visual marker
   on_stand = function(self, x, y, who)
-    if who.player and not game.dccb_entrance_warned then
-      game.log("#YELLOW#[DCCB] Dungeon entrance not implemented yet.")
-      game.dccb_entrance_warned = true
+    if who.player then
+      -- Use per-entrance tracking via grid coordinates
+      local key = string.format("dccb_entrance_%d_%d", x, y)
+      if not game[key] then
+        game.log("#YELLOW#[DCCB] Dungeon entrance not implemented yet.")
+        game[key] = true
+      end
     end
   end,
 }

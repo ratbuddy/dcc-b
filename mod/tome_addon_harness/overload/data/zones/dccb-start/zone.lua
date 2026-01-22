@@ -26,8 +26,18 @@ local function applySurfaceTemplate(level, zone, data)
   
   -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
   -- Using rng.range/rng.table if available, fallback to math.random
-  local rng_range = (rng and rng.range) or function(min, max) return math.random(min, max) end
-  local rng_table = (rng and rng.table) or function(t) return t[math.random(1, #t)] end
+  local rng_range = (rng and rng.range) or function(min, max)
+    if not min or not max or min > max then
+      error("rng_range: invalid range")
+    end
+    return math.random(min, max)
+  end
+  local rng_table = (rng and rng.table) or function(t)
+    if not t or #t == 0 then
+      error("rng_table: empty or nil table")
+    end
+    return t[math.random(1, #t)]
+  end
   
   -- Constants for map generation
   local ROAD_WIDTH = 3
@@ -144,7 +154,7 @@ _M.generator = {
     class = "engine.generator.map.Filled",
     edge_entrances = {0, 0}, -- No edge entrances
     zoom = 1,
-    ['#'] = "WALL", -- Not used, but required by Filled
+    ['#'] = "WALL", -- Required by Filled generator API
     ['.'] = "GRASS", -- Fill entire map with GRASS
   },
   -- Explicit zero spawn generators
