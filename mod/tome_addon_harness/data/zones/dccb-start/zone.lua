@@ -28,6 +28,13 @@ return {
     local Map = require "engine.Map"
     local zone = level.zone
     
+    -- First, fill the entire map with GRASS
+    for x = 0, zone.width - 1 do
+      for y = 0, zone.height - 1 do
+        Map:addGrid(level, x, y, "GRASS")
+      end
+    end
+    
     -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
     -- Using rng.range/rng.table if available, fallback to math.random
     local rng_range = (rng and rng.range) or function(min, max)
@@ -152,14 +159,11 @@ return {
     print(string.format("[DCCB-Surface] template=%s entrances=%d", template_id, entrances_placed))
   end,
   
-  -- Generator configuration using Filled generator
+  -- Generator configuration using Empty generator (simpler than Filled)
   generator = {
     map = {
-      class = "engine.generator.map.Filled",
-      edge_entrances = {0, 0}, -- No edge entrances
+      class = "engine.generator.map.Empty",
       zoom = 1,
-      ['#'] = "WALL", -- Required by Filled generator API
-      ['.'] = "GRASS", -- Fill entire map with GRASS
     },
     -- Explicit zero spawn generators
     actor = {
@@ -181,11 +185,8 @@ return {
     [1] = {
       generator = {
         map = {
-          class = "engine.generator.map.Filled",
-          edge_entrances = {0, 0},
+          class = "engine.generator.map.Empty",
           zoom = 1,
-          ['#'] = "WALL",
-          ['.'] = "GRASS",
         },
         actor = {
           class = "engine.generator.actor.Random",
