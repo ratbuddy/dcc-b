@@ -17,12 +17,7 @@ return {
   
   -- Debug logging on zone entry (one-time per level)
   on_enter = function(self, level)
-    local fs = require("engine.utils.FS")
-    local zone_file = "/data-dccb/zones/dccb-start/zone.lua"
-    local exists = fs.exists(zone_file)
-    
     print(string.format("[DCCB-Zone] Entered zone '%s' level %d", self.short_name or "unknown", level or 0))
-    print(string.format("[DCCB-Zone] Zone file exists: %s (%s)", tostring(exists), zone_file))
   end,
   
   -- Use minimal procedural generator
@@ -33,9 +28,9 @@ return {
       nb_rooms = 1,
       rooms = {"simple"},
       lite_room_chance = 100,
-      -- Terrain mappings as strings (correct Roomer format)
-      ['#'] = "WALL",
-      ['.'] = "FLOOR",
+      -- Terrain mappings as table format
+      ['#'] = {"WALL"},
+      ['.'] = {"FLOOR"},
       up = "UP",
       down = "DOWN",
       door = "DOOR",
@@ -64,9 +59,9 @@ return {
           nb_rooms = 1,
           rooms = {"simple"},
           lite_room_chance = 100,
-          -- Terrain mappings as strings (correct Roomer format)
-          ['#'] = "WALL",
-          ['.'] = "FLOOR",
+          -- Terrain mappings as table format
+          ['#'] = {"WALL"},
+          ['.'] = {"FLOOR"},
           up = "UP",
           down = "DOWN",
           door = "DOOR",
