@@ -21,7 +21,7 @@ with ToME's dungeon generation and gameplay mechanics.]]
 tags = {"dungeon", "procedural", "integration"}
 
 -- Addon capabilities
-overload = false
+overload = true
 superload = false
 hooks = true
 data = true
