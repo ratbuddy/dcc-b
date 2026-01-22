@@ -1,4 +1,4 @@
--- /mod/tome_addon_harness/data/zones/dccb-start/zone.lua
+-- /data/zones/dccb-start/zone.lua
 -- DCCB Stub Start Zone - Surface Template System
 -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-start/ (overload)
