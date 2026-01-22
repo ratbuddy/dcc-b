@@ -1,0 +1,48 @@
+# General
+*.log
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.kate-swp
+.project
+.settings/
+.classpath
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Development
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.local
+
+# Build outputs (if applicable in the future)
+dist/
+build/
+*.o
+*.so
+*.exe
+
+# Documentation build artifacts
+docs/_build/
+docs/.doctrees/
+
+# Temporary test files
+test-tmp/
+*.test.tmp
