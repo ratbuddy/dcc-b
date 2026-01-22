@@ -35,11 +35,17 @@ function SurfaceGenerator:generate(lev, old_lev)
   
   -- TODO: Replace with /core/rng.lua stream per DCC-Engineering policy
   -- Using ToME's rng for now as a minimal fallback
+  -- Note: Lua's math.random(n) returns 1 to n inclusive
   local rng_func = rng or math.random
   
-  -- Select template randomly
+  -- Constants for map generation
+  local ROAD_WIDTH = 3
+  local MIN_STAIR_DISTANCE = 8
+  local MAX_STAIR_PLACEMENT_ATTEMPTS = 1000
+  
+  -- Select template randomly (1 to #templates)
   local templates = {"green_fields", "forest_road"}
-  local template_id = templates[rng_func(#templates)]
+  local template_id = templates[rng_func(1, #templates)]
   
   -- Initialize map with GRASS
   for x = 0, self.zone.width - 1 do
@@ -53,14 +59,14 @@ function SurfaceGenerator:generate(lev, old_lev)
     -- Scatter trees across the field (10-15% density)
     for x = 0, self.zone.width - 1 do
       for y = 0, self.zone.height - 1 do
-        if rng_func(100) <= 12 then
+        if rng_func(1, 100) <= 12 then
           Map:addGrid(lev, x, y, "TREE")
         end
       end
     end
   elseif template_id == "forest_road" then
     -- Create a road cutting across the map
-    local road_type = rng_func(2) -- 1=horizontal, 2=diagonal
+    local road_type = rng_func(1, 2) -- 1=horizontal, 2=diagonal
     
     if road_type == 1 then
       -- Horizontal road in the middle third
@@ -73,10 +79,9 @@ function SurfaceGenerator:generate(lev, old_lev)
       end
     else
       -- Diagonal road
-      local road_width = 3
       for x = 0, self.zone.width - 1 do
         local center_y = math.floor((x / self.zone.width) * self.zone.height)
-        for dy = -road_width, road_width do
+        for dy = -ROAD_WIDTH, ROAD_WIDTH do
           local y = center_y + dy
           if y >= 0 and y < self.zone.height then
             Map:addGrid(lev, x, y, "ROAD")
@@ -90,7 +95,7 @@ function SurfaceGenerator:generate(lev, old_lev)
       for y = 0, self.zone.height - 1 do
         local g = Map.grids[x][y]
         -- Only place trees on GRASS, not ROAD
-        if g and g.define_as == "GRASS" and rng_func(100) <= 22 then
+        if g and g.define_as == "GRASS" and rng_func(1, 100) <= 22 then
           Map:addGrid(lev, x, y, "TREE")
         end
       end
@@ -98,19 +103,18 @@ function SurfaceGenerator:generate(lev, old_lev)
   end
   
   -- Place 2-4 DOWN stairs on passable tiles
-  local num_stairs = rng_func(3) + 1 -- 2-4 stairs
+  local num_stairs = rng_func(2, 4)
   local stairs_placed = 0
-  local min_distance = 8 -- Minimum distance between stairs
   local stair_positions = {}
   
-  local max_attempts = 1000
   local attempts = 0
   
-  while stairs_placed < num_stairs and attempts < max_attempts do
+  while stairs_placed < num_stairs and attempts < MAX_STAIR_PLACEMENT_ATTEMPTS do
     attempts = attempts + 1
     
-    local x = rng_func(self.zone.width - 1)
-    local y = rng_func(self.zone.height - 1)
+    -- Generate coordinates (0 to width-1, 0 to height-1)
+    local x = rng_func(0, self.zone.width - 1)
+    local y = rng_func(0, self.zone.height - 1)
     local g = Map.grids[x][y]
     
     -- Check if tile is passable (GRASS or ROAD)
@@ -121,7 +125,7 @@ function SurfaceGenerator:generate(lev, old_lev)
         local dx = x - pos.x
         local dy = y - pos.y
         local dist = math.sqrt(dx*dx + dy*dy)
-        if dist < min_distance then
+        if dist < MIN_STAIR_DISTANCE then
           valid = false
           break
         end
