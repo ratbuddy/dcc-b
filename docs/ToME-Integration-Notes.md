@@ -1,8 +1,8 @@
 # ToME-Integration-Notes.md
 
-Version: 0.5  
-Status: Phase-2 Verified + Zone Transition API Documented (Authoritative)  
-Date: 2026-01-21  
+Version: 0.6  
+Status: Phase-2 Verified + Zone Transition API Documented + Custom Zone Pattern Documented (Authoritative)  
+Date: 2026-01-22  
 
 This document is the authoritative Phase-2 research and planning document for integrating DCC-B with Tales of Maj'Eyal (ToME / T-Engine4).
 
@@ -580,6 +580,469 @@ game.player:move(x, y, force)
 3. Test party/follower state preservation across zone transitions
 4. Verify save/load cycles preserve redirect state correctly
 5. Document any discovered API variations or edge cases in this section
+
+---
+
+## 2.5 Stable Custom Zone Generation Pattern (dccb-start Baseline)
+
+**Status:** ✅ VERIFIED - Production baseline (2026-01-22)  
+**Implementation:** `mod/tome_addon_harness/data/zones/dccb-start/zone.lua`
+
+This section documents the **proven, non-crashing pattern** for creating custom ToME zones after extensive debugging of the dccb-start zone. This is NOT theoretical—this is the actual working recipe that emerged from fixing multiple crash scenarios.
+
+### 2.5.1 Critical Discovery: File Path Split Architecture
+
+**The Problem:** ToME's zone loading is split across two distinct mount points with different purposes.
+
+**The Solution (Proven Working):**
+
+```
+mod/tome_addon_harness/
+├── data/zones/dccb-start/
+│   └── zone.lua                    ← Zone descriptor ONLY (mounts as /data-dccb/zones/dccb-start/)
+└── overload/data/zones/dccb-start/
+    ├── grids.lua                   ← Terrain entity definitions
+    ├── npcs.lua                    ← Actor entity definitions
+    ├── objects.lua                 ← Object entity definitions
+    └── traps.lua                   ← Trap entity definitions
+```
+
+**Why This Specific Split:**
+
+1. **zone.lua in `data/zones/`:**
+   - ToME's zone loader looks for zone descriptors in addon-specific data path first
+   - Path mounts as `/data-dccb/zones/dccb-start/zone.lua`
+   - Contains ONLY zone metadata and generation config (no entity definitions)
+
+2. **Resource files in `overload/data/zones/`:**
+   - ToME's entity loader expects resources at global `/data/zones/` path
+   - Overload system provides this mount point
+   - Contains terrain (grids.lua), actors (npcs.lua), objects (objects.lua), traps (traps.lua)
+   - Engine calls `load("/data/zones/dccb-start/grids.lua")` internally
+
+3. **Why NOT both in overload:**
+   - Caused path resolution conflicts
+   - Zone descriptor was loaded twice with different contexts
+   - Led to generator state corruption and nil zone errors
+
+4. **Why NOT both in data:**
+   - Engine cannot find entity files at `/data-dccb/zones/` path
+   - Results in "terrain not found" or "GRASS not defined" errors
+   - ToME's entity loader is hardcoded to look in `/data/zones/`
+
+**Critical Rule:** There must be EXACTLY ONE `zone.lua` file. If `mod/tome_addon_harness/overload/data/zones/dccb-start/zone.lua` exists, DELETE it immediately.
+
+### 2.5.2 Explicit Load Directives (Required Pattern)
+
+**The Problem:** ToME does NOT auto-discover zone resource files. You must explicitly tell it what to load.
+
+**The Solution:**
+
+```lua
+-- In mod/tome_addon_harness/data/zones/dccb-start/zone.lua
+return {
+  name = "DCCB Start",
+  short_name = "dccb-start",
+  -- ... other zone config ...
+  
+  -- REQUIRED: Explicit load directives
+  -- These must match the overload file paths
+  load = {
+    "/data/zones/dccb-start/grids.lua",
+    "/data/zones/dccb-start/npcs.lua",
+    "/data/zones/dccb-start/objects.lua",
+    "/data/zones/dccb-start/traps.lua",
+  },
+}
+```
+
+**Why This Matters:**
+
+- Without `load` array, ToME skips resource files entirely
+- Leads to "undefined terrain" errors when post_process tries to place GRASS/TREE/etc
+- Must list ALL resource files explicitly (npcs.lua, objects.lua, traps.lua even if empty)
+- Paths are relative to ToME's virtual filesystem (use `/data/zones/` not file system paths)
+
+**Empty Resource Files Are Required:**
+
+Even if you have no actors/objects/traps, you still need placeholder files:
+
+```lua
+-- mod/tome_addon_harness/overload/data/zones/dccb-start/npcs.lua
+-- DCCB Start Zone - No NPCs
+return {}
+```
+
+Without these files, ToME's loader may throw warnings or errors.
+
+### 2.5.3 Generator Choice: Empty Canvas Pattern
+
+**The Problem:** Other generators (Roomer, Forest, Filled) introduce hidden behaviors:
+- Roomer creates dungeon rooms and automatic UP/DOWN stairs (causes "next level" generation)
+- Forest has complex terrain distribution logic that can conflict with custom post_process
+- Filled requires specific parameter configuration that caused nil value errors
+
+**The Solution: engine.generator.map.Empty**
+
+```lua
+generator = {
+  map = {
+    class = "engine.generator.map.Empty",
+    zoom = 1,
+    -- NO other parameters - keep it minimal
+  },
+  -- Zero spawns (required to prevent ToME auto-populating)
+  actor = {
+    class = "engine.generator.actor.Random",
+    nb_npc = {0, 0},
+  },
+  object = {
+    class = "engine.generator.object.Random",
+    nb_object = {0, 0},
+  },
+  trap = {
+    class = "engine.generator.trap.Random",
+    nb_trap = {0, 0},
+  },
+},
+```
+
+**Why Empty is the Stable Choice:**
+
+1. **Blank canvas:** Provides empty map grid, nothing pre-populated
+2. **No hidden stairs:** Won't create UP/DOWN terrains that trigger intra-zone level generation
+3. **Minimal config:** Only requires `class` and `zoom`, no complex parameter structures
+4. **Manual control:** All terrain placement happens explicitly in post_process
+5. **No surprises:** Failures are obvious (missing terrain = visible holes), not hidden (random rooms)
+
+**Critical: No Stair Mappings**
+
+NEVER include these in generator.map config:
+
+```lua
+-- ❌ DO NOT DO THIS (creates automatic intra-zone stairs)
+generator = {
+  map = {
+    class = "engine.generator.map.Empty",
+    up = "UP",      -- ❌ Causes automatic level -1 generation
+    down = "DOWN",  -- ❌ Causes automatic level +1 generation
+    door = "DOOR",  -- ❌ May trigger room logic
+  },
+}
+```
+
+Even with Empty generator, these mappings tell ToME to create inter-level connectors.
+
+### 2.5.4 post_process Signature: The Critical Pattern
+
+**The Problem:** ToME calls `post_process` with varying signatures depending on context. Assuming a fixed signature (e.g., `function(level)`) causes nil zone crashes.
+
+**The Solution: Signature-Agnostic Detection**
+
+```lua
+post_process = function(a, b, c, ...)
+  local Map = require "engine.Map"
+  
+  -- Detect which argument is the level object
+  local level, zone
+  if type(a) == "table" and a.map then
+    level = a
+    zone = level.zone or b
+  elseif type(b) == "table" and b.map then
+    level = b
+    zone = level.zone or a
+  else
+    level = a
+    zone = level and level.zone
+  end
+  
+  -- CRITICAL: Never assume zone exists
+  if not zone then
+    zone = {width = 30, height = 30, short_name = "dccb-start"}
+  end
+  
+  -- Now safe to use zone.width, zone.height, etc.
+  for x = 0, zone.width - 1 do
+    for y = 0, zone.height - 1 do
+      Map:addGrid(level, x, y, "GRASS")
+    end
+  end
+end
+```
+
+**Why This Pattern Works:**
+
+1. **Accepts any argument order:** `(level)`, `(level, zone)`, `(zone, level)`, etc.
+2. **Detects level by checking for `.map` property:** Level objects always have a map grid
+3. **Falls back gracefully:** If zone is nil, creates minimal fallback with dimensions
+4. **Never crashes on nil access:** Always validates before using `zone.width` etc.
+
+**What We Learned:**
+
+- ToME's post_process signature varies by generator type and context
+- Some generators pass `(level)` with `level.zone` available
+- Others pass `(level, zone)` or `(zone, level)` directly
+- Empty generator sometimes passes level with nil zone
+- There is NO documentation for this—it must be discovered empirically
+
+### 2.5.5 Manual Terrain Placement Pattern
+
+**The Solution: Map:addGrid() Direct Placement**
+
+```lua
+post_process = function(a, b, c, ...)
+  local Map = require "engine.Map"
+  local level, zone = -- ... signature detection ...
+  
+  -- Step 1: Fill entire map with base terrain
+  for x = 0, zone.width - 1 do
+    for y = 0, zone.height - 1 do
+      Map:addGrid(level, x, y, "GRASS")
+    end
+  end
+  
+  -- Step 2: Add features in predictable patterns
+  for x = 0, zone.width - 1 do
+    for y = 0, zone.height - 1 do
+      -- Example: Trees around edges
+      if x < 3 or x >= zone.width - 3 or y < 3 or y >= zone.height - 3 then
+        if (x + y) % 3 == 0 then  -- Predictable pattern (no RNG for stability)
+          Map:addGrid(level, x, y, "TREE")
+        end
+      end
+    end
+  end
+  
+  -- Step 3: Place special markers (e.g., entrance points)
+  local entrance_x = math.floor(zone.width / 2)
+  local entrance_y = math.floor(zone.height / 2)
+  Map:addGrid(level, entrance_x, entrance_y, "DCCB_ENTRANCE")
+end
+```
+
+**Why Manual Placement:**
+
+1. **Total control:** Every tile explicitly placed, no hidden generator behavior
+2. **Debuggable:** Easy to verify what was placed where (check logs, inspect map)
+3. **No RNG initially:** Use deterministic patterns first (stability baseline)
+4. **Add RNG later:** Once stable, can add randomization safely on top
+5. **Clear failure mode:** Missing terrain = obvious empty spot, not mysterious crash
+
+**Terrain Coordinate System:**
+
+- X and Y are 0-indexed: `for x = 0, zone.width - 1`
+- (0, 0) is top-left corner
+- (width-1, height-1) is bottom-right corner
+- Out-of-bounds placement is silently ignored (no crash, but no effect)
+
+### 2.5.6 Terrain Definition Pattern (grids.lua)
+
+**The Problem:** Custom terrains must be defined correctly or placement fails silently.
+
+**The Solution: Base Terrain Inheritance**
+
+```lua
+-- mod/tome_addon_harness/overload/data/zones/dccb-start/grids.lua
+
+-- REQUIRED: Load base game terrains first
+load("/data/general/grids/basic.lua")
+
+-- Define passable terrain (grass, road, etc.)
+newEntity{
+  base = "FLOOR",                    -- Inherit from base FLOOR
+  define_as = "GRASS",               -- Reference ID for Map:addGrid()
+  type = "floor", subtype = "grass",
+  name = "grass",
+  display = ',', color=colors.LIGHT_GREEN,
+  always_remember = true,
+}
+
+-- Define blocking terrain (walls, trees, etc.)
+newEntity{
+  base = "WALL",                     -- Inherit from base WALL
+  define_as = "TREE",
+  type = "wall", subtype = "tree",
+  name = "tree",
+  display = 'T', color=colors.GREEN,
+  always_remember = true,
+  does_block_move = true,
+  block_move = true,
+  block_sight = true,
+}
+
+-- Define inert marker (no level transitions)
+newEntity{
+  base = "FLOOR",
+  define_as = "DCCB_ENTRANCE",
+  type = "floor", subtype = "floor",
+  name = "dungeon entrance",
+  display = '>', color=colors.YELLOW,
+  always_remember = true,
+  -- CRITICAL: NO change_level or change_zone properties
+  on_stand = function(self, x, y, who)
+    if who.player then
+      game.log("#YELLOW#[DCCB] Dungeon entrance not implemented yet.")
+    end
+  end,
+}
+```
+
+**Critical Properties:**
+
+1. **`base = "FLOOR"` or `"WALL"`:** Must inherit from existing base terrain
+2. **`define_as = "GRASS"`:** This is the ID used in `Map:addGrid(level, x, y, "GRASS")`
+3. **`always_remember = true`:** Makes terrain visible/remembered for player
+4. **Blocking terrains need:** `block_move = true`, `block_sight = true`
+5. **NO stair properties:** Never set `change_level`, `change_zone`, or stair callbacks
+
+**Why Load Base Grids First:**
+
+- `load("/data/general/grids/basic.lua")` provides FLOOR, WALL, etc. as base types
+- Without this, `base = "FLOOR"` fails with "undefined base" error
+- Base terrains provide essential properties (passable, blocking, rendering, etc.)
+- Custom terrains inherit and override as needed
+
+### 2.5.7 Zone Configuration Checklist
+
+**Required fields in zone.lua:**
+
+```lua
+return {
+  name = "DCCB Start",              -- Display name
+  short_name = "dccb-start",        -- Zone ID (for changeLevel, etc.)
+  level_range = {1, 1},             -- Min/max danger level
+  max_level = 1,                    -- CRITICAL: Single level only
+  width = 30, height = 30,          -- Map dimensions
+  persistent = "zone",              -- Persistence mode
+  all_remembered = true,            -- Player can see entire map
+  all_lited = true,                 -- Map is always lit
+  no_level_connectivity = true,     -- CRITICAL: No intra-zone stairs
+  
+  load = { /* ... */ },             -- Explicit resource files
+  generator = { /* ... */ },        -- Map generator config
+  post_process = function(...) end, -- Terrain placement
+}
+```
+
+**Critical flags to prevent multi-level generation:**
+
+- `max_level = 1`: Only one level in this zone
+- `no_level_connectivity = true`: Disables automatic stair generation
+- Generator has NO `up`/`down`/`door` mappings
+
+**Validation Checklist:**
+
+- [ ] ✅ zone.lua exists ONLY in `data/zones/dccb-start/` (NOT in overload)
+- [ ] ✅ grids.lua exists in `overload/data/zones/dccb-start/`
+- [ ] ✅ `load` array lists all resource files
+- [ ] ✅ Generator is `engine.generator.map.Empty`
+- [ ] ✅ Generator has zero spawn configs (nb_npc = {0,0}, etc.)
+- [ ] ✅ Generator has NO up/down/door mappings
+- [ ] ✅ `max_level = 1` and `no_level_connectivity = true`
+- [ ] ✅ post_process uses signature-agnostic pattern
+- [ ] ✅ post_process validates zone before accessing properties
+- [ ] ✅ All terrain IDs in post_process match define_as in grids.lua
+- [ ] ✅ grids.lua loads base terrains via `load("/data/general/grids/basic.lua")`
+- [ ] ✅ Custom terrains have valid `base` property (FLOOR or WALL)
+- [ ] ✅ NO terrain has change_level or change_zone properties
+
+### 2.5.8 Common Failure Modes and Fixes
+
+**Crash: "attempt to index local 'zone' (a nil value)"**
+- **Cause:** post_process assumes fixed signature, zone is nil
+- **Fix:** Use signature-agnostic detection pattern (§2.5.4)
+
+**Error: "terrain 'GRASS' not found"**
+- **Cause:** grids.lua not loaded or wrong path
+- **Fix:** Add `load = {"/data/zones/dccb-start/grids.lua"}` to zone.lua
+- **Fix:** Verify grids.lua exists in overload/data/zones/dccb-start/
+
+**Zone generates multiple levels (dccb-start -2, -3, etc.)**
+- **Cause:** Generator has up/down mappings or Roomer is used
+- **Fix:** Use Empty generator with NO stair mappings
+- **Fix:** Set `no_level_connectivity = true` in zone config
+
+**Crash: "Filled.lua:92: attempt to index a nil value"**
+- **Cause:** Filled generator missing required parameters
+- **Fix:** Switch to Empty generator (simpler, more stable)
+
+**Map appears empty/black**
+- **Cause:** post_process not placing any terrain
+- **Fix:** Verify post_process loop covers all coordinates (0 to width-1)
+- **Fix:** Check that terrain IDs match define_as in grids.lua
+
+**"undefined base FLOOR" error**
+- **Cause:** grids.lua doesn't load base terrain files
+- **Fix:** Add `load("/data/general/grids/basic.lua")` at top of grids.lua
+
+### 2.5.9 Extension Points (Future Enhancements)
+
+**Once baseline is stable, you can add:**
+
+1. **Randomization:**
+   - Add RNG-based tree placement instead of fixed patterns
+   - Random template selection (green_fields vs forest_road)
+   - Keep deterministic baseline as fallback
+
+2. **Multiple entrance markers:**
+   - Place 2-4 DCCB_ENTRANCE instead of 1
+   - Use Manhattan distance >= 8 for spacing
+   - Retry loop with attempt cap
+
+3. **Actor/object spawning:**
+   - Change nb_npc/nb_object to non-zero ranges
+   - Define actors in npcs.lua, objects in objects.lua
+   - ToME will auto-spawn based on rarity tables
+
+4. **Actual dungeon connections:**
+   - Add change_level = 1 to DCCB_ENTRANCE terrain
+   - Create separate dungeon zone definitions
+   - Link via on_stand callback invoking game:changeLevel()
+
+**But NOT before baseline is proven stable in-game.**
+
+### 2.5.10 Validation and Testing
+
+**Minimum validation steps:**
+
+1. Load ToME with addon enabled
+2. Start new character (or use debug mode to spawn in zone)
+3. Verify zone loads without Lua errors (check te4_log.txt)
+4. Verify map appears with terrain (grass, trees, entrance markers visible)
+5. Verify no "next level here" messages appear
+6. Verify no dccb-start -2, -3, etc. levels are created
+7. Walk over entrance marker, verify placeholder message appears
+8. Save game, reload, verify zone persists correctly
+
+**Success criteria:**
+
+- No Lua errors in te4_log.txt
+- Map renders with expected terrain distribution
+- Exactly 1 level in zone (no -2, -3, etc.)
+- Entrance markers visible and interactable (but don't change level)
+- Zone name appears correctly in UI
+- Player can move freely on GRASS/ROAD tiles
+- Player blocked by TREE/WALL tiles
+
+**If any validation fails:**
+
+1. Check te4_log.txt for specific error messages
+2. Verify file paths and load directives
+3. Confirm signature-agnostic post_process pattern is used
+4. Double-check terrain define_as IDs match post_process usage
+5. Ensure only ONE zone.lua exists (not duplicated in overload)
+
+### 2.5.11 Reference Implementation
+
+**Current working baseline:**
+- File: `/mod/tome_addon_harness/data/zones/dccb-start/zone.lua`
+- Resources: `/mod/tome_addon_harness/overload/data/zones/dccb-start/grids.lua`
+- Status: Verified stable, non-crashing (as of 2026-01-22)
+- Commit: Latest in copilot/generate-overworld-style-surface branch
+
+**This implementation is the AUTHORITATIVE BASELINE for custom zones in this project.**
+
+Do not deviate from this pattern without strong justification and testing.
 
 ---
 
@@ -1565,6 +2028,8 @@ When updating this document:
 - **2026-01-19 - v0.2.1 - Task 2.2.1 complete** (Real ToME engine hook: `ToME:load` via `class:bindHook`, proper addon descriptor, distinguished file execution vs engine hook)
 - **2026-01-19 - v0.3 - Task 2.3 complete** (Run-start hooks: `Player:birth` and `Game:loaded` registered, idempotence guard implemented, log-only binding, §2/§8.6 added)
 - **2026-01-21 - v0.4 - Minimal addon baseline verified** (Updated to reflect verified hooks: ToME:run, Actor:move, Actor:actBase:Effects; deprecated Player:birth/Game:loaded; documented redirect plumbing; removed loader/harness framework references)
+- **2026-01-21 - v0.5 - Zone Transition API complete** (§2.4 added: full `game:changeLevel()` API documentation from source code research, validated calling patterns, safety constraints, pitfalls, validation checklist)
+- **2026-01-22 - v0.6 - Custom Zone Pattern documented** (§2.5 added: proven working dccb-start zone generation pattern, file path split architecture, Empty generator baseline, signature-agnostic post_process, terrain definition patterns, failure modes and fixes)
 
 ---
 
