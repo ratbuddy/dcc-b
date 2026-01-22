@@ -9,7 +9,7 @@ print("[DCCB] hooks/load.lua executed")
 -- ========================================
 -- DEPRECATED: Redirect is now handled by superload/mod/class/Game.lua
 -- This early Actor:move redirect is kept for logging only
-local DCCB_ENABLE_REDIRECT = false
+local DCCB_ENABLE_REDIRECT = true
 
 -- Idempotence guards
 local run_started = false
