@@ -979,22 +979,26 @@ return {
 
 **Once baseline is stable, you can add:**
 
-1. **Randomization:**
-   - Add RNG-based tree placement instead of fixed patterns
-   - Random template selection (green_fields vs forest_road)
+1. **Surface Template System:** ✅ IMPLEMENTED (§2.5.12)
+   - Modular painter + data-driven templates
+   - Deterministic template selection (plains, road)
+   - Ready for random selection when needed
+
+2. **Randomization:**
+   - Add RNG-based template selection (modify DCCB_SURFACE_TEMPLATE constant)
+   - Random decoration parameters (tree density, road width)
    - Keep deterministic baseline as fallback
 
-2. **Multiple entrance markers:**
-   - Place 2-4 DCCB_ENTRANCE instead of 1
-   - Use Manhattan distance >= 8 for spacing
-   - Retry loop with attempt cap
+3. **Multiple entrance markers:** ✅ IMPLEMENTED (§2.5.12)
+   - Currently places 2 DCCB_ENTRANCE markers deterministically
+   - Can extend to configurable positions in template schema
 
-3. **Actor/object spawning:**
+4. **Actor/object spawning:**
    - Change nb_npc/nb_object to non-zero ranges
    - Define actors in npcs.lua, objects in objects.lua
    - ToME will auto-spawn based on rarity tables
 
-4. **Actual dungeon connections:**
+5. **Actual dungeon connections:**
    - Add change_level = 1 to DCCB_ENTRANCE terrain
    - Create separate dungeon zone definitions
    - Link via on_stand callback invoking game:changeLevel()
@@ -1035,14 +1039,256 @@ return {
 ### 2.5.11 Reference Implementation
 
 **Current working baseline:**
-- File: `/mod/tome_addon_harness/data/zones/dccb-start/zone.lua`
-- Resources: `/mod/tome_addon_harness/overload/data/zones/dccb-start/grids.lua`
+- Zone descriptor: `/mod/tome_addon_harness/data/zones/dccb-start/zone.lua`
+- Zone resources: `/mod/tome_addon_harness/overload/data/zones/dccb-start/grids.lua`
+- Surface painter: `/mod/tome_addon_harness/data/dccb/surface/painter.lua`
+- Surface templates: `/mod/tome_addon_harness/data/dccb/surface/templates/*.lua`
 - Status: Verified stable, non-crashing (as of 2026-01-22)
-- Commit: Latest in copilot/generate-overworld-style-surface branch
+- Features: Empty generator + template-based surface rendering (§2.5.12)
 
 **This implementation is the AUTHORITATIVE BASELINE for custom zones in this project.**
 
 Do not deviate from this pattern without strong justification and testing.
+
+### 2.5.12 Surface Template System (Modular Terrain Painting)
+
+**Status:** ✅ IMPLEMENTED - Deterministic template-based surface rendering (2026-01-22)  
+**Implementation:** Surface painter + templates in `/mod/tome_addon_harness/data/dccb/surface/`
+
+This section documents the modular surface template system that refactors dccb-start's manual terrain painting into reusable, data-driven templates.
+
+#### 2.5.12.1 Architecture Overview
+
+**Problem:** The original post_process had hardcoded terrain placement logic, making it difficult to create variations or maintain different surface layouts.
+
+**Solution:** Template-based painter that separates:
+- **Painter module:** Reusable terrain placement logic
+- **Templates:** Pure data files defining surface layouts
+- **Zone integration:** Template selection and loading
+
+**Component Structure:**
+
+```
+mod/tome_addon_harness/data/dccb/surface/
+├── painter.lua                      ← Core painting engine
+└── templates/
+    ├── plains.lua                   ← Template: grass + tree border
+    └── road.lua                     ← Template: grass + road + tree border
+```
+
+#### 2.5.12.2 Painter Module Pattern
+
+**File:** `/mod/tome_addon_harness/data/dccb/surface/painter.lua`
+
+**API:**
+```lua
+local painter = require("painter")  -- or via loadfile()
+painter.paint_surface(level, zone, template)
+```
+
+**Core Operations:**
+1. **Grid Resolution:** Uses `zone:makeEntityByName(level, "grid", def)` (not invented APIs)
+2. **Terrain Placement:** Uses `level.map(x, y, Map.TERRAIN, grid)` (ToME-accurate)
+3. **Deterministic Order:** base fill → decorations → entrances
+4. **Fail-Soft:** Returns false on error, never crashes
+
+**Supported Decoration Types:**
+- `edge_ring`: Places grids around map perimeter with configurable thickness/step
+- `vertical_road`: Places vertical road stripe through map center with configurable width
+
+**Helper Functions:**
+```lua
+-- Internal helpers (not exported)
+make_grid(zone, level, def)           -- Resolves grid entity via zone factory
+set_terrain(level, x, y, grid)        -- Places terrain using Map.TERRAIN layer
+apply_base_fill(level, zone, template)      -- Fills entire map with base grid
+apply_decorations(level, zone, template)    -- Applies decoration specs
+apply_entrances(level, zone, template)      -- Places entrance markers
+```
+
+**Logging Pattern:**
+- All operations log with `[DCCB-Painter]` prefix
+- Reports: template name, grid counts, failures (but never crashes)
+- Example: `[DCCB-Painter] Base fill: 900 cells with 'GRASS'`
+
+#### 2.5.12.3 Template Data Schema
+
+**Template files are pure data tables (no functions):**
+
+```lua
+-- Example: plains.lua
+return {
+  name = "plains",                    -- Template identifier
+  base = "GRASS",                     -- Base terrain (fills entire map)
+  decorations = {                     -- Optional decorative features
+    { 
+      kind = "edge_ring",             -- Decoration type
+      grid = "TREE",                  -- Grid to place
+      thickness = 2,                  -- Edge width
+      step = 3                        -- Spacing pattern
+    },
+  },
+  entrances = {                       -- Entrance marker configuration
+    count = 2,                        -- Number of entrances (1-2)
+    grid = "DCCB_ENTRANCE"            -- Grid type for entrances
+  }
+}
+```
+
+**Implemented Templates:**
+
+1. **plains.lua**: Simple grassy area with tree border
+   - Base: GRASS
+   - Decorations: Edge ring of trees (thickness=2, step=3)
+   - Entrances: 2 markers
+
+2. **road.lua**: Grassy area with vertical road
+   - Base: GRASS
+   - Decorations: Vertical road (width=3), then edge ring of trees
+   - Entrances: 2 markers
+
+**Template Requirements:**
+- Must reference only existing grids: GRASS, TREE, ROAD, DCCB_ENTRANCE
+- Decoration order matters (later decorations can overwrite earlier ones)
+- Entrance positions are deterministic (currently: 1/3 width and 2/3 width at mid-height)
+
+#### 2.5.12.4 Zone Integration Pattern
+
+**In zone.lua post_process:**
+
+```lua
+-- Template selection (deterministic for now)
+local DCCB_SURFACE_TEMPLATE = "plains"  -- Options: "plains", "road"
+
+post_process = function(a, b, c, ...)
+  -- Step 1: Signature-agnostic level/zone detection (§2.5.4)
+  local level, zone = -- ... existing pattern ...
+  
+  -- Step 2: Load painter module via loadfile
+  local painter_ok, painter = pcall(function()
+    return loadfile("/data-dccb/dccb/surface/painter.lua")()
+  end)
+  
+  -- Step 3: Load selected template
+  local template_path = string.format("/data-dccb/dccb/surface/templates/%s.lua", 
+                                      DCCB_SURFACE_TEMPLATE)
+  local template_ok, template = pcall(function()
+    return loadfile(template_path)()
+  end)
+  
+  -- Step 4: Paint surface
+  painter.paint_surface(level, zone, template)
+end
+```
+
+**Fallback Behavior:**
+- If painter fails to load → inline minimal implementation (GRASS base + 1 entrance)
+- If template fails to load → fallback template (GRASS base + 1 entrance)
+- Never crashes, always produces a visible surface
+
+#### 2.5.12.5 Loading Pattern (ToME Virtual Paths)
+
+**Critical:** Templates and painter must be loaded via `loadfile()` with virtual paths:
+
+```lua
+-- Correct (virtual path):
+loadfile("/data-dccb/dccb/surface/painter.lua")()
+loadfile("/data-dccb/dccb/surface/templates/plains.lua")()
+
+-- Wrong (filesystem path - will fail):
+require("mod.tome_addon_harness.data.dccb.surface.painter")
+```
+
+**Why:** ToME's addon data mounts at `/data-dccb/` virtual path, not filesystem path.
+
+#### 2.5.12.6 Template Selection and Extension
+
+**Current: Deterministic Selection**
+```lua
+local DCCB_SURFACE_TEMPLATE = "plains"  -- Hardcoded constant
+```
+
+**Future: Random Selection (when ready)**
+```lua
+local templates = {"plains", "road"}
+local DCCB_SURFACE_TEMPLATE = templates[math.random(1, #templates)]
+```
+
+**Adding New Templates:**
+1. Create `/data/dccb/surface/templates/new_template.lua`
+2. Return data table with name, base, decorations, entrances
+3. Reference only existing grids (or define new ones in grids.lua first)
+4. Update selection constant or random pool
+
+**Adding New Decoration Types:**
+1. Implement `apply_<type>(level, zone, decoration)` in painter.lua
+2. Add case in `apply_decorations()` function
+3. Document parameters in template schema
+
+#### 2.5.12.7 Validation and Testing
+
+**Minimum validation:**
+1. Start new run, redirect to dccb-start succeeds
+2. Map renders with visible terrain (not black)
+3. te4_log.txt shows:
+   - `[DCCB-Zone] Loaded template 'plains'`
+   - `[DCCB-Painter] Starting surface paint with template 'plains'`
+   - `[DCCB-Painter] Base fill: 900 cells with 'GRASS'`
+   - `[DCCB-Painter] Completed template 'plains': base=900, decorations=84, entrances=2`
+4. Change `DCCB_SURFACE_TEMPLATE` to "road", restart, verify different layout
+5. No Lua errors, no "next level here" messages
+
+**Success Criteria:**
+- Template switching works (change constant → different surface)
+- All grids resolve successfully (no "grid not found" errors)
+- Entrances are inert (no level transitions)
+- Fail-soft behavior works (malformed template → fallback, not crash)
+
+#### 2.5.12.8 Design Constraints Preserved
+
+**This implementation maintains all baseline constraints:**
+
+✅ Keeps `engine.generator.map.Empty` (no generator changes)  
+✅ No stairs/change_zone/change_level (entrances remain inert)  
+✅ No Roomer or Forest generators  
+✅ No redirect logic changes  
+✅ Uses ToME-accurate APIs (`zone:makeEntityByName`, `level.map`)  
+✅ Deterministic placement (no randomness introduced)  
+✅ Fail-soft design (never crashes on invalid inputs)
+
+**What Changed:**
+- post_process refactored from inline loops to painter.paint_surface() call
+- Terrain placement logic moved to reusable painter module
+- Surface layouts now data-driven via templates
+
+**What Stayed the Same:**
+- Generator configuration (Empty + zero spawns)
+- Signature-agnostic post_process pattern
+- Grid resolution via zone:makeEntityByName
+- Terrain placement via level.map(x, y, Map.TERRAIN, grid)
+- All grids defined in overload/data/zones/dccb-start/grids.lua
+
+#### 2.5.12.9 Known Limitations and TODOs
+
+**Current Limitations:**
+- Template selection is deterministic (no randomness yet)
+- Entrance positions are hardcoded (not configurable in template)
+- Only 2 decoration types supported (edge_ring, vertical_road)
+- No template composition or layering
+
+**Future Enhancements (when needed):**
+- Random template selection with optional weighting
+- Template-configurable entrance positions
+- More decoration types (horizontal_road, scattered_features, etc.)
+- Template inheritance or composition
+- Biome-based template selection
+- Dynamic templates based on game state
+
+**Not Goals (per original requirements):**
+- Procedural generation (kept deterministic)
+- ToME generator integration (kept Empty generator)
+- Stair/level transitions (kept entrances inert)
+- Tileset work (kept ASCII display characters)
 
 ---
 
