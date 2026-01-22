@@ -23,8 +23,12 @@ return {
       nb_rooms = 1,
       rooms = {"simple"},
       lite_room_chance = 100,
-      ['.'] = "FLOOR",
-      ['#'] = "WALL",
+      -- Terrain mappings as arrays (ToME format)
+      ['#'] = { "WALL" },
+      ['.'] = { "FLOOR" },
+      up = "UP",
+      down = "DOWN",
+      door = "DOOR",
     },
     actor = {
       nb_npc = {0, 0},
@@ -40,8 +44,12 @@ return {
           nb_rooms = 1,
           rooms = {"simple"},
           lite_room_chance = 100,
-          ['.'] = "FLOOR",
-          ['#'] = "WALL",
+          -- Terrain mappings as arrays (ToME format)
+          ['#'] = { "WALL" },
+          ['.'] = { "FLOOR" },
+          up = "UP",
+          down = "DOWN",
+          door = "DOOR",
         },
         actor = {
           nb_npc = {0, 0},
