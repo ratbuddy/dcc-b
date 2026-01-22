@@ -15,9 +15,12 @@ return {
   all_lited = true,
   no_level_connectivity = true,
   
-  -- Debug logging on zone entry (one-time per level)
-  on_enter = function(self, level)
-    print(string.format("[DCCB-Zone] Entered zone '%s' level %d", self.short_name or "unknown", level or 0))
+  -- Debug logging on zone entry (robust signature)
+  on_enter = function(a,b,...)
+    local zone, lev
+    if type(a)=="table" then zone=a; lev=b else zone=nil; lev=a end
+    local zname = (zone and zone.short_name) or "unknown"
+    print(string.format("[DCCB-Zone] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
   end,
   
   -- Use minimal procedural generator
