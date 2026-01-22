@@ -24,6 +24,11 @@ end
 local function applySurfaceTemplate(level, zone, data)
   local Map = require "engine.Map"
   
+  -- Safety check: ensure zone is valid
+  if not zone then
+    zone = (level and level.zone) or {width = 50, height = 50, short_name = "dccb-start"}
+  end
+  
   -- First, fill the entire map with GRASS
   for x = 0, zone.width - 1 do
     for y = 0, zone.height - 1 do

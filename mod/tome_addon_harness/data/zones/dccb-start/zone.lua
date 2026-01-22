@@ -24,9 +24,32 @@ return {
   end,
   
   -- Post-process function to apply surface templates
-  post_process = function(level)
+  post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
-    local zone = level.zone
+    
+    -- Signature-agnostic: detect which argument is the level
+    local level, zone
+    if type(a) == "table" and a.map then
+      level = a
+      zone = level.zone or b
+    elseif type(b) == "table" and b.map then
+      level = b
+      zone = level.zone or a
+    else
+      -- Fallback: assume first arg is level
+      level = a
+      zone = level and level.zone
+    end
+    
+    -- Safety check: if we can't find zone, try to get it from level or use fallback dimensions
+    if not zone then
+      if level and level.zone then
+        zone = level.zone
+      else
+        -- Last resort: create a minimal zone-like table with default dimensions
+        zone = {width = 30, height = 30, short_name = "dccb-start"}
+      end
+    end
     
     -- First, fill the entire map with GRASS
     for x = 0, zone.width - 1 do
