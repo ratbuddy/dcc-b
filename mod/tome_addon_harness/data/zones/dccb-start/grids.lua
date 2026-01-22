@@ -8,7 +8,7 @@ load("/data/general/grids/basic.lua")
 -- Define WALL terrain (blocks movement and sight)
 newEntity{
   define_as = "WALL",
-  type = "wall", subtype = "floor",
+  type = "wall", subtype = "wall",
   name = "wall",
   display = '#', color=colors.SLATE,
   always_remember = true,
@@ -26,4 +26,3 @@ newEntity{
   display = '.', color=colors.DARK_GREY,
   always_remember = true,
 }
-
