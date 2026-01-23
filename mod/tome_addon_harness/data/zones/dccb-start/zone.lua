@@ -3,8 +3,11 @@
 -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-start/ (overload)
 
--- Template selection (deterministic for now, can be randomized later)
-local DCCB_SURFACE_TEMPLATE = "plains"  -- Options: "plains", "road"
+-- Template selection: nil for auto-select, or a string ("plains"/"road") to override
+local DCCB_SURFACE_TEMPLATE = nil
+
+-- Template registry: available templates for auto-selection
+local DCCB_TEMPLATES = {"plains", "road"}
 
 return {
   name = "DCCB Start",
@@ -114,24 +117,76 @@ return {
       return
     end
     
+    -- Determine which template to use
+    local selected_template_name
+    
+    if type(DCCB_SURFACE_TEMPLATE) == "string" then
+      -- Override mode: use the specified template
+      selected_template_name = DCCB_SURFACE_TEMPLATE
+      print(string.format("[DCCB-Zone] Template override: %s", selected_template_name))
+    else
+      -- Auto-selection mode: pick based on seed
+      local seed
+      local seed_source
+      
+      -- Try to get a stable seed in order of preference
+      if game and game.run_seed then
+        seed = game.run_seed
+        seed_source = "game.run_seed"
+      elseif game and game.turn then
+        seed = game.turn
+        seed_source = "game.turn"
+      else
+        seed = os.time()
+        seed_source = "os.time() [FALLBACK]"
+      end
+      
+      -- Normalize seed to integer
+      seed = math.floor(tonumber(seed) or 0)
+      
+      -- Select template using modulo
+      local index = (seed % #DCCB_TEMPLATES) + 1
+      selected_template_name = DCCB_TEMPLATES[index]
+      
+      print(string.format("[DCCB-Zone] Template auto-selected: %s (seed=%d from %s)", 
+        selected_template_name, seed, seed_source))
+    end
+    
     -- Load selected template
-    local template_path = string.format("/data-dccb/dccb/surface/templates/%s.lua", DCCB_SURFACE_TEMPLATE)
+    local template_path = string.format("/data-dccb/dccb/surface/templates/%s.lua", selected_template_name)
     local template_ok, template = pcall(function()
       return loadfile(template_path)()
     end)
     
     if not template_ok or not template then
-      print(string.format("[DCCB-Zone] WARNING: Failed to load template '%s'", DCCB_SURFACE_TEMPLATE))
+      print(string.format("[DCCB-Zone] WARNING: Failed to load template '%s'", selected_template_name))
       print(string.format("[DCCB-Zone] Error: %s", tostring(template)))
-      -- Use fallback template
-      template = {
-        name = "fallback",
-        base = "GRASS",
-        entrances = {count = 1, grid = "DCCB_ENTRANCE"}
-      }
-      print("[DCCB-Zone] Using fallback template")
+      
+      -- Try fallback to "plains" if we didn't already try it
+      if selected_template_name ~= "plains" then
+        print("[DCCB-Zone] Attempting fallback to 'plains' template")
+        template_ok, template = pcall(function()
+          return loadfile("/data-dccb/dccb/surface/templates/plains.lua")()
+        end)
+        
+        if template_ok and template then
+          print("[DCCB-Zone] Successfully loaded 'plains' fallback template")
+          selected_template_name = "plains"
+        end
+      end
+      
+      -- If still failed, use inline fallback template
+      if not template_ok or not template then
+        template = {
+          name = "fallback",
+          base = "GRASS",
+          entrances = {count = 1, grid = "DCCB_ENTRANCE"}
+        }
+        print("[DCCB-Zone] Using inline fallback template")
+        selected_template_name = "fallback"
+      end
     else
-      print(string.format("[DCCB-Zone] Loaded template '%s'", DCCB_SURFACE_TEMPLATE))
+      print(string.format("[DCCB-Zone] Loaded template '%s'", selected_template_name))
     end
     
     -- Paint the surface using the template
