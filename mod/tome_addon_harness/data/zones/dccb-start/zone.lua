@@ -153,7 +153,8 @@ return {
         seed_source = "game.calendar"
       elseif game and tostring(game):match("0x(%x+)") then
         -- Try to extract memory address as a seed
-        local addr_str = tostring(game):match("0x(%x+)")
+        local game_str = tostring(game)
+        local addr_str = game_str:match("0x(%x+)")
         local addr_num = tonumber(addr_str, 16)
         if addr_num and addr_num > 0 then
           seed = addr_num

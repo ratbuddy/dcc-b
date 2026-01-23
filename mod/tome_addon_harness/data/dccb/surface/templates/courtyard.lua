@@ -1,5 +1,5 @@
 -- /data/dccb/surface/templates/courtyard.lua
--- Courtyard surface template - grassy area with centered rectangular road courtyard and tree border
+-- Courtyard surface template - simple grassy area with tree border
 
 return {
   name = "courtyard",
