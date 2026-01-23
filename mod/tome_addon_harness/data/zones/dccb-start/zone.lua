@@ -141,8 +141,8 @@ return {
         seed_source = "os.time() [FALLBACK]"
       end
       
-      -- Normalize seed to integer
-      seed = math.floor(tonumber(seed) or 0)
+      -- Normalize seed to integer (use os.time() if seed is invalid to maintain variability)
+      seed = math.floor(tonumber(seed) or os.time())
       
       -- Select template using modulo
       local index = (seed % #DCCB_TEMPLATES) + 1
