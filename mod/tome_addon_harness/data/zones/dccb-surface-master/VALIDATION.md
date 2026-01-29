@@ -39,19 +39,40 @@ This zone demonstrates the DCCB surface painter/template system with **seed-base
 ## Key Features
 
 ### Template Selection System
-The zone now uses **seed-based auto-selection** like dccb-start:
+The zone uses **seed-based auto-selection** with **themed visual variations**:
 ```lua
 local DCCB_SURFACE_TEMPLATE = nil  -- Auto-selection enabled
 ```
 
 **Auto-selection logic:**
 - Extracts seed from game.run_seed, game._DCCB_RUN_SEED (cached), game.start_time, or fallbacks
-- Selects template using `(seed % 3) + 1` from {plains, road, courtyard}
+- Selects template using `(seed % 6) + 1` from 6 available templates
+- Each template has distinct visual theme with appropriate tilesets
 - Logs seed source and selected template
 
-**Debug override:** Set to a template name to force specific template:
+**Available Templates (6 total):**
+
+**Green/Plains Theme** (3 templates):
+- `plains` - Green grass with tree border
+- `road` - Green grass with dirt road and trees
+- `courtyard` - Green grass courtyard with trees
+- Tilesets: grass.png (green), road_dirt_6_1.png (brown dirt), tree.png (green trees)
+
+**Winter/Snow Theme** (2 templates):
+- `winter` - Snowy ground with snowy trees
+- `winter_road` - Snowy ground with icy path and trees
+- Tilesets: snow_ground.png (white), tree.png (for snowy trees)
+
+**Ruins/Ancient Theme** (1 template):
+- `ruins` - Weathered stone with ruined pillars
+- Tilesets: marble_floor.png (grey stone), grey_stone_wall1.png (ruins)
+
+**Debug override:** Set to force a specific template:
 ```lua
-local DCCB_SURFACE_TEMPLATE = "plains"  -- Force plains template
+local DCCB_SURFACE_TEMPLATE = "plains"      -- Force green plains
+local DCCB_SURFACE_TEMPLATE = "winter"      -- Force snowy winter
+local DCCB_SURFACE_TEMPLATE = "ruins"       -- Force ancient ruins
+local DCCB_SURFACE_TEMPLATE = "winter_road" -- Force winter with icy path
 ```
 
 ### Zone Configuration
@@ -122,14 +143,18 @@ Expected log sequence showing the complete flow:
 
 ### 4. Visual Verification
 - Map should render with visible terrain (not black/empty)
-- Grass (,) covers most of the map in light green
-- Trees (T) form a sparse border in green
+- Terrain appearance depends on selected theme:
+  - **Green themes**: Green grass (,), brown roads (=), green trees (T)
+  - **Winter themes**: White snow (.), light blue ice (=), white trees (T)
+  - **Ruins theme**: Grey stone (,), dark paths (=), grey pillars (#)
+- Trees/obstacles form a sparse border
 - Two entrance markers (>) visible in yellow
 - No "next level here" or staircase messages
 
 ### 5. Movement Test
-- GRASS and ROAD: passable, player can walk through
-- TREE: blocks movement and sight (impassable)
+- Base terrain (GRASS/GRASS_WINTER/GRASS_RUINS): passable, player can walk through
+- Roads (ROAD/ROAD_WINTER/ROAD_RUINS): passable, player can walk through
+- Obstacles (TREE/TREE_WINTER/TREE_RUINS): blocks movement and sight (impassable)
 - ENTRANCE markers: passable, shows "[DCCB] Dungeon entrance not implemented yet" message
 
 ### 6. Level Check
@@ -139,30 +164,45 @@ Expected log sequence showing the complete flow:
 
 ## Expected Outputs
 
-### Terrain Distribution (varies by template)
-**Plains template:**
-- Base: 900 cells (30x30) filled with GRASS
-- Decorations: ~60-100 TREE cells forming edge ring (step=3, thickness=2)
-- Entrances: 2 DCCB_ENTRANCE markers (center-left and center-right)
+### Terrain Distribution (varies by template and theme)
 
-**Road template:**
-- Base: 900 cells filled with GRASS
-- Vertical road: 3-cell wide ROAD in center
-- Tree border: ~60-100 TREE cells at edges
+**Green Theme Templates (plains/road/courtyard):**
+- Base: 900 cells filled with GRASS (green grass)
+- Decorations: ~60-100 TREE cells (green trees) forming edge ring
+- Road (road template only): 90 ROAD cells (brown dirt path)
 - Entrances: 2 DCCB_ENTRANCE markers
 
-**Courtyard template:**
-- Similar to plains (grass + tree border)
+**Winter Theme Templates (winter/winter_road):**
+- Base: 900 cells filled with GRASS_WINTER (white snow)
+- Decorations: ~60-100 TREE_WINTER cells (snowy trees) forming edge ring  
+- Road (winter_road only): 90 ROAD_WINTER cells (icy path)
+- Entrances: 2 DCCB_ENTRANCE markers
+
+**Ruins Theme Template (ruins):**
+- Base: 900 cells filled with GRASS_RUINS (grey weathered stone)
+- Decorations: ~60-100 TREE_RUINS cells (ruined pillars) forming edge ring
 - Entrances: 2 DCCB_ENTRANCE markers
 
 ### Grid Resolution
 All grids should resolve via zone:makeEntityByName without "grid not found" errors:
-- GRASS ✓
-- ROAD ✓ (used in road template)
-- TREE ✓
-- SNOW ✓ (defined but not currently used in any template)
-- RUINS ✓ (defined but not currently used in any template)
-- DCCB_ENTRANCE ✓
+
+**Green Theme:**
+- GRASS ✓ (green grass tile)
+- ROAD ✓ (brown dirt path tile)
+- TREE ✓ (green tree tile)
+
+**Winter Theme:**
+- GRASS_WINTER ✓ (white snow tile)
+- ROAD_WINTER ✓ (icy path tile)
+- TREE_WINTER ✓ (snowy tree tile)
+
+**Ruins Theme:**
+- GRASS_RUINS ✓ (grey stone tile)
+- ROAD_RUINS ✓ (ancient path tile)
+- TREE_RUINS ✓ (ruined pillar tile)
+
+**Universal:**
+- DCCB_ENTRANCE ✓ (entrance marker on grass)
 
 ## Known Limitations
 
@@ -189,12 +229,15 @@ To test a specific template, edit zone.lua line 8:
 local DCCB_SURFACE_TEMPLATE = nil  -- Auto-selection
 
 -- To force a specific template:
-local DCCB_SURFACE_TEMPLATE = "plains"    -- Force plains
-local DCCB_SURFACE_TEMPLATE = "road"      -- Force road (adds vertical road)
-local DCCB_SURFACE_TEMPLATE = "courtyard" -- Force courtyard
+local DCCB_SURFACE_TEMPLATE = "plains"      -- Green grass with trees
+local DCCB_SURFACE_TEMPLATE = "road"        -- Green grass with dirt road
+local DCCB_SURFACE_TEMPLATE = "courtyard"   -- Green grass courtyard
+local DCCB_SURFACE_TEMPLATE = "winter"      -- Snowy landscape
+local DCCB_SURFACE_TEMPLATE = "winter_road" -- Snowy with icy path
+local DCCB_SURFACE_TEMPLATE = "ruins"       -- Ancient weathered ruins
 ```
 
-Available templates: plains, road, courtyard
+Available templates: plains, road, courtyard, winter, winter_road, ruins
 
 ## Customizing Tilesets
 
