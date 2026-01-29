@@ -50,35 +50,35 @@ newEntity{
 -- ============================================================================
 
 -- Define GRASS_WINTER terrain (snow-covered ground)
+-- Inherits tileset from FLOOR base entity
 newEntity{
   base = "FLOOR",
   define_as = "GRASS_WINTER",
   type = "floor", subtype = "snow",
   name = "snowy ground",
   display = '.', color=colors.WHITE,
-  image = "terrain/snow_ground.png",
   always_remember = true,
 }
 
 -- Define ROAD_WINTER terrain (icy path)
+-- Inherits tileset from FLOOR base entity
 newEntity{
   base = "FLOOR",
   define_as = "ROAD_WINTER",
   type = "floor", subtype = "ice",
   name = "icy path",
   display = '=', color=colors.LIGHT_BLUE,
-  image = "terrain/snow_ground.png",
   always_remember = true,
 }
 
 -- Define TREE_WINTER terrain (snowy tree - blocks movement)
+-- Inherits tileset from WALL base entity
 newEntity{
   base = "WALL",
   define_as = "TREE_WINTER",
   type = "wall", subtype = "tree",
   name = "snowy tree",
   display = 'T', color=colors.WHITE,
-  image = "terrain/tree.png",
   always_remember = true,
   block_move = true,
   block_sight = true,
@@ -90,35 +90,35 @@ newEntity{
 -- ============================================================================
 
 -- Define GRASS_RUINS terrain (cracked earth with grass)
+-- Inherits tileset from FLOOR base entity
 newEntity{
   base = "FLOOR",
   define_as = "GRASS_RUINS",
   type = "floor", subtype = "grass",
   name = "overgrown ground",
   display = ',', color=colors.DARK_GREEN,
-  image = "terrain/marble_floor.png",
   always_remember = true,
 }
 
 -- Define ROAD_RUINS terrain (ancient stone path)
+-- Inherits tileset from FLOOR base entity
 newEntity{
   base = "FLOOR",
   define_as = "ROAD_RUINS",
   type = "floor", subtype = "stone",
   name = "ancient path",
   display = '=', color=colors.GREY,
-  image = "terrain/grey_stone_wall1.png",
   always_remember = true,
 }
 
 -- Define TREE_RUINS terrain (ruined pillar/wall - blocks movement)
+-- Inherits tileset from WALL base entity
 newEntity{
   base = "WALL",
   define_as = "TREE_RUINS",
   type = "wall", subtype = "ruins",
   name = "ruined pillar",
   display = '#', color=colors.GREY,
-  image = "terrain/grey_stone_wall1.png",
   always_remember = true,
   block_move = true,
   block_sight = false,
