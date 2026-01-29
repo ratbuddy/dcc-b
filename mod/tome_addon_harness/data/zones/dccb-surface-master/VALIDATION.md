@@ -59,10 +59,10 @@ Expected log messages:
 [DCCB-SurfaceMaster] Loaded template 'plains'
 [DCCB-Painter] Starting surface paint with template 'plains'
 [DCCB-Painter] Base fill: 900 cells with 'GRASS'
-[DCCB-Painter] Edge ring: XX 'TREE' cells placed (thickness=2, step=3)
-[DCCB-Painter] Total decorations: XX cells
+[DCCB-Painter] Edge ring: 60-100 'TREE' cells placed (thickness=2, step=3)
+[DCCB-Painter] Total decorations: 60-100 cells
 [DCCB-Painter] Entrances: 2 'DCCB_ENTRANCE' markers placed
-[DCCB-Painter] Completed template 'plains': base=900, decorations=XX, entrances=2
+[DCCB-Painter] Completed template 'plains': base=900, decorations=60-100, entrances=2
 [DCCB-SurfaceMaster] Surface template 'plains' applied
 ```
 
