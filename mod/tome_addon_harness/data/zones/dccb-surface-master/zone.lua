@@ -3,11 +3,11 @@
 -- Virtual path: /data-dccb/zones/dccb-surface-master/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-surface-master/ (overload)
 
--- Template selection: Fixed to "plains" for deterministic demo mode
--- This showcases the surface painter/template system in a predictable way
-local DCCB_SURFACE_TEMPLATE = "plains"
+-- Template selection: nil for auto-select (using seed), or a string to override
+-- Debug override: set to "plains", "road", or "courtyard" to force a specific template
+local DCCB_SURFACE_TEMPLATE = nil  -- Changed from "plains" to nil for auto-selection
 
--- Template registry: available templates for reference
+-- Template registry: available templates for auto-selection
 local DCCB_TEMPLATES = {"plains", "road", "courtyard"}
 
 return {
@@ -118,11 +118,76 @@ return {
       return
     end
     
-    -- Deterministic template selection: use the fixed template name
-    local selected_template_name = DCCB_SURFACE_TEMPLATE
-    local template_list = table.concat(DCCB_TEMPLATES, ",")
-    print(string.format("[DCCB-SurfaceMaster] Template fixed: %s (available templates=%s)", 
-      selected_template_name, template_list))
+    -- Determine which template to use
+    local selected_template_name
+    
+    if type(DCCB_SURFACE_TEMPLATE) == "string" then
+      -- Override mode: use the specified template
+      selected_template_name = DCCB_SURFACE_TEMPLATE
+      local template_list = table.concat(DCCB_TEMPLATES, ",")
+      print(string.format("[DCCB-SurfaceMaster] Template override: %s (templates=%s)", 
+        selected_template_name, template_list))
+    else
+      -- Auto-selection mode: pick based on seed
+      local seed
+      local seed_source
+      
+      -- Try to get a stable seed in order of preference
+      if game and type(game.run_seed) == "number" and game.run_seed > 0 then
+        seed = game.run_seed
+        seed_source = "game.run_seed"
+      elseif game and game._DCCB_RUN_SEED then
+        -- Reuse cached seed from earlier in this run
+        seed = game._DCCB_RUN_SEED
+        seed_source = "game._DCCB_RUN_SEED (cached)"
+      elseif game and game.start_time and type(game.start_time) == "number" and game.start_time > 0 then
+        seed = game.start_time
+        seed_source = "game.start_time"
+      elseif game and game.real_start_time and type(game.real_start_time) == "number" and game.real_start_time > 0 then
+        seed = game.real_start_time
+        seed_source = "game.real_start_time"
+      elseif game and game.date and type(game.date) == "number" and game.date > 0 then
+        seed = game.date
+        seed_source = "game.date"
+      elseif game and game.calendar and type(game.calendar) == "number" and game.calendar > 0 then
+        seed = game.calendar
+        seed_source = "game.calendar"
+      elseif game and tostring(game):match("0x(%x+)") then
+        -- Try to extract memory address as a seed
+        local game_str = tostring(game)
+        local addr_str = game_str:match("0x(%x+)")
+        local addr_num = tonumber(addr_str, 16)
+        if addr_num and addr_num > 0 then
+          seed = addr_num
+          seed_source = "game object address"
+        else
+          seed = os.time()
+          seed_source = "os.time() [FALLBACK]"
+        end
+      else
+        seed = os.time()
+        seed_source = "os.time() [FALLBACK]"
+      end
+      
+      -- Normalize seed to integer >= 1
+      seed = math.floor(tonumber(seed) or 0)
+      if seed < 1 then
+        seed = 1
+      end
+      
+      -- Cache seed for this run if game object exists and we computed it fresh
+      if game and not game._DCCB_RUN_SEED and seed_source ~= "game._DCCB_RUN_SEED (cached)" then
+        game._DCCB_RUN_SEED = seed
+      end
+      
+      -- Select template using modulo
+      local index = (seed % #DCCB_TEMPLATES) + 1
+      selected_template_name = DCCB_TEMPLATES[index]
+      
+      local template_list = table.concat(DCCB_TEMPLATES, ",")
+      print(string.format("[DCCB-SurfaceMaster] Template auto-selected: %s (seed=%d from %s, idx=%d/%d, templates=%s)", 
+        selected_template_name, seed, seed_source, index, #DCCB_TEMPLATES, template_list))
+    end
     
     -- Load selected template
     local template_path = string.format("/data-dccb/dccb/surface/templates/%s.lua", selected_template_name)
@@ -134,14 +199,29 @@ return {
       print(string.format("[DCCB-SurfaceMaster] WARNING: Failed to load template '%s'", selected_template_name))
       print(string.format("[DCCB-SurfaceMaster] Error: %s", tostring(template)))
       
-      -- Use inline fallback template
-      template = {
-        name = "fallback",
-        base = "GRASS",
-        entrances = {count = 1, grid = "DCCB_ENTRANCE"}
-      }
-      print("[DCCB-SurfaceMaster] Using inline fallback template")
-      selected_template_name = "fallback"
+      -- Try fallback to "plains" if we didn't already try it
+      if selected_template_name ~= "plains" then
+        print("[DCCB-SurfaceMaster] Attempting fallback to 'plains' template")
+        template_ok, template = pcall(function()
+          return loadfile("/data-dccb/dccb/surface/templates/plains.lua")()
+        end)
+        
+        if template_ok and template then
+          print("[DCCB-SurfaceMaster] Successfully loaded 'plains' fallback template")
+          selected_template_name = "plains"
+        end
+      end
+      
+      -- If still failed, use inline fallback template
+      if not template_ok or not template then
+        template = {
+          name = "fallback",
+          base = "GRASS",
+          entrances = {count = 1, grid = "DCCB_ENTRANCE"}
+        }
+        print("[DCCB-SurfaceMaster] Using inline fallback template")
+        selected_template_name = "fallback"
+      end
     else
       print(string.format("[DCCB-SurfaceMaster] Loaded template '%s'", selected_template_name))
     end
