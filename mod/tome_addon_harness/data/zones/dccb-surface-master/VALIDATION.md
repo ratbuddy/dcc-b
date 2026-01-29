@@ -241,34 +241,58 @@ Available templates: plains, road, courtyard, winter, winter_road, ruins
 
 ## Customizing Tilesets
 
-The visual appearance of tiles is controlled in `grids.lua` via the `image` property. To change how grass, roads, or trees look:
+The visual appearance of tiles is controlled in `grids.lua`. Themed grids (winter, ruins) inherit tilesets from their base entities to ensure compatibility.
 
 **Edit:** `mod/tome_addon_harness/overload/data/zones/dccb-surface-master/grids.lua`
 
-**Example - Change grass to a different tileset:**
+**Current approach - Inherited tilesets:**
+```lua
+newEntity{
+  base = "FLOOR",              -- Inherits tileset from FLOOR
+  define_as = "GRASS_WINTER",
+  name = "snowy ground",
+  color = colors.WHITE,        -- Color creates visual distinction
+  -- No image property = uses FLOOR's default tile
+}
+```
+
+**Green theme grids use explicit tilesets:**
 ```lua
 newEntity{
   base = "FLOOR",
   define_as = "GRASS",
   name = "grass",
-  image = "terrain/grass.png",  -- Change this to any ToME terrain image
-  -- Try: "terrain/forest_grass_01.png", "terrain/grass2.png", etc.
+  image = "terrain/grass.png",  -- Explicit outdoor grass tile
+}
+```
+
+**How themes differ visually:**
+- **Colors**: White for winter, grey for ruins, green for plains
+- **Names**: "snowy ground" vs "grass" vs "overgrown ground"
+- **Tilesets**: All inherit from FLOOR/WALL (marble floor, stone walls)
+
+**To use custom tilesets:**
+Add `image` property with a valid ToME terrain file:
+```lua
+newEntity{
+  define_as = "GRASS_WINTER",
+  image = "terrain/marble_floor.png",  -- Use any existing ToME tile
+  -- Must exist in /data/gfx/shockbolt/terrain/
 }
 ```
 
 **Current tilesets used:**
-- GRASS: `terrain/grass.png` (green grass)
-- ROAD: `terrain/road_dirt_6_1.png` (dirt path)
-- TREE: `terrain/tree.png` (tree)
-- SNOW: `terrain/snow_ground.png` (snow)
-- RUINS: `terrain/grey_stone_wall1.png` (stone ruins)
+- GRASS: `terrain/grass.png` (explicit green grass)
+- ROAD: `terrain/road_dirt_6_1.png` (explicit brown dirt)
+- TREE: `terrain/tree.png` (explicit green tree)
+- GRASS_WINTER: Inherits from FLOOR (marble floor with white color)
+- ROAD_WINTER: Inherits from FLOOR (marble floor with blue color)
+- TREE_WINTER: Inherits from WALL (stone wall with white color)
+- GRASS_RUINS: Inherits from FLOOR (marble floor with dark green)
+- ROAD_RUINS: Inherits from FLOOR (marble floor with grey)
+- TREE_RUINS: Inherits from WALL (stone wall with grey)
 
-**To explore available tilesets:**
-- Look in ToME's data directory: `/data/gfx/shockbolt/terrain/`
-- Common outdoor tiles: grass, dirt, stone, snow, water, forest, etc.
-- Common dungeon tiles: marble_floor, stone_wall, brick, etc.
-
-**Note:** Without an `image` property, terrains inherit the base entity's tileset (usually dungeon bricks/stone).
+**Note:** Without a valid `image` property or proper inheritance, ToME displays ASCII characters instead of tiles.
 
 ## Integration Pattern
 
