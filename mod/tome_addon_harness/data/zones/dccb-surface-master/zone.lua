@@ -1,18 +1,19 @@
--- /data/zones/dccb-start/zone.lua
--- DCCB Stub Start Zone - Surface Template System
--- Virtual path: /data-dccb/zones/dccb-start/zone.lua
--- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-start/ (overload)
+-- /data/zones/dccb-surface-master/zone.lua
+-- DCCB Surface Master Zone - Canonical Surface Generator Showcase
+-- Virtual path: /data-dccb/zones/dccb-surface-master/zone.lua
+-- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-surface-master/ (overload)
 
--- Template selection: nil for auto-select, or a string ("plains"/"road"/etc) to override
-local DCCB_SURFACE_TEMPLATE = nil
+-- Template selection: nil for auto-select (using seed), or a string to override
+-- Debug override: set to "plains", "road", "courtyard", "winter", "winter_road", or "ruins" to force a specific template
+local DCCB_SURFACE_TEMPLATE = nil  -- Changed from "plains" to nil for auto-selection
 
 -- Template registry: available templates for auto-selection
 -- Themed templates: plains/road/courtyard (green), winter/winter_road (snowy), ruins (ancient)
 local DCCB_TEMPLATES = {"plains", "road", "courtyard", "winter", "winter_road", "ruins"}
 
 return {
-  name = "DCCB Start",
-  short_name = "dccb-start",
+  name = "DCCB Surface Master",
+  short_name = "dccb-surface-master",
   level_range = {1, 1},
   max_level = 1,
   width = 30,
@@ -24,10 +25,10 @@ return {
   
   -- Explicit zone entity loads (ensures grids/npcs/objects/traps are registered)
   load = {
-    "/data/zones/dccb-start/grids.lua",
-    "/data/zones/dccb-start/npcs.lua",
-    "/data/zones/dccb-start/objects.lua",
-    "/data/zones/dccb-start/traps.lua",
+    "/data/zones/dccb-surface-master/grids.lua",
+    "/data/zones/dccb-surface-master/npcs.lua",
+    "/data/zones/dccb-surface-master/objects.lua",
+    "/data/zones/dccb-surface-master/traps.lua",
   },
   
   -- Debug logging on zone entry
@@ -35,9 +36,7 @@ return {
     local zone, lev
     if type(a)=="table" then zone=a; lev=b else zone=nil; lev=a end
     local zname = (zone and zone.short_name) or "unknown"
-    print(string.format("[DCCB-Zone] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
-    -- Note: Handoff to dccb-surface-master happens via Actor:move hook in hooks/load.lua
-    -- The on_enter callback doesn't fire reliably during initial zone generation
+    print(string.format("[DCCB-SurfaceMaster] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
   end,
   
   -- Post-process: use surface template painter for deterministic layout
@@ -65,12 +64,12 @@ return {
     
     -- Validate we have both level and zone
     if not level or not level.map then
-      print("[DCCB-Zone] ERROR: Cannot detect level object (no .map found)")
+      print("[DCCB-SurfaceMaster] ERROR: Cannot detect level object (no .map found)")
       return
     end
     
     if not zone or not (zone.makeEntityByName or zone.makeEntity) then
-      print("[DCCB-Zone] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
+      print("[DCCB-SurfaceMaster] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
       return
     end
     
@@ -80,17 +79,17 @@ return {
     end)
     
     if not painter_ok or not painter then
-      print("[DCCB-Zone] ERROR: Failed to load painter module")
-      print(string.format("[DCCB-Zone] Error: %s", tostring(painter)))
+      print("[DCCB-SurfaceMaster] ERROR: Failed to load painter module")
+      print(string.format("[DCCB-SurfaceMaster] Error: %s", tostring(painter)))
       
       -- Safe fallback: verify we have the required capabilities
       if not zone.makeEntityByName then
-        print("[DCCB-Zone] ERROR: Cannot fallback - zone.makeEntityByName unavailable")
+        print("[DCCB-SurfaceMaster] ERROR: Cannot fallback - zone.makeEntityByName unavailable")
         return
       end
       
       if not level.map then
-        print("[DCCB-Zone] ERROR: Cannot fallback - level.map unavailable")
+        print("[DCCB-SurfaceMaster] ERROR: Cannot fallback - level.map unavailable")
         return
       end
       
@@ -116,7 +115,7 @@ return {
         level.map(e_x, e_y, Map.TERRAIN, entrance_grid)
       end
       
-      print("[DCCB-Zone] Fallback surface generated (painter unavailable)")
+      print("[DCCB-SurfaceMaster] Fallback surface generated (painter unavailable)")
       return
     end
     
@@ -127,7 +126,7 @@ return {
       -- Override mode: use the specified template
       selected_template_name = DCCB_SURFACE_TEMPLATE
       local template_list = table.concat(DCCB_TEMPLATES, ",")
-      print(string.format("[DCCB-Zone] Template override: %s (templates=%s)", 
+      print(string.format("[DCCB-SurfaceMaster] Template override: %s (templates=%s)", 
         selected_template_name, template_list))
     else
       -- Auto-selection mode: pick based on seed
@@ -187,7 +186,7 @@ return {
       selected_template_name = DCCB_TEMPLATES[index]
       
       local template_list = table.concat(DCCB_TEMPLATES, ",")
-      print(string.format("[DCCB-Zone] Template auto-selected: %s (seed=%d from %s, idx=%d/%d, templates=%s)", 
+      print(string.format("[DCCB-SurfaceMaster] Template auto-selected: %s (seed=%d from %s, idx=%d/%d, templates=%s)", 
         selected_template_name, seed, seed_source, index, #DCCB_TEMPLATES, template_list))
     end
     
@@ -198,18 +197,18 @@ return {
     end)
     
     if not template_ok or not template then
-      print(string.format("[DCCB-Zone] WARNING: Failed to load template '%s'", selected_template_name))
-      print(string.format("[DCCB-Zone] Error: %s", tostring(template)))
+      print(string.format("[DCCB-SurfaceMaster] WARNING: Failed to load template '%s'", selected_template_name))
+      print(string.format("[DCCB-SurfaceMaster] Error: %s", tostring(template)))
       
       -- Try fallback to "plains" if we didn't already try it
       if selected_template_name ~= "plains" then
-        print("[DCCB-Zone] Attempting fallback to 'plains' template")
+        print("[DCCB-SurfaceMaster] Attempting fallback to 'plains' template")
         template_ok, template = pcall(function()
           return loadfile("/data-dccb/dccb/surface/templates/plains.lua")()
         end)
         
         if template_ok and template then
-          print("[DCCB-Zone] Successfully loaded 'plains' fallback template")
+          print("[DCCB-SurfaceMaster] Successfully loaded 'plains' fallback template")
           selected_template_name = "plains"
         end
       end
@@ -221,21 +220,21 @@ return {
           base = "GRASS",
           entrances = {count = 1, grid = "DCCB_ENTRANCE"}
         }
-        print("[DCCB-Zone] Using inline fallback template")
+        print("[DCCB-SurfaceMaster] Using inline fallback template")
         selected_template_name = "fallback"
       end
     else
-      print(string.format("[DCCB-Zone] Loaded template '%s'", selected_template_name))
+      print(string.format("[DCCB-SurfaceMaster] Loaded template '%s'", selected_template_name))
     end
     
     -- Paint the surface using the template
     local success = painter.paint_surface(level, zone, template)
     
     if not success then
-      print("[DCCB-Zone] WARNING: Surface painting failed")
+      print("[DCCB-SurfaceMaster] WARNING: Surface painting failed")
     end
     
-    print(string.format("[DCCB-Zone] Surface template '%s' applied", template.name or "unknown"))
+    print(string.format("[DCCB-SurfaceMaster] Surface template '%s' applied", template.name or "unknown"))
   end,
   
   -- Single stable generator: Empty (no Roomer, no intra-zone stairs)

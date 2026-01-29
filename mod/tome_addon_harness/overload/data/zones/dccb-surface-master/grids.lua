@@ -1,6 +1,6 @@
--- ToME4 DCCB addon - Grid Definitions (Overload)
--- DCCB Stub Start Zone - Minimal visible terrains
--- This file provides terrain definitions at /data/zones/dccb-start/ path
+-- ToME4 DCCB addon - Grid Definitions for Surface Master Zone
+-- dccb-surface-master: Canonical surface generator showcase zone
+-- This file provides terrain definitions at /data/zones/dccb-surface-master/ path
 
 -- Load base game terrain definitions first for compatibility
 load("/data/general/grids/basic.lua")
@@ -8,32 +8,6 @@ load("/data/general/grids/basic.lua")
 -- ============================================================================
 -- GREEN/PLAINS THEME - Default grass and trees
 -- ============================================================================
-
--- Define WALL terrain (blocks movement and sight)
-newEntity{
-  base = "WALL",
-  define_as = "WALL",
-  type = "wall", subtype = "wall",
-  name = "wall",
-  display = '#', color=colors.LIGHT_UMBER,
-  image = "terrain/grey_stone_wall1.png",
-  always_remember = true,
-  does_block_move = true,
-  block_move = true,
-  block_sight = true,
-  air_level = -20,
-}
-
--- Define FLOOR terrain (passable, visible)
-newEntity{
-  base = "FLOOR",
-  define_as = "FLOOR",
-  type = "floor", subtype = "floor",
-  name = "floor",
-  display = '.', color=colors.WHITE,
-  image = "terrain/marble_floor.png",
-  always_remember = true,
-}
 
 -- Define GRASS terrain (passable surface tile)
 newEntity{
@@ -46,21 +20,6 @@ newEntity{
   always_remember = true,
 }
 
--- Define TREE terrain (blocks movement and sight)
-newEntity{
-  base = "WALL",
-  define_as = "TREE",
-  type = "wall", subtype = "tree",
-  name = "tree",
-  display = 'T', color=colors.GREEN,
-  image = "terrain/tree.png",
-  always_remember = true,
-  does_block_move = true,
-  block_move = true,
-  block_sight = true,
-  air_level = -10,
-}
-
 -- Define ROAD terrain (passable surface tile)
 newEntity{
   base = "FLOOR",
@@ -70,6 +29,20 @@ newEntity{
   display = '=', color=colors.UMBER,
   image = "terrain/road_dirt_6_1.png",
   always_remember = true,
+}
+
+-- Define TREE terrain (blocks movement and sight)
+newEntity{
+  base = "WALL",
+  define_as = "TREE",
+  type = "wall", subtype = "tree",
+  name = "tree",
+  display = 'T', color=colors.GREEN,
+  image = "terrain/tree.png",
+  always_remember = true,
+  block_move = true,
+  block_sight = true,
+  air_level = -10,
 }
 
 -- ============================================================================
@@ -107,7 +80,6 @@ newEntity{
   name = "snowy tree",
   display = 'T', color=colors.WHITE,
   always_remember = true,
-  does_block_move = true,
   block_move = true,
   block_sight = true,
   air_level = -10,
@@ -148,7 +120,35 @@ newEntity{
   name = "ruined pillar",
   display = '#', color=colors.GREY,
   always_remember = true,
-  does_block_move = true,
+  block_move = true,
+  block_sight = false,
+  air_level = -5,
+}
+
+-- ============================================================================
+-- LEGACY/OPTIONAL GRIDS - Keep for backward compatibility
+-- ============================================================================
+
+-- Define SNOW terrain (optional placeholder - passable surface)
+newEntity{
+  base = "FLOOR",
+  define_as = "SNOW",
+  type = "floor", subtype = "snow",
+  name = "snow",
+  display = '.', color=colors.WHITE,
+  image = "terrain/snow_ground.png",
+  always_remember = true,
+}
+
+-- Define RUINS terrain (optional placeholder - blocks movement)
+newEntity{
+  base = "WALL",
+  define_as = "RUINS",
+  type = "wall", subtype = "ruins",
+  name = "ruins",
+  display = '#', color=colors.GREY,
+  image = "terrain/grey_stone_wall1.png",
+  always_remember = true,
   block_move = true,
   block_sight = false,
   air_level = -5,
