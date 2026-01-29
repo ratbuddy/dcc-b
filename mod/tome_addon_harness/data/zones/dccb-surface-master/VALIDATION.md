@@ -196,6 +196,37 @@ local DCCB_SURFACE_TEMPLATE = "courtyard" -- Force courtyard
 
 Available templates: plains, road, courtyard
 
+## Customizing Tilesets
+
+The visual appearance of tiles is controlled in `grids.lua` via the `image` property. To change how grass, roads, or trees look:
+
+**Edit:** `mod/tome_addon_harness/overload/data/zones/dccb-surface-master/grids.lua`
+
+**Example - Change grass to a different tileset:**
+```lua
+newEntity{
+  base = "FLOOR",
+  define_as = "GRASS",
+  name = "grass",
+  image = "terrain/grass.png",  -- Change this to any ToME terrain image
+  -- Try: "terrain/forest_grass_01.png", "terrain/grass2.png", etc.
+}
+```
+
+**Current tilesets used:**
+- GRASS: `terrain/grass.png` (green grass)
+- ROAD: `terrain/road_dirt_6_1.png` (dirt path)
+- TREE: `terrain/tree.png` (tree)
+- SNOW: `terrain/snow_ground.png` (snow)
+- RUINS: `terrain/grey_stone_wall1.png` (stone ruins)
+
+**To explore available tilesets:**
+- Look in ToME's data directory: `/data/gfx/shockbolt/terrain/`
+- Common outdoor tiles: grass, dirt, stone, snow, water, forest, etc.
+- Common dungeon tiles: marble_floor, stone_wall, brick, etc.
+
+**Note:** Without an `image` property, terrains inherit the base entity's tileset (usually dungeon bricks/stone).
+
 ## Integration Pattern
 
 This zone follows the ToME-Integration-Notes.md §2.5 Stable Custom Zone Generation Pattern plus handoff:
