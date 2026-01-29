@@ -35,7 +35,7 @@ This ensures consistent, predictable map generation for testing and validation.
 - **Short name**: "dccb-surface-master"
 - **Dimensions**: 30x30
 - **Max level**: 1 (single level only)
-- **No level connectivity**: Prevents automatic level 2+ generation
+- **No level connectivity**: Prevents automatic generation of levels 2 and beyond
 - **Persistent**: "zone" (zone persists in save)
 - **All remembered/lited**: Full visibility for testing
 
@@ -59,7 +59,7 @@ Expected log messages:
 [DCCB-SurfaceMaster] Loaded template 'plains'
 [DCCB-Painter] Starting surface paint with template 'plains'
 [DCCB-Painter] Base fill: 900 cells with 'GRASS'
-[DCCB-Painter] Edge ring: XX 'TREE' cells (thickness=2, step=3)
+[DCCB-Painter] Edge ring: XX 'TREE' cells placed (thickness=2, step=3)
 [DCCB-Painter] Total decorations: XX cells
 [DCCB-Painter] Entrances: 2 'DCCB_ENTRANCE' markers placed
 [DCCB-Painter] Completed template 'plains': base=900, decorations=XX, entrances=2
