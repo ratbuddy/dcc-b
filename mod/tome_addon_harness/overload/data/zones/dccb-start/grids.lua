@@ -12,6 +12,7 @@ newEntity{
   type = "wall", subtype = "wall",
   name = "wall",
   display = '#', color=colors.LIGHT_UMBER,
+  image = "terrain/grey_stone_wall1.png",
   always_remember = true,
   does_block_move = true,
   block_move = true,
@@ -26,6 +27,7 @@ newEntity{
   type = "floor", subtype = "floor",
   name = "floor",
   display = '.', color=colors.WHITE,
+  image = "terrain/marble_floor.png",
   always_remember = true,
 }
 
@@ -36,6 +38,7 @@ newEntity{
   type = "floor", subtype = "grass",
   name = "grass",
   display = ',', color=colors.LIGHT_GREEN,
+  image = "terrain/grass.png",
   always_remember = true,
 }
 
@@ -46,6 +49,7 @@ newEntity{
   type = "wall", subtype = "tree",
   name = "tree",
   display = 'T', color=colors.GREEN,
+  image = "terrain/tree.png",
   always_remember = true,
   does_block_move = true,
   block_move = true,
@@ -60,6 +64,7 @@ newEntity{
   type = "floor", subtype = "road",
   name = "road",
   display = '=', color=colors.UMBER,
+  image = "terrain/road_dirt_6_1.png",
   always_remember = true,
 }
 
@@ -71,6 +76,7 @@ newEntity{
   type = "floor", subtype = "floor",
   name = "dungeon entrance",
   display = '>', color=colors.YELLOW,
+  image = "terrain/grass.png",
   always_remember = true,
   -- NO change_level or change_zone - this is just a visual marker
   on_stand = function(self, x, y, who)
