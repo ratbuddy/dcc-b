@@ -29,31 +29,14 @@ return {
     "/data/zones/dccb-start/traps.lua",
   },
   
-  -- Debug logging on zone entry + handoff to surface-master
+  -- Debug logging on zone entry
   on_enter = function(a,b,...)
     local zone, lev
     if type(a)=="table" then zone=a; lev=b else zone=nil; lev=a end
     local zname = (zone and zone.short_name) or "unknown"
     print(string.format("[DCCB-Zone] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
-    
-    -- One-time handoff to dccb-surface-master
-    -- This moves the player from bootstrap zone to the surface generator showcase
-    if game and game.player and not game._DCCB_HANDOFF_DONE then
-      game._DCCB_HANDOFF_DONE = true
-      print("[DCCB-Zone] ========================================")
-      print("[DCCB-Zone] Handoff: dccb-start -> dccb-surface-master")
-      print("[DCCB-Zone] ========================================")
-      
-      -- Use ToME's changeLevel API to transition to surface-master
-      -- Format: game:changeLevel(level, zone_identifier, params)
-      local target_zone = "dccb+dccb-surface-master"
-      print(string.format("[DCCB-Zone] Transitioning to: %s", target_zone))
-      
-      game:changeLevel(1, target_zone)
-      
-      print("[DCCB-Zone] Handoff complete (once per run)")
-      print("[DCCB-Zone] ========================================")
-    end
+    -- Note: Handoff to dccb-surface-master happens via Actor:move hook in hooks/load.lua
+    -- The on_enter callback doesn't fire reliably during initial zone generation
   end,
   
   -- Post-process: use surface template painter for deterministic layout

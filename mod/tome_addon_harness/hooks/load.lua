@@ -94,6 +94,28 @@ local function on_first_zone_observed(hook_name)
     -- Addon zones use format: {addon_short_name}+{zone_name}
     if zone_short == "dccb+dccb-start" or zone_short == "dccb-start" then
         print("[DCCB] entered DCCB stub zone: " .. zone_short)
+        
+        -- ========================================
+        -- Handoff: dccb-start -> dccb-surface-master
+        -- ========================================
+        -- One-time handoff to dccb-surface-master after bootstrap zone loads
+        if game and game.player and not game._DCCB_HANDOFF_DONE then
+            game._DCCB_HANDOFF_DONE = true
+            
+            print("[DCCB] ========================================")
+            print("[DCCB] Handoff: dccb-start -> dccb-surface-master")
+            print("[DCCB] ========================================")
+            
+            -- Use ToME's changeLevel API to transition to surface-master
+            local target_zone = "dccb+dccb-surface-master"
+            print(string.format("[DCCB] Transitioning to: %s", target_zone))
+            
+            game:changeLevel(1, target_zone)
+            
+            print("[DCCB] Handoff complete (once per run)")
+            print("[DCCB] ========================================")
+            return -- Exit early after handoff
+        end
     end
     
     print("[DCCB] ========================================")
