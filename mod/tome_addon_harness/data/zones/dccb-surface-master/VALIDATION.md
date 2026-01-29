@@ -74,8 +74,6 @@ local DCCB_SURFACE_TEMPLATE = "plains"  -- Force plains template
    - Brief landing in **dccb-start** (bootstrap zone)
    - Automatic transition to **dccb-surface-master** (once per run)
 4. Verify you are now in dccb-surface-master zone
-2. Use debug commands or zone redirect to enter "dccb-surface-master"
-3. Check for Lua errors in te4_log.txt
 
 ### 2. Log Verification (te4_log.txt)
 Expected log sequence showing the complete flow:
@@ -118,7 +116,7 @@ Expected log sequence showing the complete flow:
 - Two entrance markers (>) visible in yellow
 - No "next level here" or staircase messages
 
-### 4. Movement Test
+### 5. Movement Test
 - GRASS and ROAD: passable, player can walk through
 - TREE: blocks movement and sight (impassable)
 - ENTRANCE markers: passable, shows "[DCCB] Dungeon entrance not implemented yet" message

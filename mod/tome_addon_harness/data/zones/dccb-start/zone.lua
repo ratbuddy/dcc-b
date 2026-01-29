@@ -154,7 +154,7 @@ return {
       if game and type(game.run_seed) == "number" and game.run_seed > 0 then
         seed = game.run_seed
         seed_source = "game.run_seed"
-      elseif game and game._DCCB_RUN_SEED then
+      elseif game and game._DCCB_RUN_SEED and type(game._DCCB_RUN_SEED) == "number" then
         -- Reuse cached seed from earlier in this run
         seed = game._DCCB_RUN_SEED
         seed_source = "game._DCCB_RUN_SEED (cached)"
