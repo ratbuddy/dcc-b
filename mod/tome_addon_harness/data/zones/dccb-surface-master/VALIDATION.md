@@ -5,14 +5,17 @@ This zone demonstrates the DCCB surface painter/template system with **seed-base
 
 **New in this version:** Auto-selects templates based on run seed instead of using a fixed template.
 
+**Handoff mechanism:** The transition from dccb-start to dccb-surface-master happens via the Actor:move hook in `hooks/load.lua` when the player first moves in dccb-start. The zone `on_enter` callback doesn't fire reliably during initial zone generation.
+
 ## Flow Sequence
 
 1. **Game starts** → Game.lua superload redirects from wilderness to `dccb-start`
-2. **Player enters dccb-start** → `on_enter` fires one-time handoff
-3. **Handoff executes** → `game:changeLevel(1, "dccb+dccb-surface-master")`
-4. **Player enters dccb-surface-master** → `post_process` runs with template picker
-5. **Template selection** → Seed-based auto-selection from {plains, road, courtyard}
-6. **Surface painting** → Painter applies selected template
+2. **dccb-start zone generates** → Template picker and painter create the map
+3. **Player makes first move** → Actor:move hook fires in hooks/load.lua
+4. **Handoff executes** → `game:changeLevel(1, "dccb+dccb-surface-master")`
+5. **Player enters dccb-surface-master** → `post_process` runs with template picker
+6. **Template selection** → Seed-based auto-selection from {plains, road, courtyard}
+7. **Surface painting** → Painter applies selected template
 
 ## Files Created
 
@@ -72,6 +75,7 @@ local DCCB_SURFACE_TEMPLATE = "plains"  -- Force plains template
 2. Start a new character/run
 3. Observe the following sequence:
    - Brief landing in **dccb-start** (bootstrap zone)
+   - Make first move (arrow key or any movement)
    - Automatic transition to **dccb-surface-master** (once per run)
 4. Verify you are now in dccb-surface-master zone
 
@@ -79,13 +83,19 @@ local DCCB_SURFACE_TEMPLATE = "plains"  -- Force plains template
 Expected log sequence showing the complete flow:
 ```
 [DCCB] early redirect: changeLevelReal from wilderness to dccb+dccb-start
-[DCCB-Zone] Entered zone 'dccb-start' level 1
-[DCCB-Zone] ========================================
-[DCCB-Zone] Handoff: dccb-start -> dccb-surface-master
-[DCCB-Zone] ========================================
-[DCCB-Zone] Transitioning to: dccb+dccb-surface-master
-[DCCB-Zone] Handoff complete (once per run)
-[DCCB-Zone] ========================================
+[DCCB-Zone] Template auto-selected: [template] (seed=[X] from [source], idx=[1-3]/3)
+[DCCB-Painter] Starting surface paint with template '[template_name]'
+[DCCB-Painter] Base fill: 900 cells with 'GRASS'
+...
+[DCCB] first zone observed after bootstrap
+[DCCB] current zone short_name: dccb-start
+[DCCB] entered DCCB stub zone: dccb-start
+[DCCB] ========================================
+[DCCB] Handoff: dccb-start -> dccb-surface-master
+[DCCB] ========================================
+[DCCB] Transitioning to: dccb+dccb-surface-master
+[DCCB] Handoff complete (once per run)
+[DCCB] ========================================
 [DCCB-SurfaceMaster] Entered zone 'dccb-surface-master' level 1
 [DCCB-SurfaceMaster] Template auto-selected: [plains|road|courtyard] (seed=[X] from [source], idx=[1-3]/3, templates=plains,road,courtyard)
 [DCCB-Painter] Starting surface paint with template '[template_name]'
@@ -98,10 +108,11 @@ Expected log sequence showing the complete flow:
 ```
 
 **Key points to verify:**
-- Handoff messages appear exactly once
-- Template selection shows auto-selected (not override/fixed)
+- dccb-start zone generates first (you'll see its template selection)
+- Handoff messages appear after first zone observed
+- Template selection in surface-master shows auto-selected (not override/fixed)
 - Seed source is logged (game.run_seed, cached, etc.)
-- Painter completes successfully
+- Both painters complete successfully
 
 ### 3. No Loop Verification
 - Move around the map
