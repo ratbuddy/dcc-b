@@ -3,11 +3,12 @@
 -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-start/ (overload)
 
--- Template selection: nil for auto-select, or a string ("plains"/"road") to override
+-- Template selection: nil for auto-select, or a string ("plains"/"road"/etc) to override
 local DCCB_SURFACE_TEMPLATE = nil
 
 -- Template registry: available templates for auto-selection
-local DCCB_TEMPLATES = {"plains", "road", "courtyard"}
+-- Themed templates: plains/road/courtyard (green), winter/winter_road (snowy), ruins (ancient)
+local DCCB_TEMPLATES = {"plains", "road", "courtyard", "winter", "winter_road", "ruins"}
 
 return {
   name = "DCCB Start",

@@ -4,11 +4,12 @@
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-surface-master/ (overload)
 
 -- Template selection: nil for auto-select (using seed), or a string to override
--- Debug override: set to "plains", "road", or "courtyard" to force a specific template
+-- Debug override: set to "plains", "road", "courtyard", "winter", "winter_road", or "ruins" to force a specific template
 local DCCB_SURFACE_TEMPLATE = nil  -- Changed from "plains" to nil for auto-selection
 
 -- Template registry: available templates for auto-selection
-local DCCB_TEMPLATES = {"plains", "road", "courtyard"}
+-- Themed templates: plains/road/courtyard (green), winter/winter_road (snowy), ruins (ancient)
+local DCCB_TEMPLATES = {"plains", "road", "courtyard", "winter", "winter_road", "ruins"}
 
 return {
   name = "DCCB Surface Master",

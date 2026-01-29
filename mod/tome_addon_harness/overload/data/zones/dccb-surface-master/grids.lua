@@ -5,6 +5,10 @@
 -- Load base game terrain definitions first for compatibility
 load("/data/general/grids/basic.lua")
 
+-- ============================================================================
+-- GREEN/PLAINS THEME - Default grass and trees
+-- ============================================================================
+
 -- Define GRASS terrain (passable surface tile)
 newEntity{
   base = "FLOOR",
@@ -41,6 +45,90 @@ newEntity{
   air_level = -10,
 }
 
+-- ============================================================================
+-- WINTER/SNOW THEME - Snowy landscape
+-- ============================================================================
+
+-- Define GRASS_WINTER terrain (snow-covered ground)
+newEntity{
+  base = "FLOOR",
+  define_as = "GRASS_WINTER",
+  type = "floor", subtype = "snow",
+  name = "snowy ground",
+  display = '.', color=colors.WHITE,
+  image = "terrain/snow_ground.png",
+  always_remember = true,
+}
+
+-- Define ROAD_WINTER terrain (icy path)
+newEntity{
+  base = "FLOOR",
+  define_as = "ROAD_WINTER",
+  type = "floor", subtype = "ice",
+  name = "icy path",
+  display = '=', color=colors.LIGHT_BLUE,
+  image = "terrain/snow_ground.png",
+  always_remember = true,
+}
+
+-- Define TREE_WINTER terrain (snowy tree - blocks movement)
+newEntity{
+  base = "WALL",
+  define_as = "TREE_WINTER",
+  type = "wall", subtype = "tree",
+  name = "snowy tree",
+  display = 'T', color=colors.WHITE,
+  image = "terrain/tree.png",
+  always_remember = true,
+  block_move = true,
+  block_sight = true,
+  air_level = -10,
+}
+
+-- ============================================================================
+-- RUINS/ANCIENT THEME - Weathered stone and overgrown
+-- ============================================================================
+
+-- Define GRASS_RUINS terrain (cracked earth with grass)
+newEntity{
+  base = "FLOOR",
+  define_as = "GRASS_RUINS",
+  type = "floor", subtype = "grass",
+  name = "overgrown ground",
+  display = ',', color=colors.DARK_GREEN,
+  image = "terrain/marble_floor.png",
+  always_remember = true,
+}
+
+-- Define ROAD_RUINS terrain (ancient stone path)
+newEntity{
+  base = "FLOOR",
+  define_as = "ROAD_RUINS",
+  type = "floor", subtype = "stone",
+  name = "ancient path",
+  display = '=', color=colors.GREY,
+  image = "terrain/grey_stone_wall1.png",
+  always_remember = true,
+}
+
+-- Define TREE_RUINS terrain (ruined pillar/wall - blocks movement)
+newEntity{
+  base = "WALL",
+  define_as = "TREE_RUINS",
+  type = "wall", subtype = "ruins",
+  name = "ruined pillar",
+  display = '#', color=colors.GREY,
+  image = "terrain/grey_stone_wall1.png",
+  always_remember = true,
+  block_move = true,
+  block_sight = false,
+  air_level = -5,
+}
+
+-- ============================================================================
+-- LEGACY/OPTIONAL GRIDS - Keep for backward compatibility
+-- ============================================================================
+
 -- Define SNOW terrain (optional placeholder - passable surface)
 newEntity{
   base = "FLOOR",
@@ -65,6 +153,10 @@ newEntity{
   block_sight = false,
   air_level = -5,
 }
+
+-- ============================================================================
+-- ENTRANCE MARKERS - Theme-neutral
+-- ============================================================================
 
 -- Define DCCB_ENTRANCE terrain (visual dungeon entrance marker)
 -- Does NOT cause level transitions - placeholder for future dungeon connections
