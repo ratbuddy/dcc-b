@@ -1,18 +1,27 @@
 -- /data/zones/dccb-tileset-gallery/zone.lua
--- DCCB Tileset Gallery Zone - Visual Catalog and Validation Tool
+-- DCCB Tileset Gallery Zone - Dense Visual Catalog and Validation Tool
 -- Virtual path: /data-dccb/zones/dccb-tileset-gallery/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-tileset-gallery/ (overload)
 
 -- This is a debug/reference zone to validate terrain tilesets
--- It displays a "palette map" of all DCCB surface grids and key base game grids
+-- It displays a dense "palette map" of dozens/hundreds of terrain samples
+-- Missing IDs are skipped safely, dangerous terrains (with change_level/on_stand) are filtered
+
+-- Dense layout configuration
+local CELL_W = 2              -- Cell width spacing
+local CELL_H = 2              -- Cell height spacing
+local START_X = 2             -- Palette start X
+local START_Y = 2             -- Palette start Y
+local SPAWN_PAD_SIZE = 8      -- Walkable spawn pad size
+local DEBUG_SHOW_OBJECTS = false  -- Toggle object display
 
 return {
   name = "DCCB Tileset Gallery",
   short_name = "dccb-tileset-gallery",
   level_range = {1, 1},
   max_level = 1,
-  width = 50,  -- Wide enough to fit palette
-  height = 50, -- Tall enough to fit palette
+  width = 50,  -- Wide enough for dense palette
+  height = 50, -- Tall enough for many rows
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
@@ -50,9 +59,17 @@ return {
     print(string.format("[DCCB-Gallery] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
   end,
   
-  -- Post-process: Place grid palette in organized layout
+  -- Post-process: Place dense terrain palette with safe filtering
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
+    
+    -- Load terrain manifest
+    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest.lua")
+    if not manifest_ok or not manifest then
+      print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
+      return
+    end
+    manifest = manifest()
     
     -- Capability-based detection: find level and zone by their methods
     local level, zone
@@ -85,7 +102,7 @@ return {
     end
     
     print("[DCCB-Gallery] ========================================")
-    print("[DCCB-Gallery] Generating Tileset Palette")
+    print("[DCCB-Gallery] Generating Dense Tileset Palette")
     print("[DCCB-Gallery] ========================================")
     
     -- Step 1: Fill background to prevent black map
@@ -105,110 +122,130 @@ return {
       print("[DCCB-Gallery] WARNING: No background grid available (GRASS/FLOOR not found)")
     end
     
-    -- Step 2: Define grid catalog to display
-    print("[DCCB-Gallery] Step 2: Preparing terrain catalog...")
-    local grid_catalog = {
-      -- ===== DCCB CUSTOM GRIDS =====
-      
-      -- Base game grids (from /data/general/grids/basic.lua)
-      {id = "FLOOR", category = "DCCB/Base", description = "Standard floor tile"},
-      {id = "WALL", category = "DCCB/Base", description = "Standard wall tile"},
-      
-      -- DCCB Green/Plains theme
-      {id = "GRASS", category = "DCCB/Green", description = "Grass (explicit tileset)"},
-      {id = "ROAD", category = "DCCB/Green", description = "Dirt road (explicit)"},
-      {id = "TREE", category = "DCCB/Green", description = "Tree (explicit)"},
-      
-      -- DCCB Winter/Snow theme
-      {id = "GRASS_WINTER", category = "DCCB/Winter", description = "Snowy ground"},
-      {id = "ROAD_WINTER", category = "DCCB/Winter", description = "Icy path"},
-      {id = "TREE_WINTER", category = "DCCB/Winter", description = "Snowy tree"},
-      
-      -- DCCB Ruins/Ancient theme
-      {id = "GRASS_RUINS", category = "DCCB/Ruins", description = "Overgrown ground"},
-      {id = "ROAD_RUINS", category = "DCCB/Ruins", description = "Ancient path"},
-      {id = "TREE_RUINS", category = "DCCB/Ruins", description = "Ruined pillar"},
-      
-      -- DCCB Special
-      {id = "DCCB_ENTRANCE", category = "DCCB/Special", description = "Dungeon entrance marker"},
-      
-      -- ===== OFFICIAL TOME TERRAINS =====
-      -- These IDs may or may not exist depending on loaded packs
-      
-      -- Forest terrain (from forest.lua)
-      {id = "FOREST_TREE", category = "ToME/Forest", description = "Forest tree"},
-      {id = "TREE_OLDER", category = "ToME/Forest", description = "Old tree"},
-      {id = "TREE_BURNT", category = "ToME/Forest", description = "Burnt tree"},
-      {id = "DENSE_FOREST", category = "ToME/Forest", description = "Dense forest"},
-      
-      -- Water terrain (from water.lua)
-      {id = "WATER", category = "ToME/Water", description = "Shallow water"},
-      {id = "DEEP_WATER", category = "ToME/Water", description = "Deep water"},
-      {id = "WATER_BUBBLE", category = "ToME/Water", description = "Bubbling water"},
-      
-      -- Lava terrain (from lava.lua)
-      {id = "LAVA", category = "ToME/Lava", description = "Lava"},
-      {id = "LAVA_DEEP", category = "ToME/Lava", description = "Deep lava"},
-      {id = "VOLCANIC_FLOOR", category = "ToME/Lava", description = "Volcanic floor"},
-      
-      -- Mountain/Rock terrain (from mountain.lua)
-      {id = "MOUNTAIN", category = "ToME/Mountain", description = "Mountain"},
-      {id = "MOUNTAIN_WALL", category = "ToME/Mountain", description = "Mountain wall"},
-      {id = "ROCK", category = "ToME/Mountain", description = "Rocky ground"},
-      
-      -- Additional base terrain variants
-      {id = "HARDFLOOR", category = "ToME/Base", description = "Hard floor"},
-      {id = "HARDWALL", category = "ToME/Base", description = "Hard wall"},
-    }
+    -- Step 2: Create spawn pad (walkable area for player)
+    print("[DCCB-Gallery] Step 2: Creating spawn pad...")
+    local spawn_x = level.map.w - SPAWN_PAD_SIZE - 2
+    local spawn_y = level.map.h - SPAWN_PAD_SIZE - 2
+    local spawn_floor = zone:makeEntityByName(level, "terrain", "GRASS") or 
+                       zone:makeEntityByName(level, "terrain", "FLOOR")
     
-    -- Layout configuration
-    local start_x = 5
-    local start_y = 5
-    local grid_spacing = 4  -- Space between grid samples
-    local grids_per_row = 6  -- Increased to fit more grids
+    if spawn_floor then
+      if spawn_floor.resolve then spawn_floor:resolve() end
+      for x = spawn_x, spawn_x + SPAWN_PAD_SIZE - 1 do
+        for y = spawn_y, spawn_y + SPAWN_PAD_SIZE - 1 do
+          level.map(x, y, Map.TERRAIN, spawn_floor)
+        end
+      end
+      print(string.format("[DCCB-Gallery] Spawn pad: %dx%d at (%d,%d)", 
+        SPAWN_PAD_SIZE, SPAWN_PAD_SIZE, spawn_x, spawn_y))
+    end
     
-    print(string.format("[DCCB-Gallery] Step 3: Placing %d terrain samples...", #grid_catalog))
-    print("[DCCB-Gallery] Layout: " .. grids_per_row .. " grids per row, spacing=" .. grid_spacing)
+    -- Step 3: Calculate dense layout
+    local map_width = level.map.w
+    local available_width = map_width - START_X - 2
+    local cols = math.floor(available_width / CELL_W)
+    cols = math.max(cols, 10)  -- At least 10 columns
+    
+    print(string.format("[DCCB-Gallery] Step 3: Dense layout: %d columns, %dx%d cell spacing", 
+      cols, CELL_W, CELL_H))
+    
+    -- Step 4: Place terrain samples with safety checks
+    print(string.format("[DCCB-Gallery] Step 4: Placing terrain samples from manifest (%d candidates)...", 
+      #manifest.TERRAIN_CANDIDATES))
     
     local placed_count = 0
-    local skipped_count = 0
+    local skipped_missing = 0
+    local skipped_dangerous = 0
     
-    -- Place each grid in the catalog
-    for idx, grid_info in ipairs(grid_catalog) do
-      local row = math.floor((idx - 1) / grids_per_row)
-      local col = (idx - 1) % grids_per_row
+    -- Helper function to check if terrain is dangerous
+    local function is_dangerous_terrain(terrain)
+      if not terrain then return false end
+      -- Check for transition/movement hooks
+      if terrain.change_level or terrain.change_zone or 
+         terrain.on_stand or terrain.on_move then
+        return true
+      end
+      return false
+    end
+    
+    -- Place each terrain candidate
+    for idx, terrain_info in ipairs(manifest.TERRAIN_CANDIDATES) do
+      local row = math.floor((idx - 1) / cols)
+      local col = (idx - 1) % cols
       
-      local x = start_x + (col * grid_spacing)
-      local y = start_y + (row * grid_spacing)
+      local x = START_X + (col * CELL_W)
+      local y = START_Y + (row * CELL_H)
       
-      -- Try to make the grid entity using "terrain" kind (canonical approach)
-      local grid = zone:makeEntityByName(level, "terrain", grid_info.id)
+      -- Skip if out of bounds
+      if x >= map_width - 2 or y >= level.map.h - 2 then
+        break
+      end
       
-      if grid then
-        -- Resolve grid if it has a resolve method
-        if grid.resolve then
-          grid:resolve()
+      -- Try to make the terrain entity using "terrain" kind
+      local terrain = zone:makeEntityByName(level, "terrain", terrain_info.id)
+      
+      if not terrain then
+        -- Terrain not found (missing)
+        skipped_missing = skipped_missing + 1
+        -- Only log first few missing to avoid spam
+        if skipped_missing <= 5 then
+          print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | MISSING", 
+            x, y, terrain_info.id))
         end
-        
-        -- Place the grid
-        level.map(x, y, Map.TERRAIN, grid)
+      elseif is_dangerous_terrain(terrain) then
+        -- Terrain has dangerous hooks (would cause transitions)
+        skipped_dangerous = skipped_dangerous + 1
+        print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (has change_level/on_stand)", 
+          x, y, terrain_info.id))
+      else
+        -- Safe terrain - place it
+        if terrain.resolve then terrain:resolve() end
+        level.map(x, y, Map.TERRAIN, terrain)
         placed_count = placed_count + 1
         
-        -- Log successful placement
-        print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %-15s | %s", 
-          x, y, grid_info.id, grid_info.category, grid_info.description))
-      else
-        -- Log skipped placement (grid not found)
-        skipped_count = skipped_count + 1
-        print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | %-15s | SKIPPED (not found)", 
-          x, y, grid_info.id, grid_info.category))
+        -- Only log first few placements to avoid spam
+        if placed_count <= 10 then
+          print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
+            x, y, terrain_info.id, terrain_info.category))
+        end
       end
+    end
+    
+    -- Step 5: Optionally place objects (if enabled)
+    if DEBUG_SHOW_OBJECTS and manifest.OBJECT_CANDIDATES then
+      print("[DCCB-Gallery] Step 5: Placing object samples...")
+      local object_placed = 0
+      local object_start_y = START_Y + (math.ceil(#manifest.TERRAIN_CANDIDATES / cols) * CELL_H) + 5
+      
+      for idx, obj_info in ipairs(manifest.OBJECT_CANDIDATES) do
+        local row = math.floor((idx - 1) / cols)
+        local col = (idx - 1) % cols
+        
+        local x = START_X + (col * CELL_W)
+        local y = object_start_y + (row * CELL_H)
+        
+        if y >= level.map.h - 2 then break end
+        
+        local obj = zone:makeEntityByName(level, "object", obj_info.id)
+        if obj then
+          if obj.resolve then obj:resolve() end
+          level.map(x, y, Map.OBJECT, obj)
+          object_placed = object_placed + 1
+        end
+      end
+      
+      print(string.format("[DCCB-Gallery] Objects placed: %d", object_placed))
     end
     
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Palette generation complete")
-    print("[DCCB-Gallery] Total attempted: " .. #grid_catalog)
-    print("[DCCB-Gallery] Placed: " .. placed_count .. " | Skipped: " .. skipped_count)
+    print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Total candidates: %d", #manifest.TERRAIN_CANDIDATES))
+    print(string.format("[DCCB-Gallery] ✓ Placed: %d terrains", placed_count))
+    print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
+    print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
+    print(string.format("[DCCB-Gallery] Layout: %d columns × %d rows visible", 
+      cols, math.ceil(placed_count / cols)))
     print("[DCCB-Gallery] ========================================")
   end,
 }
