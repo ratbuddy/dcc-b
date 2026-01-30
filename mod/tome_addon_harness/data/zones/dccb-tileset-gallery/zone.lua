@@ -158,25 +158,13 @@ return {
     local skipped_missing = 0
     local skipped_dangerous = 0
     
-    -- Whitelist of known-safe DCCB custom grids
-    -- These are designed for the addon and safe to display
-    local SAFE_DCCB_GRIDS = {
-      FLOOR = true, WALL = true,
-      GRASS = true, ROAD = true, TREE = true,
-      GRASS_WINTER = true, ROAD_WINTER = true, TREE_WINTER = true,
-      GRASS_RUINS = true, ROAD_RUINS = true, TREE_RUINS = true,
+    -- Blacklist of known-dangerous terrains that should NOT be displayed
+    -- These have actual gameplay hooks that could cause unwanted transitions
+    local KNOWN_DANGEROUS = {
+      DCCB_ENTRANCE = true,  -- Has on_stand message
+      -- Note: We're using a blacklist approach instead of checking for hooks
+      -- because many safe terrains inherit hooks from base entities
     }
-    
-    -- Helper function to check if terrain is dangerous
-    local function is_dangerous_terrain(terrain)
-      if not terrain then return false end
-      -- Check for transition/movement hooks
-      if terrain.change_level or terrain.change_zone or 
-         terrain.on_stand or terrain.on_move then
-        return true
-      end
-      return false
-    end
     
     -- Place each terrain candidate
     for idx, terrain_info in ipairs(manifest.TERRAIN_CANDIDATES) do
@@ -208,24 +196,14 @@ return {
         -- Resolve the terrain first to get actual properties
         if terrain.resolve then terrain:resolve() end
         
-        -- Check if this is a whitelisted DCCB grid (always safe)
-        if SAFE_DCCB_GRIDS[terrain_info.id] then
-          -- Whitelisted DCCB grid: always safe to display
-          level.map(x, y, Map.TERRAIN, terrain)
-          placed_count = placed_count + 1
-          
-          -- Only log first few placements to avoid spam
-          if placed_count <= 10 then
-            print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
-              x, y, terrain_info.id, terrain_info.category))
-          end
-        elseif is_dangerous_terrain(terrain) then
-          -- Not whitelisted and has dangerous hooks: skip it
+        -- Check if this is a blacklisted dangerous terrain
+        if KNOWN_DANGEROUS[terrain_info.id] then
+          -- Blacklisted: skip it
           skipped_dangerous = skipped_dangerous + 1
-          print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (has change_level/on_stand)", 
+          print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (blacklisted)", 
             x, y, terrain_info.id))
         else
-          -- Not whitelisted but safe: place it
+          -- Not blacklisted: safe to place
           level.map(x, y, Map.TERRAIN, terrain)
           placed_count = placed_count + 1
           
