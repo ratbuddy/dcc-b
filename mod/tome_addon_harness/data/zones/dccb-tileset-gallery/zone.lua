@@ -88,39 +88,90 @@ return {
     print("[DCCB-Gallery] Generating Tileset Palette")
     print("[DCCB-Gallery] ========================================")
     
-    -- Define grid catalog to display
+    -- Step 1: Fill background to prevent black map
+    print("[DCCB-Gallery] Step 1: Filling background...")
+    local background_grid = zone:makeEntityByName(level, "terrain", "GRASS") or 
+                           zone:makeEntityByName(level, "terrain", "FLOOR")
+    
+    if background_grid then
+      if background_grid.resolve then background_grid:resolve() end
+      for x = 0, level.map.w - 1 do
+        for y = 0, level.map.h - 1 do
+          level.map(x, y, Map.TERRAIN, background_grid)
+        end
+      end
+      print("[DCCB-Gallery] Background filled with: " .. (background_grid.name or "unknown"))
+    else
+      print("[DCCB-Gallery] WARNING: No background grid available (GRASS/FLOOR not found)")
+    end
+    
+    -- Step 2: Define grid catalog to display
+    print("[DCCB-Gallery] Step 2: Preparing terrain catalog...")
     local grid_catalog = {
+      -- ===== DCCB CUSTOM GRIDS =====
+      
       -- Base game grids (from /data/general/grids/basic.lua)
-      {id = "FLOOR", category = "Base Game", description = "Standard floor tile"},
-      {id = "WALL", category = "Base Game", description = "Standard wall tile"},
+      {id = "FLOOR", category = "DCCB/Base", description = "Standard floor tile"},
+      {id = "WALL", category = "DCCB/Base", description = "Standard wall tile"},
       
       -- DCCB Green/Plains theme
-      {id = "GRASS", category = "Green Theme", description = "Grass (explicit tileset)"},
-      {id = "ROAD", category = "Green Theme", description = "Dirt road (explicit tileset)"},
-      {id = "TREE", category = "Green Theme", description = "Tree (explicit tileset)"},
+      {id = "GRASS", category = "DCCB/Green", description = "Grass (explicit tileset)"},
+      {id = "ROAD", category = "DCCB/Green", description = "Dirt road (explicit)"},
+      {id = "TREE", category = "DCCB/Green", description = "Tree (explicit)"},
       
       -- DCCB Winter/Snow theme
-      {id = "GRASS_WINTER", category = "Winter Theme", description = "Snowy ground (inherited)"},
-      {id = "ROAD_WINTER", category = "Winter Theme", description = "Icy path (inherited)"},
-      {id = "TREE_WINTER", category = "Winter Theme", description = "Snowy tree (inherited)"},
+      {id = "GRASS_WINTER", category = "DCCB/Winter", description = "Snowy ground"},
+      {id = "ROAD_WINTER", category = "DCCB/Winter", description = "Icy path"},
+      {id = "TREE_WINTER", category = "DCCB/Winter", description = "Snowy tree"},
       
       -- DCCB Ruins/Ancient theme
-      {id = "GRASS_RUINS", category = "Ruins Theme", description = "Overgrown ground (inherited)"},
-      {id = "ROAD_RUINS", category = "Ruins Theme", description = "Ancient path (inherited)"},
-      {id = "TREE_RUINS", category = "Ruins Theme", description = "Ruined pillar (inherited)"},
+      {id = "GRASS_RUINS", category = "DCCB/Ruins", description = "Overgrown ground"},
+      {id = "ROAD_RUINS", category = "DCCB/Ruins", description = "Ancient path"},
+      {id = "TREE_RUINS", category = "DCCB/Ruins", description = "Ruined pillar"},
       
       -- DCCB Special
-      {id = "DCCB_ENTRANCE", category = "Special", description = "Dungeon entrance marker"},
+      {id = "DCCB_ENTRANCE", category = "DCCB/Special", description = "Dungeon entrance marker"},
+      
+      -- ===== OFFICIAL TOME TERRAINS =====
+      -- These IDs may or may not exist depending on loaded packs
+      
+      -- Forest terrain (from forest.lua)
+      {id = "FOREST_TREE", category = "ToME/Forest", description = "Forest tree"},
+      {id = "TREE_OLDER", category = "ToME/Forest", description = "Old tree"},
+      {id = "TREE_BURNT", category = "ToME/Forest", description = "Burnt tree"},
+      {id = "DENSE_FOREST", category = "ToME/Forest", description = "Dense forest"},
+      
+      -- Water terrain (from water.lua)
+      {id = "WATER", category = "ToME/Water", description = "Shallow water"},
+      {id = "DEEP_WATER", category = "ToME/Water", description = "Deep water"},
+      {id = "WATER_BUBBLE", category = "ToME/Water", description = "Bubbling water"},
+      
+      -- Lava terrain (from lava.lua)
+      {id = "LAVA", category = "ToME/Lava", description = "Lava"},
+      {id = "LAVA_DEEP", category = "ToME/Lava", description = "Deep lava"},
+      {id = "VOLCANIC_FLOOR", category = "ToME/Lava", description = "Volcanic floor"},
+      
+      -- Mountain/Rock terrain (from mountain.lua)
+      {id = "MOUNTAIN", category = "ToME/Mountain", description = "Mountain"},
+      {id = "MOUNTAIN_WALL", category = "ToME/Mountain", description = "Mountain wall"},
+      {id = "ROCK", category = "ToME/Mountain", description = "Rocky ground"},
+      
+      -- Additional base terrain variants
+      {id = "HARDFLOOR", category = "ToME/Base", description = "Hard floor"},
+      {id = "HARDWALL", category = "ToME/Base", description = "Hard wall"},
     }
     
     -- Layout configuration
     local start_x = 5
     local start_y = 5
     local grid_spacing = 4  -- Space between grid samples
-    local grids_per_row = 5
+    local grids_per_row = 6  -- Increased to fit more grids
     
-    print(string.format("[DCCB-Gallery] Placing %d grids in palette", #grid_catalog))
+    print(string.format("[DCCB-Gallery] Step 3: Placing %d terrain samples...", #grid_catalog))
     print("[DCCB-Gallery] Layout: " .. grids_per_row .. " grids per row, spacing=" .. grid_spacing)
+    
+    local placed_count = 0
+    local skipped_count = 0
     
     -- Place each grid in the catalog
     for idx, grid_info in ipairs(grid_catalog) do
@@ -130,8 +181,8 @@ return {
       local x = start_x + (col * grid_spacing)
       local y = start_y + (row * grid_spacing)
       
-      -- Try to make the grid entity
-      local grid = zone:makeEntityByName(level, "grid", grid_info.id)
+      -- Try to make the grid entity using "terrain" kind (canonical approach)
+      local grid = zone:makeEntityByName(level, "terrain", grid_info.id)
       
       if grid then
         -- Resolve grid if it has a resolve method
@@ -141,20 +192,23 @@ return {
         
         -- Place the grid
         level.map(x, y, Map.TERRAIN, grid)
+        placed_count = placed_count + 1
         
         -- Log successful placement
-        print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-15s | %s | %s", 
+        print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %-15s | %s", 
           x, y, grid_info.id, grid_info.category, grid_info.description))
       else
-        -- Log failed placement (grid not found)
-        print(string.format("[DCCB-Gallery] ✗ [%2d,%2d] %-15s | %s | NOT FOUND", 
+        -- Log skipped placement (grid not found)
+        skipped_count = skipped_count + 1
+        print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | %-15s | SKIPPED (not found)", 
           x, y, grid_info.id, grid_info.category))
       end
     end
     
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Palette generation complete")
-    print("[DCCB-Gallery] Total grids attempted: " .. #grid_catalog)
+    print("[DCCB-Gallery] Total attempted: " .. #grid_catalog)
+    print("[DCCB-Gallery] Placed: " .. placed_count .. " | Skipped: " .. skipped_count)
     print("[DCCB-Gallery] ========================================")
   end,
 }

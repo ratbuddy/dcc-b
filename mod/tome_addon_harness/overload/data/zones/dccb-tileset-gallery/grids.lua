@@ -5,6 +5,25 @@
 -- Load base game terrain definitions first for compatibility
 load("/data/general/grids/basic.lua")
 
+-- Safe loader helper: attempts to load terrain pack, logs result, doesn't crash
+local function safe_load(path)
+  local ok, err = pcall(load, path)
+  if ok then 
+    print("[DCCB-Gallery] Loaded terrain pack: " .. path)
+  else 
+    print("[DCCB-Gallery] Failed to load terrain pack: " .. path .. " : " .. tostring(err))
+  end
+  return ok
+end
+
+-- Load additional official terrain packs (used by official zones)
+-- These provide water, forest, lava, mountain, and jungle terrain types
+safe_load("/data/general/grids/water.lua")
+safe_load("/data/general/grids/forest.lua")
+safe_load("/data/general/grids/lava.lua")
+safe_load("/data/general/grids/mountain.lua")
+safe_load("/data/general/grids/jungle_hut.lua")
+
 -- ============================================================================
 -- DCCB SURFACE GRIDS - Defined here for gallery display
 -- These grids mirror the definitions from dccb-surface-master
