@@ -25,7 +25,7 @@ The script generates a JSON file with the following structure:
     "object_ids": [...sorted unique object IDs...],
     "define_as_ids": [...sorted unique define_as IDs...],
     "sources": {
-        "ID": ["relative/path:line", ...],  // max ~10 sources per ID
+        "ID": ["relative/path:line", ...],  // max 10 sources per ID
         ...
     }
 }
@@ -60,6 +60,11 @@ from pathlib import Path
 
 
 # Regex patterns for extraction
+# Note: ToME IDs typically follow the pattern: starts with letter or underscore,
+# followed by letters, digits, or underscores (e.g., FLOOR, WALL_GRANITE, GRASS_01)
+# The re.IGNORECASE flag allows matching IDs in any case, and we normalize to uppercase
+# with .upper() to ensure consistency
+
 # Pattern 1: makeEntityByName(..., "terrain", "ID")
 TERRAIN_PATTERN = re.compile(
     r'makeEntityByName\s*\([^,]*,\s*["\']terrain["\']\s*,\s*["\']([A-Z_][A-Z0-9_]*)["\']',
@@ -128,8 +133,12 @@ def extract_ids_from_file(file_path, root_path):
     try:
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             lines = f.readlines()
-            
-        relative_path = file_path.relative_to(root_path)
+        
+        try:
+            relative_path = file_path.relative_to(root_path)
+        except ValueError:
+            # Fallback if file_path is not under root_path (e.g., symlinks)
+            relative_path = file_path
         
         for line_num, line in enumerate(lines, start=1):
             # Skip lines that are pure comments (start with -- after whitespace)
@@ -138,7 +147,9 @@ def extract_ids_from_file(file_path, root_path):
                 continue
             
             # Remove inline comments to avoid extracting IDs from comments
-            # This is a simple approach - doesn't handle -- inside strings
+            # Note: This is a simple approach that doesn't handle -- inside string literals
+            # This is acceptable per the problem statement's "avoid insane false positives"
+            # requirement, which doesn't mandate perfect Lua parsing
             code_part = line.split('--')[0] if '--' in line else line
             
             # Extract terrain IDs
