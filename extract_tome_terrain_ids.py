@@ -1,53 +1,63 @@
 #!/usr/bin/env python3
 """
-ToME Terrain ID Extraction Script
-==================================
+ToME Terrain/Grid ID Manifest Generator
+========================================
 
 This script crawls a local clone of the official ToME repository and extracts
-terrain/grid IDs, object IDs, and define_as IDs referenced by official zone content.
+terrain/grid define_as IDs from grids.lua files ONLY (not npcs, objects, traps).
+
+This produces a high-signal manifest of actual terrain IDs used for map tiles.
 
 Usage:
 ------
     python extract_tome_terrain_ids.py --root /path/to/t-engine4
     python extract_tome_terrain_ids.py --root /path/to/t-engine4 --include-general
-    python extract_tome_terrain_ids.py --root /path/to/t-engine4 --out my_output.json
+    python extract_tome_terrain_ids.py --root /path/to/t-engine4 --out my_manifest.json
 
 Arguments:
     --root PATH           Path to local ToME repository root (required)
-    --include-general     Also scan game/modules/tome/data/general/** (optional)
-    --out FILENAME        Output JSON filename (default: tome_used_terrain_manifest.json)
+    --include-general     Also scan game/modules/tome/data/general/grids/** (optional)
+    --out FILENAME        Output JSON filename (default: tome_terrain_manifest.json)
 
 Output Format:
 --------------
-The script generates a JSON file with the following structure:
+The script generates TWO files:
+
+1. JSON file (default: tome_terrain_manifest.json):
 {
-    "terrain_ids": [...sorted unique terrain IDs...],
-    "object_ids": [...sorted unique object IDs...],
-    "define_as_ids": [...sorted unique define_as IDs...],
-    "sources": {
-        "ID": ["relative/path:line", ...],  // max 10 sources per ID
-        ...
+    "terrain_define_as": [...sorted unique terrain define_as IDs...],
+    "meta": {
+        "ID": {
+            "base": "...",  // optional, if present
+            "image": "...",  // optional, if present
+            "sources": ["relative/path:line", ...]
+        }
     }
 }
 
+2. Text file (default: tome_terrain_define_as_ids.txt):
+One ID per line for easy pasting into DCCB manifests.
+
 Integration with DCCB:
 ---------------------
-The generated manifest can be used to populate the DCCB tileset gallery by:
-1. Running this script against your ToME installation
-2. Using the terrain_ids list to generate preview images
-3. Mapping IDs to their visual assets in the tileset
-4. Creating gallery entries for all official terrain types
-
-This ensures the DCCB gallery includes all terrain types used in official ToME zones.
+The generated manifest provides a focused list of terrain IDs:
+1. Run this script against your ToME installation
+2. Use terrain_define_as list for tileset gallery entries
+3. Use meta information for image paths and base terrain references
+4. Import IDs from .txt file directly into DCCB manifests
 
 Extraction Strategy:
 -------------------
-Uses regex patterns to extract:
-1. makeEntityByName(..., "terrain", "<ID>") or makeEntityByName(..., "grid", "<ID>")
-2. makeEntityByName(..., "object", "<ID>")
-3. define_as = "<ID>"
+Scans ONLY:
+- game/modules/tome/data/zones/**/grids.lua
+- game/modules/tome/data/general/grids/**/*.lua (if --include-general)
 
-Note: ToME uses both "terrain" and "grid" for terrain entities. This script extracts both.
+Extracts from grids.lua files:
+- define_as = "ID"
+- image = "..." (optional)
+- base = "..." (optional)
+
+Does NOT scan: npcs.lua, objects.lua, traps.lua, zone.lua, etc.
 
 The script avoids complex Lua parsing to remain lightweight and dependency-free.
 """
@@ -61,28 +71,27 @@ from collections import defaultdict
 from pathlib import Path
 
 
-# Regex patterns for extraction
+# Regex patterns for extraction from grids.lua files
 # Note: ToME IDs typically follow the pattern: starts with letter or underscore,
 # followed by letters, digits, or underscores (e.g., FLOOR, WALL_GRANITE, GRASS_01)
 # The re.IGNORECASE flag allows matching IDs in any case, and we normalize to uppercase
 # with .upper() to ensure consistency
 
-# Pattern 1: makeEntityByName(..., "terrain", "ID") or makeEntityByName(..., "grid", "ID")
-# Note: ToME uses both "terrain" and "grid" for terrain/grid entities
-TERRAIN_PATTERN = re.compile(
-    r'makeEntityByName\s*\([^,]*,\s*["\'](?:terrain|grid)["\']\s*,\s*["\']([A-Z_][A-Z0-9_]*)["\']',
-    re.IGNORECASE
-)
-
-# Pattern 2: makeEntityByName(..., "object", "ID")
-OBJECT_PATTERN = re.compile(
-    r'makeEntityByName\s*\([^,]*,\s*["\']object["\']\s*,\s*["\']([A-Z_][A-Z0-9_]*)["\']',
-    re.IGNORECASE
-)
-
-# Pattern 3: define_as = "ID"
+# Pattern for define_as = "ID"
 DEFINE_AS_PATTERN = re.compile(
     r'define_as\s*=\s*["\']([A-Z_][A-Z0-9_]*)["\']',
+    re.IGNORECASE
+)
+
+# Pattern for base = "ID"
+BASE_PATTERN = re.compile(
+    r'base\s*=\s*["\']([A-Z_][A-Z0-9_]*)["\']',
+    re.IGNORECASE
+)
+
+# Pattern for image = "path/to/image.png"
+IMAGE_PATTERN = re.compile(
+    r'image\s*=\s*["\']([^"\']+)["\']',
     re.IGNORECASE
 )
 
@@ -90,52 +99,72 @@ DEFINE_AS_PATTERN = re.compile(
 MAX_SOURCES_PER_ID = 10
 
 
-def find_lua_files(root_path, include_general=False):
+def find_grids_lua_files(root_path, include_general=False):
     """
-    Find all .lua files in the zones directory and optionally general directory.
+    Find all grids.lua files in the zones directory and optionally general/grids directory.
+    
+    This function restricts scanning to only terrain/grid definition files:
+    - game/modules/tome/data/zones/**/grids.lua
+    - game/modules/tome/data/general/grids/**/*.lua (if include_general=True)
+    
+    Does NOT include: npcs.lua, objects.lua, traps.lua, zone.lua, etc.
     
     Args:
         root_path: Path to ToME repository root
-        include_general: Whether to include general/** directory
+        include_general: Whether to include general/grids/** directory
     
     Returns:
-        List of Path objects for .lua files
+        List of Path objects for grids.lua files
     """
-    lua_files = []
+    grids_files = []
     
-    # Always scan zones directory
+    # Scan zones directory for grids.lua files only
     zones_path = root_path / "game" / "modules" / "tome" / "data" / "zones"
     if zones_path.exists():
-        lua_files.extend(zones_path.rglob("*.lua"))
+        # Find all files named "grids.lua" in zones subdirectories
+        for grids_file in zones_path.rglob("grids.lua"):
+            grids_files.append(grids_file)
     
-    # Optionally scan general directory
+    # Optionally scan general/grids directory for all .lua files
     if include_general:
-        general_path = root_path / "game" / "modules" / "tome" / "data" / "general"
-        if general_path.exists():
-            lua_files.extend(general_path.rglob("*.lua"))
+        general_grids_path = root_path / "game" / "modules" / "tome" / "data" / "general" / "grids"
+        if general_grids_path.exists():
+            # In general/grids, all .lua files are terrain definitions
+            grids_files.extend(general_grids_path.rglob("*.lua"))
     
-    return lua_files
+    return grids_files
 
 
-def extract_ids_from_file(file_path, root_path):
+def extract_terrain_data_from_file(file_path, root_path):
     """
-    Extract terrain IDs, object IDs, and define_as IDs from a Lua file.
+    Extract terrain define_as IDs, base, and image from a grids.lua file.
+    
+    This function looks for newEntity blocks and extracts:
+    - define_as = "ID"
+    - base = "ID" (optional)
+    - image = "path" (optional)
     
     Args:
-        file_path: Path to the Lua file
+        file_path: Path to the grids.lua file
         root_path: Root path for computing relative paths
     
     Returns:
-        Tuple of (terrain_dict, object_dict, define_as_dict) where each dict
-        maps ID -> list of "relative/path:line" strings
+        Dict mapping terrain_id -> {
+            "base": "...",  # optional
+            "image": "...",  # optional
+            "sources": ["relative/path:line", ...]
+        }
     """
-    terrain_matches = defaultdict(list)
-    object_matches = defaultdict(list)
-    define_as_matches = defaultdict(list)
+    terrain_data = defaultdict(lambda: {
+        "base": None,
+        "image": None,
+        "sources": []
+    })
     
     try:
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            lines = f.readlines()
+            content = f.read()
+            lines = content.split('\n')
         
         try:
             relative_path = file_path.relative_to(root_path)
@@ -143,129 +172,156 @@ def extract_ids_from_file(file_path, root_path):
             # Fallback if file_path is not under root_path (e.g., symlinks)
             relative_path = file_path
         
+        # Track current entity block for multi-line parsing
+        current_entity = None
+        current_entity_start_line = None
+        in_entity_block = False
+        brace_depth = 0
+        
         for line_num, line in enumerate(lines, start=1):
-            # Skip lines that are pure comments (start with -- after whitespace)
+            # Skip pure comment lines
             stripped = line.lstrip()
             if stripped.startswith('--'):
                 continue
             
-            # Remove inline comments to avoid extracting IDs from comments
-            # Note: This is a simple approach that doesn't handle -- inside string literals
-            # This is acceptable per the problem statement's "avoid insane false positives"
-            # requirement, which doesn't mandate perfect Lua parsing
+            # Remove inline comments
             code_part = line.split('--')[0] if '--' in line else line
             
-            # Extract terrain IDs
-            for match in TERRAIN_PATTERN.finditer(code_part):
-                terrain_id = match.group(1).upper()
-                source = f"{relative_path}:{line_num}"
-                terrain_matches[terrain_id].append(source)
+            # Check if we're entering a newEntity block
+            if 'newEntity' in code_part and '{' in code_part:
+                in_entity_block = True
+                current_entity = {}
+                current_entity_start_line = line_num
+                brace_depth = code_part.count('{') - code_part.count('}')
+            elif in_entity_block:
+                brace_depth += code_part.count('{') - code_part.count('}')
             
-            # Extract object IDs
-            for match in OBJECT_PATTERN.finditer(code_part):
-                object_id = match.group(1).upper()
-                source = f"{relative_path}:{line_num}"
-                object_matches[object_id].append(source)
-            
-            # Extract define_as IDs
-            for match in DEFINE_AS_PATTERN.finditer(code_part):
-                define_as_id = match.group(1).upper()
-                source = f"{relative_path}:{line_num}"
-                define_as_matches[define_as_id].append(source)
+            # If we're in an entity block, extract fields
+            if in_entity_block:
+                # Extract define_as
+                define_as_match = DEFINE_AS_PATTERN.search(code_part)
+                if define_as_match:
+                    current_entity['define_as'] = define_as_match.group(1).upper()
+                    current_entity['define_as_line'] = line_num
+                
+                # Extract base
+                base_match = BASE_PATTERN.search(code_part)
+                if base_match:
+                    current_entity['base'] = base_match.group(1).upper()
+                
+                # Extract image
+                image_match = IMAGE_PATTERN.search(code_part)
+                if image_match:
+                    current_entity['image'] = image_match.group(1)
+                
+                # Check if entity block is closed
+                if brace_depth == 0:
+                    in_entity_block = False
+                    # Process the completed entity
+                    if 'define_as' in current_entity:
+                        terrain_id = current_entity['define_as']
+                        source = f"{relative_path}:{current_entity['define_as_line']}"
+                        
+                        # Store data
+                        if current_entity.get('base'):
+                            terrain_data[terrain_id]['base'] = current_entity['base']
+                        if current_entity.get('image'):
+                            terrain_data[terrain_id]['image'] = current_entity['image']
+                        terrain_data[terrain_id]['sources'].append(source)
+                    
+                    current_entity = None
     
     except Exception as e:
         print(f"Warning: Error reading {file_path}: {e}", file=sys.stderr)
     
-    return terrain_matches, object_matches, define_as_matches
+    return dict(terrain_data)
 
 
-def merge_sources(all_sources):
+def merge_terrain_data(all_terrain_data):
     """
-    Merge source dictionaries and limit to MAX_SOURCES_PER_ID per ID.
+    Merge terrain data from multiple files and limit sources per ID.
     
     Args:
-        all_sources: Dict mapping ID -> list of sources
+        all_terrain_data: List of dicts from extract_terrain_data_from_file
     
     Returns:
-        Dict with sources limited to MAX_SOURCES_PER_ID per ID
+        Dict mapping terrain_id -> {base, image, sources}
     """
-    merged = defaultdict(list)
+    merged = defaultdict(lambda: {
+        "base": None,
+        "image": None,
+        "sources": []
+    })
     
-    for id_key, sources in all_sources.items():
-        # Remove duplicates while preserving order
-        unique_sources = []
-        seen = set()
-        for source in sources:
-            if source not in seen:
-                unique_sources.append(source)
-                seen.add(source)
-                if len(unique_sources) >= MAX_SOURCES_PER_ID:
-                    break
-        
-        merged[id_key] = unique_sources
+    for terrain_data in all_terrain_data:
+        for terrain_id, data in terrain_data.items():
+            # Merge base (prefer first non-None value)
+            if data.get('base') and not merged[terrain_id]['base']:
+                merged[terrain_id]['base'] = data['base']
+            
+            # Merge image (prefer first non-None value)
+            if data.get('image') and not merged[terrain_id]['image']:
+                merged[terrain_id]['image'] = data['image']
+            
+            # Merge sources (deduplicate and limit)
+            for source in data.get('sources', []):
+                if source not in merged[terrain_id]['sources']:
+                    merged[terrain_id]['sources'].append(source)
+                    if len(merged[terrain_id]['sources']) >= MAX_SOURCES_PER_ID:
+                        break
     
-    return dict(merged)
+    # Convert to regular dict and clean up None values
+    result = {}
+    for terrain_id, data in merged.items():
+        cleaned_data = {"sources": data['sources']}
+        if data['base']:
+            cleaned_data['base'] = data['base']
+        if data['image']:
+            cleaned_data['image'] = data['image']
+        result[terrain_id] = cleaned_data
+    
+    return result
 
 
-def extract_all_ids(root_path, include_general=False):
+def extract_all_terrain_data(root_path, include_general=False):
     """
-    Extract all IDs from ToME repository.
+    Extract all terrain data from ToME repository grids.lua files.
     
     Args:
         root_path: Path to ToME repository root
-        include_general: Whether to include general/** directory
+        include_general: Whether to include general/grids/** directory
     
     Returns:
-        Dict with terrain_ids, object_ids, define_as_ids, and sources
+        Dict with terrain_define_as and meta fields
     """
     print(f"Scanning ToME repository at: {root_path}")
     if include_general:
-        print("Including general/** directory")
+        print("Including general/grids/** directory")
     
-    lua_files = find_lua_files(root_path, include_general)
-    print(f"Found {len(lua_files)} .lua files to process")
+    grids_files = find_grids_lua_files(root_path, include_general)
+    print(f"Found {len(grids_files)} grids.lua files to process")
     
-    all_terrain = defaultdict(list)
-    all_objects = defaultdict(list)
-    all_define_as = defaultdict(list)
+    all_terrain_data = []
     
-    for lua_file in lua_files:
-        terrain, objects, define_as = extract_ids_from_file(lua_file, root_path)
-        
-        # Merge results
-        for tid, sources in terrain.items():
-            all_terrain[tid].extend(sources)
-        for oid, sources in objects.items():
-            all_objects[oid].extend(sources)
-        for did, sources in define_as.items():
-            all_define_as[did].extend(sources)
+    for grids_file in grids_files:
+        terrain_data = extract_terrain_data_from_file(grids_file, root_path)
+        if terrain_data:
+            all_terrain_data.append(terrain_data)
     
-    print(f"Extracted {len(all_terrain)} unique terrain IDs")
-    print(f"Extracted {len(all_objects)} unique object IDs")
-    print(f"Extracted {len(all_define_as)} unique define_as IDs")
+    # Merge all terrain data
+    merged_meta = merge_terrain_data(all_terrain_data)
     
-    # Limit sources per ID
-    all_terrain = merge_sources(all_terrain)
-    all_objects = merge_sources(all_objects)
-    all_define_as = merge_sources(all_define_as)
-    
-    # Combine all sources
-    all_sources = {}
-    all_sources.update(all_terrain)
-    all_sources.update(all_objects)
-    all_sources.update(all_define_as)
+    print(f"Extracted {len(merged_meta)} unique terrain define_as IDs")
     
     return {
-        "terrain_ids": sorted(all_terrain.keys()),
-        "object_ids": sorted(all_objects.keys()),
-        "define_as_ids": sorted(all_define_as.keys()),
-        "sources": all_sources
+        "terrain_define_as": sorted(merged_meta.keys()),
+        "meta": merged_meta
     }
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extract terrain and object IDs from ToME repository',
+        description='Extract terrain define_as IDs from ToME grids.lua files',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -283,12 +339,12 @@ Examples:
     parser.add_argument(
         '--include-general',
         action='store_true',
-        help='Also scan game/modules/tome/data/general/** directory'
+        help='Also scan game/modules/tome/data/general/grids/** directory'
     )
     parser.add_argument(
         '--out',
-        default='tome_used_terrain_manifest.json',
-        help='Output JSON filename (default: tome_used_terrain_manifest.json)'
+        default='tome_terrain_manifest.json',
+        help='Output JSON filename (default: tome_terrain_manifest.json)'
     )
     
     args = parser.parse_args()
@@ -305,21 +361,43 @@ Examples:
         print("Make sure --root points to the ToME repository root directory", file=sys.stderr)
         sys.exit(1)
     
-    # Extract IDs
-    result = extract_all_ids(root_path, args.include_general)
+    # Extract terrain data
+    result = extract_all_terrain_data(root_path, args.include_general)
     
-    # Write to file
+    # Write JSON file
     output_path = Path(args.out)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=2, sort_keys=True)
     
-    print(f"\nResults written to: {output_path}")
+    print(f"\nJSON results written to: {output_path}")
     
-    # Also print to stdout
+    # Write text file with one ID per line
+    txt_output_path = output_path.with_suffix('.txt').with_stem('tome_terrain_define_as_ids')
+    with open(txt_output_path, 'w', encoding='utf-8') as f:
+        for terrain_id in result['terrain_define_as']:
+            f.write(f"{terrain_id}\n")
+    
+    print(f"Text ID list written to: {txt_output_path}")
+    
+    # Also print summary to stdout
     print("\n" + "="*60)
-    print("JSON OUTPUT:")
+    print("EXTRACTION SUMMARY:")
     print("="*60)
-    print(json.dumps(result, indent=2, sort_keys=True))
+    print(f"Total terrain IDs: {len(result['terrain_define_as'])}")
+    print(f"\nFirst 20 IDs:")
+    for terrain_id in result['terrain_define_as'][:20]:
+        print(f"  - {terrain_id}")
+    if len(result['terrain_define_as']) > 20:
+        print(f"  ... and {len(result['terrain_define_as']) - 20} more")
+    
+    print("\n" + "="*60)
+    print("JSON OUTPUT (first 50 lines):")
+    print("="*60)
+    json_str = json.dumps(result, indent=2, sort_keys=True)
+    json_lines = json_str.split('\n')
+    print('\n'.join(json_lines[:50]))
+    if len(json_lines) > 50:
+        print(f"... ({len(json_lines) - 50} more lines)")
     
     return 0
 
