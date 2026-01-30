@@ -158,6 +158,15 @@ return {
     local skipped_missing = 0
     local skipped_dangerous = 0
     
+    -- Whitelist of known-safe DCCB custom grids
+    -- These are designed for the addon and safe to display
+    local SAFE_DCCB_GRIDS = {
+      FLOOR = true, WALL = true,
+      GRASS = true, ROAD = true, TREE = true,
+      GRASS_WINTER = true, ROAD_WINTER = true, TREE_WINTER = true,
+      GRASS_RUINS = true, ROAD_RUINS = true, TREE_RUINS = true,
+    }
+    
     -- Helper function to check if terrain is dangerous
     local function is_dangerous_terrain(terrain)
       if not terrain then return false end
@@ -196,17 +205,27 @@ return {
             x, y, terrain_info.id))
         end
       else
-        -- Resolve the terrain first to get actual properties (not inherited)
+        -- Resolve the terrain first to get actual properties
         if terrain.resolve then terrain:resolve() end
         
-        -- Check if resolved terrain is dangerous
-        if is_dangerous_terrain(terrain) then
-          -- Terrain has dangerous hooks (would cause transitions)
+        -- Check if this is a whitelisted DCCB grid (always safe)
+        if SAFE_DCCB_GRIDS[terrain_info.id] then
+          -- Whitelisted DCCB grid: always safe to display
+          level.map(x, y, Map.TERRAIN, terrain)
+          placed_count = placed_count + 1
+          
+          -- Only log first few placements to avoid spam
+          if placed_count <= 10 then
+            print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
+              x, y, terrain_info.id, terrain_info.category))
+          end
+        elseif is_dangerous_terrain(terrain) then
+          -- Not whitelisted and has dangerous hooks: skip it
           skipped_dangerous = skipped_dangerous + 1
           print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (has change_level/on_stand)", 
             x, y, terrain_info.id))
         else
-          -- Safe terrain - place it
+          -- Not whitelisted but safe: place it
           level.map(x, y, Map.TERRAIN, terrain)
           placed_count = placed_count + 1
           
