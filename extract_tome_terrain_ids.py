@@ -43,9 +43,11 @@ This ensures the DCCB gallery includes all terrain types used in official ToME z
 Extraction Strategy:
 -------------------
 Uses regex patterns to extract:
-1. makeEntityByName(..., "terrain", "<ID>")
+1. makeEntityByName(..., "terrain", "<ID>") or makeEntityByName(..., "grid", "<ID>")
 2. makeEntityByName(..., "object", "<ID>")
 3. define_as = "<ID>"
+
+Note: ToME uses both "terrain" and "grid" for terrain entities. This script extracts both.
 
 The script avoids complex Lua parsing to remain lightweight and dependency-free.
 """
@@ -65,9 +67,10 @@ from pathlib import Path
 # The re.IGNORECASE flag allows matching IDs in any case, and we normalize to uppercase
 # with .upper() to ensure consistency
 
-# Pattern 1: makeEntityByName(..., "terrain", "ID")
+# Pattern 1: makeEntityByName(..., "terrain", "ID") or makeEntityByName(..., "grid", "ID")
+# Note: ToME uses both "terrain" and "grid" for terrain/grid entities
 TERRAIN_PATTERN = re.compile(
-    r'makeEntityByName\s*\([^,]*,\s*["\']terrain["\']\s*,\s*["\']([A-Z_][A-Z0-9_]*)["\']',
+    r'makeEntityByName\s*\([^,]*,\s*["\'](?:terrain|grid)["\']\s*,\s*["\']([A-Z_][A-Z0-9_]*)["\']',
     re.IGNORECASE
 )
 
