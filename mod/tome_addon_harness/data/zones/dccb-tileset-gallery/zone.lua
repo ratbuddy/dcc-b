@@ -195,19 +195,23 @@ return {
           print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | MISSING", 
             x, y, terrain_info.id))
         end
-      elseif is_dangerous_terrain(terrain) then
-        -- Terrain has dangerous hooks (would cause transitions)
-        skipped_dangerous = skipped_dangerous + 1
-        print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (has change_level/on_stand)", 
-          x, y, terrain_info.id))
       else
-        -- Safe terrain - place it
+        -- Resolve the terrain first to get actual properties (not inherited)
         if terrain.resolve then terrain:resolve() end
-        level.map(x, y, Map.TERRAIN, terrain)
-        placed_count = placed_count + 1
         
-        -- Only log first few placements to avoid spam
-        if placed_count <= 10 then
+        -- Check if resolved terrain is dangerous
+        if is_dangerous_terrain(terrain) then
+          -- Terrain has dangerous hooks (would cause transitions)
+          skipped_dangerous = skipped_dangerous + 1
+          print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (has change_level/on_stand)", 
+            x, y, terrain_info.id))
+        else
+          -- Safe terrain - place it
+          level.map(x, y, Map.TERRAIN, terrain)
+          placed_count = placed_count + 1
+          
+          -- Only log first few placements to avoid spam
+          if placed_count <= 10 then
           print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
             x, y, terrain_info.id, terrain_info.category))
         end
