@@ -1,25 +1,25 @@
 # dccb-tileset-gallery Zone - Usage Guide
 
 ## Overview
-The dccb-tileset-gallery zone is a **debug/reference tool** that displays a visual palette of all DCCB terrain grids **plus official ToME terrain families**. It's designed to validate tileset image paths and serve as a comprehensive catalog for theme development.
+The dccb-tileset-gallery zone is a **debug/reference tool** that displays a **dense visual palette** of 90+ terrain samples. It validates tileset image paths and serves as a comprehensive catalog for theme development.
 
 ## Purpose
 
 ### Why This Zone Exists
-After PR #45 fixed ASCII fallback by removing invalid image paths, we needed:
-1. A way to **validate which tileset paths work** without trial-and-error
-2. A **visual catalog** of all available DCCB grids
-3. A **reference for official ToME terrains** (water, lava, forest, mountain)
-4. A **regression testing tool** to detect tileset issues
-5. A **comprehensive reference** for future theme development
+After PR #45 fixed ASCII fallback, we needed a comprehensive terrain catalog. This zone now provides:
+1. **Dense palette:** 40-60+ visible terrain samples tightly packed
+2. **Comprehensive catalog:** 90+ terrain candidates from all ToME families
+3. **Safe operation:** Handles missing IDs and dangerous terrains gracefully
+4. **Visual validation:** See which tilesets render correctly vs ASCII
+5. **Theme reference:** All DCCB themes plus official ToME terrain families
 
 ### What Problem It Solves
 - **Eliminates guessing:** See immediately which tilesets render correctly
-- **Side-by-side comparison:** View all themed variants at once
-- **Official terrain showcase:** Discover what terrains ToME provides
-- **Safe loading:** Handles missing terrain packs gracefully (no crashes)
-- **Documentation:** Canonical reference for all available terrains
-- **Quality assurance:** Detect ASCII fallback issues before they reach players
+- **Comprehensive coverage:** Probes 90+ terrain IDs across all categories
+- **Safe exploration:** No crashes, no unwanted zone transitions
+- **Dense layout:** Many samples visible at once (not widely spaced)
+- **Clear categorization:** DCCB custom + official ToME terrains organized
+- **Quality assurance:** Detect tileset issues before they reach players
 
 ## How to Access
 
@@ -36,68 +36,62 @@ game:changeLevel(1, "dccb+dccb-tileset-gallery")
 
 ## What You'll See
 
-### Terrain Palette Layout
-The zone displays **up to 30 terrain samples** in an organized layout:
+### Dense Palette Layout
+The zone displays a **dense grid** of terrain samples:
 
 **Background:** Filled with grass (or floor if grass unavailable)  
-**Starting position:** (5, 5)  
-**Spacing:** 4 cells between samples  
-**Arrangement:** 6 terrains per row
+**Starting position:** (2, 2)  
+**Spacing:** 2 cells between samples (tight packing)  
+**Arrangement:** 16-20 terrains per row (auto-calculated)  
+**Spawn pad:** 8×8 walkable area at bottom-right corner
 
 ### Generation Process
 1. **Background Fill:** Entire map filled with GRASS or FLOOR (no black areas)
-2. **Terrain Loading:** Safely loads 5 additional ToME terrain packs
-3. **Sample Placement:** Places terrain samples from catalog at spaced coordinates
+2. **Spawn Pad:** 8×8 safe walkable area created at bottom-right
+3. **Dense Layout:** Auto-calculates columns from map width (~16-20)
+4. **Safe Placement:** Each terrain checked for safety before placing
+5. **Terrain Loading:** Safely loads terrain packs and probes 90+ candidates
 
-### Terrain Categories
+### Terrain Categories (90+ Candidates)
 
-#### DCCB Custom Terrains (13 terrains)
+#### DCCB Custom Terrains (12 terrains)
+- **Base:** FLOOR, WALL
+- **Green Theme:** GRASS, ROAD, TREE
+- **Winter Theme:** GRASS_WINTER, ROAD_WINTER, TREE_WINTER
+- **Ruins Theme:** GRASS_RUINS, ROAD_RUINS, TREE_RUINS
+- **Special:** DCCB_ENTRANCE
 
-**Base (2 terrains):**
-- `FLOOR` - Standard floor tile (from ToME basic.lua)
-- `WALL` - Standard wall tile (from ToME basic.lua)
+#### Official ToME Terrains (80+ candidates)
+*Note: Many may be skipped if terrain packs not loaded - this is normal*
 
-**Green/Plains Theme (3 terrains):**
-- `GRASS` - Green grass with explicit tileset (terrain/grass.png)
-- `ROAD` - Dirt road with explicit tileset (terrain/road_dirt_6_1.png)
-- `TREE` - Tree with explicit tileset (terrain/tree.png)
+**Base/Generic (10):**
+- HARDFLOOR, HARDWALL, DIRT, SAND, ROCK, STONE_FLOOR, STONE_WALL
+- GRANITE_FLOOR, GRANITE_WALL, MARBLE_FLOOR, MARBLE_WALL
 
-**Winter/Snow Theme (3 terrains):**
-- `GRASS_WINTER` - Snowy ground (inherits from FLOOR, white color)
-- `ROAD_WINTER` - Icy path (inherits from FLOOR, light blue color)
-- `TREE_WINTER` - Snowy tree (inherits from WALL, white color)
+**Forest (10):**
+- FOREST_TREE, TREE_OLDER, TREE_BURNT, DENSE_FOREST, TREE_WALL
+- BUSH, THICKET, FOREST_FLOOR, FOREST_GRASS, TALL_GRASS
 
-**Ruins/Ancient Theme (3 terrains):**
-- `GRASS_RUINS` - Overgrown ground (inherits from FLOOR, dark green color)
-- `ROAD_RUINS` - Ancient path (inherits from FLOOR, grey color)
-- `TREE_RUINS` - Ruined pillar (inherits from WALL, grey color)
+**Water (8):**
+- WATER, DEEP_WATER, SHALLOW_WATER, WATER_BUBBLE, WATER_FLOOR
+- UNDERWATER_FLOOR, UNDERWATER_WALL, POOL
 
-**Special (1 terrain):**
-- `DCCB_ENTRANCE` - Dungeon entrance marker (yellow, grass tileset)
+**Lava (6):**
+- LAVA, DEEP_LAVA, LAVA_DEEP, VOLCANIC_FLOOR, LAVA_FLOOR, MOLTEN_ROCK
 
-#### Official ToME Terrains (17 terrains)
-*Note: Availability depends on which terrain packs successfully loaded*
+**Mountain/Cave (8):**
+- MOUNTAIN, MOUNTAIN_WALL, MOUNTAIN_FLOOR, CAVE_WALL, CAVE_FLOOR
+- ROCKY_GROUND, ROUGH_ROCK, CAVE_MOSS
 
-**Forest Terrains (4 terrains):**
-- `FOREST_TREE` - Forest tree
-- `TREE_OLDER` - Old tree
-- `TREE_BURNT` - Burnt tree
-- `DENSE_FOREST` - Dense forest
+**Snow/Ice (7):**
+- SNOW, SNOW_FLOOR, SNOW_GROUND, ICE, ICE_FLOOR, ICE_WALL, FROZEN_GROUND
 
-**Water Terrains (3 terrains):**
-- `WATER` - Shallow water
-- `DEEP_WATER` - Deep water
-- `WATER_BUBBLE` - Bubbling water
+**Dungeon (6):**
+- DOOR, DOOR_OPEN, DOOR_CLOSED, CHASM, PIT, VOID
 
-**Lava Terrains (3 terrains):**
-- `LAVA` - Lava
-- `LAVA_DEEP` - Deep lava
-- `VOLCANIC_FLOOR` - Volcanic floor
-
-**Mountain Terrains (3 terrains):**
-- `MOUNTAIN` - Mountain
-- `MOUNTAIN_WALL` - Mountain wall
-- `ROCK` - Rocky ground
+**Misc (13):**
+- SWAMP, MUD, BOG, SAND_FLOOR, DESERT_SAND, COBBLESTONE, FLAGSTONE
+- CRYSTAL, CRYSTAL_WALL, FUNGUS, SLIME
 
 **Base Variants (4 terrains):**
 - `HARDFLOOR` - Hard floor
@@ -105,7 +99,7 @@ The zone displays **up to 30 terrain samples** in an organized layout:
 
 ## Expected Log Output
 
-When the zone generates, you'll see detailed logging in three steps:
+When the zone generates, you'll see detailed logging with safety checks:
 
 ```
 [DCCB-Gallery] Entered zone 'dccb-tileset-gallery' level 1
@@ -117,45 +111,64 @@ When the zone generates, you'll see detailed logging in three steps:
 [DCCB-Gallery] Failed to load terrain pack: /data/general/grids/jungle_hut.lua : [error details]
 
 [DCCB-Gallery] ========================================
-[DCCB-Gallery] Generating Tileset Palette
+[DCCB-Gallery] Generating Dense Tileset Palette
 [DCCB-Gallery] ========================================
 
 [DCCB-Gallery] Step 1: Filling background...
 [DCCB-Gallery] Background filled with: grass
 
-[DCCB-Gallery] Step 2: Preparing terrain catalog...
+[DCCB-Gallery] Step 2: Creating spawn pad...
+[DCCB-Gallery] Spawn pad: 8x8 at (40,40)
 
-[DCCB-Gallery] Step 3: Placing 30 terrain samples...
-[DCCB-Gallery] Layout: 6 grids per row, spacing=4
+[DCCB-Gallery] Step 3: Dense layout: 16 columns, 2x2 cell spacing
 
-[DCCB-Gallery] ✓ [ 5, 5] FLOOR                | DCCB/Base      | Standard floor tile
-[DCCB-Gallery] ✓ [ 9, 5] WALL                 | DCCB/Base      | Standard wall tile
-[DCCB-Gallery] ✓ [13, 5] GRASS                | DCCB/Green     | Grass (explicit tileset)
-... (all DCCB terrains)
-[DCCB-Gallery] ✓ [13,13] WATER                | ToME/Water     | Shallow water
-[DCCB-Gallery] ⊘ [17,13] LAVA_DEEP            | ToME/Lava      | SKIPPED (not found)
-[DCCB-Gallery] ✓ [21,13] MOUNTAIN             | ToME/Mountain  | Mountain
-... (remaining terrains)
+[DCCB-Gallery] Step 4: Placing terrain samples from manifest (90 candidates)...
+
+[DCCB-Gallery] ✓ [ 2, 2] FLOOR                | DCCB/Base
+[DCCB-Gallery] ✓ [ 4, 2] WALL                 | DCCB/Base
+[DCCB-Gallery] ✓ [ 6, 2] GRASS                | DCCB/Green
+... (first 10 placed terrains logged)
+[DCCB-Gallery] ⊘ [14, 4] SHALLOW_WATER        | MISSING
+[DCCB-Gallery] ⊘ [16, 4] UNDERWATER_FLOOR     | MISSING
+... (first 5 missing terrains logged)
+[DCCB-Gallery] ⚠ [20, 6] DOOR_CLOSED          | DANGEROUS (has change_level/on_stand)
+[DCCB-Gallery] ⚠ [22, 6] CHASM                | DANGEROUS (has change_level/on_stand)
+... (all dangerous terrains logged)
 
 [DCCB-Gallery] ========================================
 [DCCB-Gallery] Palette generation complete
-[DCCB-Gallery] Total attempted: 30
-[DCCB-Gallery] Placed: 24 | Skipped: 6
+[DCCB-Gallery] ========================================
+[DCCB-Gallery] Total candidates: 90
+[DCCB-Gallery] ✓ Placed: 45 terrains
+[DCCB-Gallery] ⊘ Skipped (missing): 40
+[DCCB-Gallery] ⚠ Skipped (dangerous): 5
+[DCCB-Gallery] Layout: 16 columns × 3 rows visible
 [DCCB-Gallery] ========================================
 ```
 
 ### Log Symbols
-- **✓** - Terrain successfully placed
-- **⊘** - Terrain skipped (ID not found in loaded packs)
+- **✓** - Terrain successfully placed (safe to use)
+- **⊘** - Terrain skipped (ID not found - normal for missing packs)
+- **⚠** - Terrain dangerous (has change_level/on_stand hooks - filtered out)
 
-The skipped terrains are **expected** - not all ToME installations have all terrain packs. The gallery handles this gracefully.
+### What the Counts Mean
 
-### What to Look For
+**Placed (40-60):** Terrains that exist and are safe to use  
+**Skipped Missing (30-50):** Terrains not found - depends on ToME installation  
+**Skipped Dangerous (5-10):** Terrains with transition hooks - intentionally filtered
 
-**✓ (checkmark)** = Terrain placed successfully  
-**⊘ (crossed circle)** = Terrain skipped (not found - normal for missing packs)
+Missing terrains are **expected and normal** - not all ToME installations have all terrain packs. The gallery probes comprehensively to find what's available.
 
-If a terrain is skipped, it simply means that terrain pack isn't loaded. This is **expected behavior** and not an error.
+### Safety Features
+
+**Dangerous Terrain Detection:**
+The gallery automatically filters terrains with:
+- `change_level` - Would cause zone transitions
+- `change_zone` - Would change zones
+- `on_stand` - Could trigger when walking
+- `on_move` - Could trigger on movement
+
+These are logged with ⚠ and **never placed** to prevent unwanted transitions.
 
 ## Validating Tilesets
 
@@ -184,20 +197,25 @@ Walk around the zone and visually inspect each grid:
 
 ## How to Add New Terrains to Catalog
 
-### Step 1: Add Terrain Pack (if needed)
-If adding official ToME terrains, add the pack load to `grids.lua`:
+### Step 1: Add to Manifest
+Edit `/mod/tome_addon_harness/data/dccb/tileset/gallery_manifest.lua`:
 
 ```lua
-safe_load("/data/general/grids/your_pack.lua")
+M.TERRAIN_CANDIDATES = {
+  -- ... existing terrains ...
+  
+  -- Add your new terrain:
+  {id = "MY_TERRAIN", category = "Custom/MyTheme", description = "My custom terrain"},
+}
 ```
 
 ### Step 2: Define Custom Terrain (optional)
-For DCCB custom terrains, add to `grids.lua`:
+If it's a DCCB custom terrain, add to `dccb-tileset-gallery/grids.lua`:
 
 ```lua
 newEntity{
   base = "FLOOR",
-  define_as = "MY_NEW_TERRAIN",
+  define_as = "MY_TERRAIN",
   type = "floor", subtype = "custom",
   name = "my custom terrain",
   display = '*', color=colors.PURPLE,
@@ -206,70 +224,70 @@ newEntity{
 }
 ```
 
-### Step 3: Add to Catalog
-Edit `zone.lua` and add to the `grid_catalog` table:
-
-```lua
-local grid_catalog = {
-  -- ... existing entries ...
-  
-  {id = "MY_NEW_TERRAIN", category = "Custom/Theme", description = "My custom terrain"},
-}
-```
-
-### Step 4: Test
+### Step 3: Test
 1. Load the zone: `game:changeLevel(1, "dccb+dccb-tileset-gallery")`
 2. Check the log:
-   - Pack loaded successfully?
-   - Terrain placed (✓) or skipped (⊘)?
+   - Terrain placed (✓), missing (⊘), or dangerous (⚠)?
 3. Visually inspect: PNG tile or ASCII fallback?
 
-### Step 5: Fix Issues
+### Step 4: Fix Issues
 If you see ASCII instead of tile:
 1. Check if `image` path exists in ToME
 2. Try removing `image` to inherit from base
 3. Verify `base` entity has valid tileset
 
-If terrain is skipped:
-1. Check terrain ID spelling
+If terrain is skipped (missing):
+1. Check terrain ID spelling in manifest
 2. Verify terrain pack loaded successfully
 3. Confirm terrain exists in that pack
+
+If terrain is dangerous (⚠):
+1. This is intentional - terrain has transition hooks
+2. Gallery filters these to prevent unwanted zone changes
+3. Don't use these terrains in gameplay zones
 
 ## Technical Details
 
 ### Zone Configuration
-- **Size:** 50x50 (large enough for expanded palette)
+- **Size:** 50x50 (large enough for dense palette)
 - **Generator:** Empty (blank canvas)
 - **Levels:** Single level only
 - **Visibility:** All remembered, all lited (full visibility)
 - **Persistence:** Zone level
 - **Background:** Filled with GRASS or FLOOR (no black areas)
+- **Spawn Pad:** 8×8 walkable area at bottom-right
 
-### Terrain Placement Algorithm
+### Dense Layout Algorithm
 ```lua
-grids_per_row = 6  -- Increased from 5
-grid_spacing = 4
-start_x = 5
-start_y = 5
+CELL_W = 2              -- Tight horizontal spacing
+CELL_H = 2              -- Tight vertical spacing
+START_X = 2             -- Palette origin
+START_Y = 2
+cols = ~16-20           -- Auto-calculated from map width
 
 For terrain #N (1-indexed):
-  row = floor((N-1) / grids_per_row)
-  col = (N-1) % grids_per_row
-  x = start_x + (col * grid_spacing)
-  y = start_y + (row * grid_spacing)
+  row = floor((N-1) / cols)
+  col = (N-1) % cols
+  x = START_X + (col * CELL_W)
+  y = START_Y + (row * CELL_H)
 ```
 
-### Why This Layout
-- **Background fill:** Prevents black map, provides context
-- **Spacing (4 cells):** Enough to see individual terrains clearly
-- **6 per row:** Accommodates expanded catalog (30 terrains)
-- **Starting (5,5):** Leaves border space, centers content
+### Why Dense Layout
+- **Tight spacing (2 cells):** Maximizes visible terrains
+- **Auto columns (~16-20):** Adapts to map width
+- **Sequential placement:** Easy to scan visually
+- **Spawn pad:** Safe walkable area preserved
 
-### Safe Loading
-Terrain packs are loaded with `pcall` to prevent crashes:
-- If pack loads: Terrains available for placement
-- If pack fails: Logged but doesn't crash zone
-- Missing terrains: Skipped gracefully during placement
+### Safety Checks
+**Three-tier filtering:**
+1. **Entity creation:** `zone:makeEntityByName()` - nil if not found
+2. **Dangerous check:** Looks for change_level/on_stand/etc hooks
+3. **Safe placement:** Only places terrains that pass both checks
+
+**Prevents:**
+- Crashes from missing terrains
+- Unwanted zone transitions
+- Movement-triggered events
 
 ## Integration with Development Workflow
 
@@ -303,9 +321,10 @@ Terrain packs are loaded with `pcall` to prevent crashes:
 ### Zone Won't Load
 **Problem:** Error when changing to zone  
 **Check:**
-1. Are all resource files present? (grids.lua, npcs.lua, etc.)
-2. Is grids.lua syntax correct? (Lua errors)
-3. Are zone directories created correctly?
+1. Is manifest file present? (`data/dccb/tileset/gallery_manifest.lua`)
+2. Are all resource files present? (grids.lua, npcs.lua, etc.)
+3. Is zone.lua syntax correct? (Lua errors)
+4. Are zone directories created correctly?
 
 ### All Terrains Show ASCII
 **Problem:** Everything renders as ASCII characters  
@@ -314,18 +333,31 @@ Terrain packs are loaded with `pcall` to prevent crashes:
 2. Are base entities (FLOOR, WALL) available?
 3. ToME tileset installation correct?
 
-### Some Terrains Skipped
-**Problem:** `⊘` in log for specific terrains (especially ToME terrains)  
-**This is normal!** Not all terrain packs exist in all ToME installations. The gallery handles this gracefully. Only investigate if:
-1. All ToME terrains are skipped (check pack loading)
-2. DCCB terrains are skipped (check grids.lua definitions)
+### Most Terrains Skipped (⊘)
+**Problem:** Many terrains show `⊘ MISSING` in log  
+**This is normal!** The gallery probes 90+ terrain IDs. Not all exist in every ToME installation.
+
+**Expected:** 40-50 skipped terrains is typical  
+**Only investigate if:**
+1. ALL terrains are skipped (check manifest loading)
+2. All DCCB terrains are skipped (check grids.lua)
+3. Placed count is very low (<10)
+
+### Dangerous Terrains (⚠)
+**Problem:** Some terrains show `⚠ DANGEROUS` in log  
+**This is intentional!** These terrains have change_level/on_stand hooks that would cause zone transitions.
+
+**Expected:** 5-10 dangerous terrains is normal  
+**Action:** None needed - these are automatically filtered for safety
 
 ### Terrain Pack Load Failures
 **Problem:** "Failed to load terrain pack" messages  
-**Check:**
-1. Is this a standard ToME installation? (some packs may not exist)
-2. Are pack paths correct? (`/data/general/grids/water.lua` etc.)
-3. This is **expected** for non-existent packs - zone continues safely
+**This is expected** for non-existent packs. Common scenarios:
+1. jungle_hut.lua may not exist in all ToME versions
+2. Some packs are expansion/mod-specific
+3. Gallery continues safely without them
+
+**Only investigate if:** All terrain packs fail to load (ToME installation issue)
 
 ### Colors Look Wrong
 **Problem:** Grids have wrong colors  
