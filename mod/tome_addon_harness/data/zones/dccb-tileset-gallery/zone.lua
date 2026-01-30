@@ -8,12 +8,12 @@
 -- Missing IDs are skipped safely, dangerous terrains (with change_level/on_stand) are filtered
 
 -- Dense layout configuration
-local CELL_W = 2              -- Cell width spacing
-local CELL_H = 2              -- Cell height spacing
+local CELL_W = 3              -- Cell width (3x3 per terrain)
+local CELL_H = 3              -- Cell height (3x3 per terrain)
+local CELL_GAP = 1            -- Gap between cells
 local START_X = 2             -- Palette start X
 local START_Y = 2             -- Palette start Y
 local SPAWN_PAD_SIZE = 8      -- Walkable spawn pad size
-local DEBUG_SHOW_OBJECTS = false  -- Toggle object display
 
 return {
   name = "DCCB Tileset Gallery",
@@ -140,14 +140,15 @@ return {
         SPAWN_PAD_SIZE, SPAWN_PAD_SIZE, spawn_x, spawn_y))
     end
     
-    -- Step 3: Calculate dense layout
+    -- Step 3: Calculate dense layout with 3x3 cells + 1 tile gap
     local map_width = level.map.w
+    local cell_total = CELL_W + CELL_GAP  -- Total space per cell
     local available_width = map_width - START_X - 2
-    local cols = math.floor(available_width / CELL_W)
-    cols = math.max(cols, 10)  -- At least 10 columns
+    local cols = math.floor(available_width / cell_total)
+    cols = math.max(cols, 8)  -- At least 8 columns
     
-    print(string.format("[DCCB-Gallery] Step 3: Dense layout: %d columns, %dx%d cell spacing", 
-      cols, CELL_W, CELL_H))
+    print(string.format("[DCCB-Gallery] Step 3: Layout: %d columns, %dx%d cells, %d gap", 
+      cols, CELL_W, CELL_H, CELL_GAP))
     
     -- Step 4: Place terrain samples with safety checks
     print(string.format("[DCCB-Gallery] Step 4: Placing terrain samples from manifest (%d candidates)...", 
@@ -173,8 +174,10 @@ return {
       local row = math.floor((idx - 1) / cols)
       local col = (idx - 1) % cols
       
-      local x = START_X + (col * CELL_W)
-      local y = START_Y + (row * CELL_H)
+      -- Calculate position with cell spacing + gap
+      local cell_total = CELL_W + CELL_GAP
+      local x = START_X + (col * cell_total)
+      local y = START_Y + (row * cell_total)
       
       -- Skip if out of bounds
       if x >= map_width - 2 or y >= level.map.h - 2 then
@@ -209,32 +212,6 @@ return {
             x, y, terrain_info.id, terrain_info.category))
         end
       end
-    end
-    
-    -- Step 5: Optionally place objects (if enabled)
-    if DEBUG_SHOW_OBJECTS and manifest.OBJECT_CANDIDATES then
-      print("[DCCB-Gallery] Step 5: Placing object samples...")
-      local object_placed = 0
-      local object_start_y = START_Y + (math.ceil(#manifest.TERRAIN_CANDIDATES / cols) * CELL_H) + 5
-      
-      for idx, obj_info in ipairs(manifest.OBJECT_CANDIDATES) do
-        local row = math.floor((idx - 1) / cols)
-        local col = (idx - 1) % cols
-        
-        local x = START_X + (col * CELL_W)
-        local y = object_start_y + (row * CELL_H)
-        
-        if y >= level.map.h - 2 then break end
-        
-        local obj = zone:makeEntityByName(level, "object", obj_info.id)
-        if obj then
-          if obj.resolve then obj:resolve() end
-          level.map(x, y, Map.OBJECT, obj)
-          object_placed = object_placed + 1
-        end
-      end
-      
-      print(string.format("[DCCB-Gallery] Objects placed: %d", object_placed))
     end
     
     print("[DCCB-Gallery] ========================================")
