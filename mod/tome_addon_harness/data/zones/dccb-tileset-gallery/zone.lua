@@ -212,8 +212,9 @@ return {
           
           -- Only log first few placements to avoid spam
           if placed_count <= 10 then
-          print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
-            x, y, terrain_info.id, terrain_info.category))
+            print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
+              x, y, terrain_info.id, terrain_info.category))
+          end
         end
       end
     end
