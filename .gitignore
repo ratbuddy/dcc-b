@@ -1,0 +1,22 @@
+# Generated output files (specific files kept for documentation, but covered by *.json and *.txt below)
+tome_terrain_manifest.json
+tome_terrain_define_as_ids.txt
+*.json
+*.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
