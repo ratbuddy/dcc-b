@@ -184,11 +184,18 @@ def extract_terrain_data_from_file(file_path, root_path):
             if stripped.startswith('--'):
                 continue
             
-            # Remove inline comments
+            # Remove inline comments (simple approach - doesn't handle -- inside string literals)
+            # This limitation is acceptable per requirements for lightweight parsing
             code_part = line.split('--')[0] if '--' in line else line
             
             # Check if we're entering a newEntity block
-            if 'newEntity' in code_part and '{' in code_part:
+            # Look for 'newEntity' followed by a brace (allowing whitespace between)
+            if re.search(r'newEntity\s*\{', code_part):
+                # Don't start a new entity if we're already in one (handle nested/malformed cases)
+                if in_entity_block:
+                    # Log warning but continue (could be malformed Lua)
+                    print(f"Warning: Nested newEntity detected at {relative_path}:{line_num}", file=sys.stderr)
+                
                 in_entity_block = True
                 current_entity = {}
                 current_entity_start_line = line_num
@@ -214,8 +221,8 @@ def extract_terrain_data_from_file(file_path, root_path):
                 if image_match:
                     current_entity['image'] = image_match.group(1)
                 
-                # Check if entity block is closed
-                if brace_depth == 0:
+                # Check if entity block is closed (handle malformed code with negative depth)
+                if brace_depth <= 0:
                     in_entity_block = False
                     # Process the completed entity
                     if 'define_as' in current_entity:
@@ -230,6 +237,9 @@ def extract_terrain_data_from_file(file_path, root_path):
                         terrain_data[terrain_id]['sources'].append(source)
                     
                     current_entity = None
+                    # Reset brace_depth if it went negative
+                    if brace_depth < 0:
+                        brace_depth = 0
     
     except Exception as e:
         print(f"Warning: Error reading {file_path}: {e}", file=sys.stderr)
@@ -255,13 +265,21 @@ def merge_terrain_data(all_terrain_data):
     
     for terrain_data in all_terrain_data:
         for terrain_id, data in terrain_data.items():
-            # Merge base (prefer first non-None value)
-            if data.get('base') and not merged[terrain_id]['base']:
-                merged[terrain_id]['base'] = data['base']
+            # Merge base (prefer first non-None value, warn on conflicts)
+            if data.get('base'):
+                if merged[terrain_id]['base'] and merged[terrain_id]['base'] != data['base']:
+                    print(f"Warning: Conflicting 'base' for {terrain_id}: "
+                          f"{merged[terrain_id]['base']} vs {data['base']}", file=sys.stderr)
+                elif not merged[terrain_id]['base']:
+                    merged[terrain_id]['base'] = data['base']
             
-            # Merge image (prefer first non-None value)
-            if data.get('image') and not merged[terrain_id]['image']:
-                merged[terrain_id]['image'] = data['image']
+            # Merge image (prefer first non-None value, warn on conflicts)
+            if data.get('image'):
+                if merged[terrain_id]['image'] and merged[terrain_id]['image'] != data['image']:
+                    print(f"Warning: Conflicting 'image' for {terrain_id}: "
+                          f"{merged[terrain_id]['image']} vs {data['image']}", file=sys.stderr)
+                elif not merged[terrain_id]['image']:
+                    merged[terrain_id]['image'] = data['image']
             
             # Merge sources (deduplicate and limit)
             for source in data.get('sources', []):
@@ -372,7 +390,8 @@ Examples:
     print(f"\nJSON results written to: {output_path}")
     
     # Write text file with one ID per line
-    txt_output_path = output_path.with_suffix('.txt').with_stem('tome_terrain_define_as_ids')
+    # Derive text filename from JSON output path to preserve user's naming preference
+    txt_output_path = output_path.with_suffix('.txt')
     with open(txt_output_path, 'w', encoding='utf-8') as f:
         for terrain_id in result['terrain_define_as']:
             f.write(f"{terrain_id}\n")
