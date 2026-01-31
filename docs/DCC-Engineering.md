@@ -185,6 +185,12 @@ DCCBState = {
   5. reward_tables/*.json
   6. mutations/*.json
 
+**Terrain Resources** (Phase 2+):
+- TE4 terrain catalog available at `/docs/te4_grid_catalog.json`
+- Pre-categorized terrain lists at `/docs/te4_grid_ids_by_category/*.txt`
+- Safe terrain list at `/docs/te4_gallery_safe_ids.txt`
+- See `TE4_GRID_SAFETY_ANALYSIS.md` for usage guidelines
+
 ### 4.2 Validation levels
 - **Runtime validation** (Lua): required keys, type sanity, referential integrity (IDs exist).
 - **Offline validation** (tools): JSON Schema (optional but recommended).
