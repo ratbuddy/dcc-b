@@ -242,6 +242,15 @@ return {
       DCCB_ENTRANCE = true,  -- Has on_stand message
     }
     
+    -- Track entity types
+    local by_entity_kind = {
+      terrain = {},
+      object = {},
+      trap = {},
+      missing = {},
+      dangerous = {},
+    }
+    
     -- Process all terrains in range to build signature map
     for idx = start_idx, end_idx do
       local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
@@ -253,35 +262,70 @@ return {
       if KNOWN_DANGEROUS[id] then
         phase1_dangerous = phase1_dangerous + 1
         id_to_signature[id] = "DANGEROUS"
+        table.insert(by_entity_kind.dangerous, id)
       else
-        -- Try to create terrain
-        local terrain = zone:makeEntityByName(level, "terrain", id)
+        -- Try multiple entity types: terrain, object, trap
+        local entity = nil
+        local entity_kind = nil
         
-        if not terrain then
-          -- Terrain not found
+        -- Try terrain first
+        entity = zone:makeEntityByName(level, "terrain", id)
+        if entity then
+          entity_kind = "terrain"
+        end
+        
+        -- Try object if terrain failed
+        if not entity then
+          entity = zone:makeEntityByName(level, "object", id)
+          if entity then
+            entity_kind = "object"
+          end
+        end
+        
+        -- Try trap if both terrain and object failed
+        if not entity then
+          entity = zone:makeEntityByName(level, "trap", id)
+          if entity then
+            entity_kind = "trap"
+          end
+        end
+        
+        if not entity then
+          -- Entity not found in any category
           phase1_missing = phase1_missing + 1
           id_to_signature[id] = "MISSING"
+          table.insert(by_entity_kind.missing, id)
         else
-          -- Resolve terrain to get actual properties
-          if terrain.resolve then terrain:resolve() end
+          -- Entity resolved - track its kind
+          table.insert(by_entity_kind[entity_kind], id)
           
-          -- Compute visual signature
-          local signature = compute_visual_signature(terrain)
-          
-          if signature then
-            phase1_resolved = phase1_resolved + 1
-            id_to_signature[id] = signature
+          -- Only process terrains for visual display (objects/traps just tracked)
+          if entity_kind == "terrain" then
+            -- Resolve terrain to get actual properties
+            if entity.resolve then entity:resolve() end
             
-            -- Group by signature
-            if not signature_map[signature] then
-              signature_map[signature] = {
-                first_id = id,
-                ids = {id},
-                signature = signature
-              }
-            else
-              table.insert(signature_map[signature].ids, id)
+            -- Compute visual signature
+            local signature = compute_visual_signature(entity)
+            
+            if signature then
+              phase1_resolved = phase1_resolved + 1
+              id_to_signature[id] = signature
+              
+              -- Group by signature
+              if not signature_map[signature] then
+                signature_map[signature] = {
+                  first_id = id,
+                  ids = {id},
+                  signature = signature
+                }
+              else
+                table.insert(signature_map[signature].ids, id)
+              end
             end
+          else
+            -- Non-terrain entity: mark as resolved but not displayable
+            phase1_resolved = phase1_resolved + 1
+            id_to_signature[id] = "NON_TERRAIN"
           end
         end
       end
@@ -363,6 +407,42 @@ return {
     table.sort(missing_list)
     table.sort(dangerous_list)
     table.sort(duplicate_list)
+    
+    -- Sort entity kind lists
+    for kind, list in pairs(by_entity_kind) do
+      table.sort(list)
+    end
+    
+    -- Output ENTITY KIND SUMMARY
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print("[DCCB-PROBE-REPORT] ENTITY KIND CLASSIFICATION:")
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print(string.format("[DCCB-PROBE-REPORT]   Terrain entities: %d", #by_entity_kind.terrain))
+    print(string.format("[DCCB-PROBE-REPORT]   Object entities: %d", #by_entity_kind.object))
+    print(string.format("[DCCB-PROBE-REPORT]   Trap entities: %d", #by_entity_kind.trap))
+    print(string.format("[DCCB-PROBE-REPORT]   Dangerous (blacklisted): %d", #by_entity_kind.dangerous))
+    print(string.format("[DCCB-PROBE-REPORT]   Missing (not found): %d", #by_entity_kind.missing))
+    print(string.format("[DCCB-PROBE-REPORT]   Total processed: %d", 
+      #by_entity_kind.terrain + #by_entity_kind.object + #by_entity_kind.trap + 
+      #by_entity_kind.dangerous + #by_entity_kind.missing))
+    print("[DCCB-PROBE-REPORT] ")
+    
+    -- Output entity lists by kind (for reference)
+    if #by_entity_kind.object > 0 then
+      print("[DCCB-PROBE-REPORT] Object IDs:")
+      for _, id in ipairs(by_entity_kind.object) do
+        print("[DCCB-PROBE-REPORT]   " .. id)
+      end
+      print("[DCCB-PROBE-REPORT] ")
+    end
+    
+    if #by_entity_kind.trap > 0 then
+      print("[DCCB-PROBE-REPORT] Trap IDs:")
+      for _, id in ipairs(by_entity_kind.trap) do
+        print("[DCCB-PROBE-REPORT]   " .. id)
+      end
+      print("[DCCB-PROBE-REPORT] ")
+    end
     
     -- Output RESOLVED IDs
     print("[DCCB-PROBE-REPORT] ========================================")
