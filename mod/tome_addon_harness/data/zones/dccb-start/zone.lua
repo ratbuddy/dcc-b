@@ -3,12 +3,11 @@
 -- Virtual path: /data-dccb/zones/dccb-start/zone.lua
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-start/ (overload)
 
--- Template selection: nil for auto-select, or a string ("plains"/"road"/etc) to override
+-- Template selection: nil for auto-select, or a string ("plains"/"road") to override
 local DCCB_SURFACE_TEMPLATE = nil
 
 -- Template registry: available templates for auto-selection
--- Themed templates: plains/road/courtyard (green), winter/winter_road (snowy), ruins (ancient)
-local DCCB_TEMPLATES = {"plains", "road", "courtyard", "winter", "winter_road", "ruins"}
+local DCCB_TEMPLATES = {"plains", "road", "courtyard"}
 
 return {
   name = "DCCB Start",
@@ -36,8 +35,6 @@ return {
     if type(a)=="table" then zone=a; lev=b else zone=nil; lev=a end
     local zname = (zone and zone.short_name) or "unknown"
     print(string.format("[DCCB-Zone] Entered zone '%s' level %d", zname, tonumber(lev) or 0))
-    -- Note: Handoff to dccb-surface-master happens via Actor:move hook in hooks/load.lua
-    -- The on_enter callback doesn't fire reliably during initial zone generation
   end,
   
   -- Post-process: use surface template painter for deterministic layout
@@ -138,7 +135,7 @@ return {
       if game and type(game.run_seed) == "number" and game.run_seed > 0 then
         seed = game.run_seed
         seed_source = "game.run_seed"
-      elseif game and game._DCCB_RUN_SEED and type(game._DCCB_RUN_SEED) == "number" then
+      elseif game and game._DCCB_RUN_SEED then
         -- Reuse cached seed from earlier in this run
         seed = game._DCCB_RUN_SEED
         seed_source = "game._DCCB_RUN_SEED (cached)"
