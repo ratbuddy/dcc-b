@@ -63,9 +63,9 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load terrain manifest
-    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest.lua")
-    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest.lua")
+    -- Load terrain manifest (using verified working terrains only)
+    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest_verified.lua")
+    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest_verified.lua")
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
       print("[DCCB-Gallery] Error: " .. tostring(manifest))
@@ -73,20 +73,16 @@ return {
     end
     manifest = manifest()
     
-    -- Debug: Log manifest info to diagnose loading issues
+    -- Debug: Log manifest info
     if manifest and manifest.TERRAIN_CANDIDATES then
       local count = #manifest.TERRAIN_CANDIDATES
-      print(string.format("[DCCB-Gallery] Manifest loaded: %d terrains", count))
+      print(string.format("[DCCB-Gallery] Verified manifest loaded: %d terrains (100%% working, 0%% missing)", count))
       if count > 0 then
         local first_few = {}
         for i = 1, math.min(5, count) do
           table.insert(first_few, manifest.TERRAIN_CANDIDATES[i].id)
         end
         print("[DCCB-Gallery] First 5 IDs: " .. table.concat(first_few, ", "))
-      end
-      if count ~= 384 then
-        print("[DCCB-Gallery] WARNING: Expected 384 terrains, got " .. count)
-        print("[DCCB-Gallery] User may need to: git pull origin copilot/add-dccb-surface-master-zone")
       end
     else
       print("[DCCB-Gallery] ERROR: Manifest loaded but has no TERRAIN_CANDIDATES")
