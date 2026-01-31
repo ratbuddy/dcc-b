@@ -2316,6 +2316,118 @@ When updating this document:
 
 ---
 
+## 10. Terrain Resources and Grid Catalogs
+
+**Status:** ✅ AVAILABLE  
+**Location:** `/docs/te4_grid_catalog.json` and `/docs/te4_grid_ids_by_category/*.txt`  
+**Documentation:** See `TE4_GRID_SAFETY_ANALYSIS.md` and `TE4_EXTRACTOR_USAGE.md`
+
+### 10.1 Overview
+
+The TE4 Grid Extractor (`extract_tome_terrain_ids.py`) has generated a comprehensive catalog of all terrain (grid) types available in ToME. This provides critical semantic context for zone generation and template work.
+
+**Key Resources:**
+
+1. **`te4_grid_catalog.json`**: Complete metadata for all grid IDs
+   - Category classification (floor, wall, vegetation, water, lava, door, feature, special)
+   - Blocking behavior (`is_blocking`, `block_move`, `block_sight`)
+   - Dangerous flags (`is_dangerous`, `change_level`, `change_zone`, `on_stand`, `on_move`)
+   - Type/subtype information
+   - Image references
+
+2. **`te4_grid_ids_by_category/*.txt`**: Grid IDs grouped by category (8 categories)
+   - `floor.txt` - Safe passable terrain
+   - `wall.txt` - Blocking obstacles
+   - `vegetation.txt` - Trees, bushes
+   - `water.txt` - Water terrain
+   - `lava.txt` - Lava (dangerous)
+   - `door.txt` - Doors (context-dependent)
+   - `feature.txt` - Decorative features
+   - `special.txt` - Dangerous/transition terrain (use with caution)
+
+3. **`te4_gallery_safe_ids.txt`**: Pre-filtered safe terrain list
+   - Union of: floor + wall + vegetation + water + lava + feature
+   - Excludes: special and door
+   - Safe for gallery/showcase work
+
+### 10.2 Usage in Zone Generation
+
+**For zone templates and generation:**
+
+```lua
+-- Safe approach: Use category-specific lists
+local safe_floors = {"FLOOR", "GRASS", "ROAD", ...}  -- from floor.txt
+local safe_walls = {"WALL", "ROCK", ...}             -- from wall.txt
+
+-- In post_process or generator:
+for x = 0, level.map.w - 1 do
+  for y = 0, level.map.h - 1 do
+    if should_be_floor(x, y) then
+      local grid_id = safe_floors[rng.range(1, #safe_floors)]
+      level.map(x, y, engine.Map.TERRAIN, level.map:checkEntity(grid_id, "terrain"))
+    end
+  end
+end
+```
+
+**Safety Guidelines:**
+- ✅ **SAFE**: floor.txt, wall.txt, feature.txt, vegetation.txt
+- ⚠️ **CAUTION**: water.txt (may have effects), lava.txt (dangerous), door.txt (context-dependent)
+- ❌ **AVOID**: special.txt (contains stairs, portals, level transitions)
+
+See `TE4_GRID_SAFETY_ANALYSIS.md` for detailed safety analysis of each category.
+
+### 10.3 Integration with DCCB Systems
+
+**Zone Adapter Usage:**
+
+```lua
+-- In zone_adapter.lua
+local TerrainCatalog = require("core.terrain_catalog")
+
+function ZoneAdapter:select_floor_terrain(zone_theme)
+  -- Load appropriate category based on theme
+  local candidates = TerrainCatalog.get_safe_floors(zone_theme)
+  return rng.table(candidates)
+end
+```
+
+**Region-Specific Theming:**
+
+Different regions can use different terrain categories:
+- **Forest regions**: vegetation.txt + floor.txt (grass, dirt)
+- **Mountain regions**: wall.txt (rock, mountain) + floor.txt (stone)
+- **Water regions**: water.txt + floor.txt (sand, shallow water)
+- **Volcanic regions**: lava.txt + wall.txt (volcanic rock)
+
+### 10.4 Terrain Gallery Zone
+
+A dedicated terrain gallery zone can be created to showcase all available terrain types. See `TERRAIN_GALLERY_PROMPT.md` for comprehensive implementation guide.
+
+**Gallery Purpose:**
+- Visual reference for all terrain types
+- Testing ground for terrain behavior
+- Template development aid
+- Quality assurance for terrain rendering
+
+### 10.5 Future Enhancements
+
+**Potential improvements:**
+- Terrain tagging system (themes, biomes, difficulty)
+- Dynamic terrain selection based on floor depth
+- Terrain combination rules (what can be adjacent)
+- Performance profiling of different terrain types
+- Texture/image extraction for gallery rendering
+
+### 10.6 Related Documentation
+
+- **`TE4_GRID_SAFETY_ANALYSIS.md`**: Detailed safety analysis for each category
+- **`TE4_EXTRACTOR_USAGE.md`**: How to run the extractor and update catalog
+- **`TERRAIN_GALLERY_PROMPT.md`**: Implementation guide for terrain gallery zone
+- **`ToME_zone_spec.md`**: Zone construction patterns (updated with terrain references)
+
+---
+
 ## 11. Success Criteria (Final)
 
 Phase-2 is complete and successful when:

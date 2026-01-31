@@ -347,6 +347,128 @@ Once grids inherit proper forest/snow/cave sets, templates will visually diverge
 
 ---
 
+# 12. Terrain Resources and Grid Selection
+
+**Available Resources:** TE4 Grid Catalog (comprehensive terrain metadata)  
+**Location:** `/docs/te4_grid_catalog.json` and `/docs/te4_grid_ids_by_category/*.txt`  
+**Documentation:** See `TE4_GRID_SAFETY_ANALYSIS.md` for detailed safety analysis
+
+## 12.1 Using Categorized Terrain Lists
+
+The TE4 Grid Extractor has generated pre-categorized terrain lists that are safe for zone generation:
+
+**Safe Categories for Templates:**
+- **`floor.txt`**: Passable floor terrain (FLOOR, GRASS, ROAD, SAND, SNOW, etc.)
+- **`wall.txt`**: Blocking walls and obstacles (WALL, ROCK, MOUNTAIN, etc.)
+- **`feature.txt`**: Non-blocking decorative features (ALTAR, STATUE, PILLAR, etc.)
+- **`vegetation.txt`**: Trees, bushes, thickets (TREE, BUSH, etc.)
+- **`water.txt`**: Water terrain (WATER, RIVER, SHALLOW_WATER, etc.)
+
+**Use with Caution:**
+- **`lava.txt`**: Lava terrain (deals damage via `on_stand` effects)
+- **`door.txt`**: Doors (blocking when closed, requires context)
+
+**Avoid in Generic Templates:**
+- **`special.txt`**: Contains stairs, portals, level/zone transitions (dangerous)
+
+## 12.2 Example: Theme-Based Terrain Selection
+
+```lua
+-- In grids.lua, load base terrain
+load("/data/general/grids/basic.lua")
+load("/data/general/grids/forest.lua")
+
+-- In zone.lua generator configuration
+generator = {
+  map = {
+    class = "engine.generator.map.Forest",
+    -- For forest theme, use vegetation category
+    floor = "GRASS",           -- from floor.txt
+    wall  = "TREE",            -- from vegetation.txt (blocks)
+    road  = "ROAD",            -- from floor.txt
+    up    = "GRASS_UP",        -- Note: stairs are in special.txt
+    down  = "GRASS_DOWN",
+  },
+}
+
+-- For volcanic theme
+generator = {
+  map = {
+    class = "engine.generator.map.Cavern",
+    floor = "VOLCANIC_FLOOR",  -- from floor.txt
+    wall  = "VOLCANIC_WALL",   -- from wall.txt
+    -- Add lava pools in post_process using lava.txt
+  },
+}
+```
+
+## 12.3 Safe Terrain Selection in post_process
+
+```lua
+post_process = function(level)
+  local Map = require "engine.Map"
+  
+  -- Safe floor terrain pool (from floor.txt)
+  local safe_floors = {"FLOOR", "GRASS", "DIRT", "ROAD"}
+  
+  -- Safe wall terrain pool (from wall.txt)
+  local safe_walls = {"WALL", "TREE_WALL", "ROCK"}
+  
+  -- Paint random floors in a room
+  for x = 10, 20 do
+    for y = 10, 20 do
+      local floor_id = safe_floors[rng.range(1, #safe_floors)]
+      local g = zone:makeEntityByName(level, "grid", floor_id)
+      if g and g.resolve then g:resolve() end
+      level.map(x, y, Map.TERRAIN, g)
+    end
+  end
+end
+```
+
+## 12.4 Checking Terrain Safety
+
+Before using a grid ID, check its metadata in `te4_grid_catalog.json`:
+
+```lua
+-- Python example for validation
+import json
+
+with open('docs/te4_grid_catalog.json', 'r') as f:
+    catalog = json.load(f)
+
+grid_id = "LAVA"
+meta = catalog['meta'][grid_id]
+
+# Check safety flags
+if meta['is_dangerous']:
+    print(f"WARNING: {grid_id} is dangerous!")
+    print(f"  - change_level: {meta['change_level']}")
+    print(f"  - change_zone: {meta['change_zone']}")
+    print(f"  - on_stand: {meta['on_stand']}")
+
+if meta['is_blocking']:
+    print(f"{grid_id} blocks movement")
+```
+
+## 12.5 Gallery Safe List
+
+For showcases and galleries, use the pre-filtered safe list:
+
+**`te4_gallery_safe_ids.txt`** contains:
+- All terrain from: floor + wall + vegetation + water + lava + feature
+- Excludes: special (stairs, portals) and door categories
+- Safe for visual showcases and testing
+
+## 12.6 Related Documentation
+
+- **`TE4_GRID_SAFETY_ANALYSIS.md`**: Detailed safety analysis for each category
+- **`TERRAIN_GALLERY_PROMPT.md`**: How to create a comprehensive terrain gallery
+- **`TE4_EXTRACTOR_USAGE.md`**: How to update the grid catalog
+- **`ToME-Integration-Notes.md`**: Section 10 on terrain resources
+
+---
+
 # Appendix A – LLM Reference Pack
 
 When asking Copilot / LLMs to generate zones, prepend:
