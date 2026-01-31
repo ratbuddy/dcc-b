@@ -1,0 +1,3363 @@
+{
+  "define_as_ids": [
+    "ABOMINATION",
+    "ABOMINATION_RANTHA",
+    "ACCURACY_HELM",
+    "ACCURACY_ORC_2",
+    "ACCURACY_ORC_5",
+    "ACOLYTE",
+    "ADV_LTR_6",
+    "ADV_LTR_7",
+    "ADV_LTR_8",
+    "ALCHEMIST",
+    "ALETTA",
+    "ALETTA_LETTER",
+    "ALTAR",
+    "ALTAR_BARE",
+    "ALTAR_CORRUPT",
+    "ALTAR_SPLATTER",
+    "ALUIN",
+    "ARCANEBLADE",
+    "ARCHER_WEAPON_STORE",
+    "ARCH_ZEPHYR",
+    "ARDHUNGOL",
+    "ARENA_AGENT",
+    "ARENA_BOOTS_DISE",
+    "ARENA_BOOTS_PHAS",
+    "ARENA_BOOTS_RUSH",
+    "ARENA_BOSS_FRYJIA",
+    "ARENA_BOSS_MASTER_DEFAULT",
+    "ARENA_BOSS_RIALA",
+    "ARENA_BOSS_RYAL",
+    "ARENA_BOSS_VALFREN",
+    "ARENA_BOW",
+    "ARENA_SCORING",
+    "ARENA_SLING",
+    "ARGONIEL",
+    "ARGONIEL_ATHAME",
+    "ARGONIEL_DIAMOND",
+    "ASSASSIN_LORD",
+    "ASTELRID_CLUBSTAFF",
+    "ATAMATHON",
+    "ATAMATHON_ACTIVATE",
+    "ATAMATHON_BROKEN",
+    "ATAMATHON_RUBY_EYE",
+    "ATHAME",
+    "ATHAME_WEST",
+    "ATHAME_WEST2",
+    "AUTUMN_ROCK",
+    "AVERAGE_TROLL",
+    "AXE_WEAPON_STORE",
+    "BAMBOO_HUT_COOKING3",
+    "BAMBOO_HUT_DOOR",
+    "BAMBOO_HUT_DOOR_HORIZ",
+    "BAMBOO_HUT_DOOR_HORIZ_OPEN",
+    "BAMBOO_HUT_DOOR_OPEN",
+    "BAMBOO_HUT_DOOR_OPEN_VERT",
+    "BAMBOO_HUT_DOOR_VERT",
+    "BAMBOO_HUT_FLOOR",
+    "BAMBOO_HUT_WALL",
+    "BANDERS_NOTES",
+    "BASE_BERETHH_COMPANION",
+    "BASE_CARAVANEER",
+    "BASE_NPC_ANGOLWEN_TOWN",
+    "BASE_NPC_ARENA1",
+    "BASE_NPC_DERTH_TOWN",
+    "BASE_NPC_ELVALA_OGRE_TOWN",
+    "BASE_NPC_ELVALA_TOWN",
+    "BASE_NPC_IRKKK_TOWN",
+    "BASE_NPC_IRON_COUNCIL_TOWN",
+    "BASE_NPC_LAST_HOPE_TOWN",
+    "BASE_NPC_LOSGOROTH",
+    "BASE_NPC_NAGA",
+    "BASE_NPC_ORC_ATTACKER",
+    "BASE_NPC_ORC_SUMMON",
+    "BASE_NPC_POINT_ZERO_TOWN",
+    "BASE_NPC_RITCH_REL",
+    "BASE_NPC_SLAVER",
+    "BASE_NPC_SPIDER",
+    "BASE_NPC_SUNWALL_DEFENDER",
+    "BASE_NPC_VAT",
+    "BASE_SHADOW",
+    "BASE_TUTORIAL_SPIDER",
+    "BASKET",
+    "BEACH_UP",
+    "BEN_CRUTHDAR",
+    "BEN_CRUTHDAR_ABOMINATION",
+    "BERETHH",
+    "BERETHH_ARCHER",
+    "BERETHH_WARRIOR",
+    "BHW_CROSS1",
+    "BHW_E_CROSS1",
+    "BHW_H_FULL",
+    "BHW_NE1",
+    "BHW_NW1",
+    "BHW_N_CROSS1",
+    "BHW_SE1",
+    "BHW_SOLO1",
+    "BHW_SW1",
+    "BHW_S_CROSS1",
+    "BHW_V_FULL1",
+    "BHW_W_CROSS1",
+    "BINDINGS_ETERNAL_NIGHT",
+    "BLOCK",
+    "BLOOD_FLOOR",
+    "BLUSTERING_ELF",
+    "BOGTREE",
+    "BOGWATER",
+    "BOGWATER_MISC",
+    "BOOTS_OF_PHASING",
+    "BORED_ELF_1",
+    "BORED_ELF_2",
+    "BORED_ELF_3",
+    "BORFAST",
+    "BORFAST_LETTER",
+    "BREEDING_HISTORY",
+    "BREEDING_HISTORY5",
+    "BREEZY_ELF",
+    "BRIAGH",
+    "BRIAGH_LAIR",
+    "BROTOQ",
+    "BURNT_DOOR",
+    "BURNT_FOREST",
+    "BUTLER",
+    "CALDIZAR",
+    "CALDIZAR_AOADS",
+    "CANDLE",
+    "CARAVAN_GUARD",
+    "CARAVAN_MERCHANT",
+    "CARAVAN_PORTER",
+    "CAVEFLOOR_CAVE_DESCRIPTION",
+    "CAVEFLOOR_CAVE_ENTRANCE",
+    "CAVEFLOOR_CAVE_MARKER",
+    "CAVEFLOOR_DOG_VAULT",
+    "CAVEFLOOR_EVENT",
+    "CAVEFLOOR_VAULT_ENTRANCE",
+    "CAVEFLOOR_VAULT_TRIGGER",
+    "CAVERN_MOON",
+    "CAVE_DOOR",
+    "CAVE_DOOR_HORIZ",
+    "CAVE_DOOR_HORIZ_OPEN",
+    "CAVE_DOOR_OPEN",
+    "CAVE_DOOR_OPEN_VERT",
+    "CAVE_DOOR_VERT",
+    "CAVE_HIGH_PEAK_UP",
+    "CAVE_ROCK",
+    "CCHARRED_SCAR_PORTAL",
+    "CELESTIAL_BODY",
+    "CELIA",
+    "CELIA_HEART",
+    "CELIA_NOTE",
+    "CFARPORTAL",
+    "CFAR_EAST_PORTAL",
+    "CHARRED_SCAR",
+    "CHARRED_SCAR_PATCH",
+    "CHARRED_SCAR_PORTAL",
+    "CHARRED_SCAR_VOLCANO",
+    "CHRONOLITH_CLONE",
+    "CHRONOLITH_TWIN",
+    "CLOAK_DECEPTION",
+    "CLOSED_GATE",
+    "CLOTH_ARMOR_STORE",
+    "CLOUD",
+    "COBBLESTONE",
+    "COFFIN",
+    "COFFIN_OPEN",
+    "COLD_FOREST",
+    "COMBAT_STATS_DONE",
+    "COMMAND_ORB",
+    "CONTROL_ORB",
+    "CORRUPTED_DAELACH",
+    "CORRUPTED_OOZEMANCER",
+    "CORRUPTED_SANDQUEEN_HEART",
+    "CORRUPTED_SAND_WYRM",
+    "CORRUPTED_WAR_DOG",
+    "CORRUPTOR",
+    "CRACKS",
+    "CROWN_ETERNAL_NIGHT",
+    "CRYSTAL_ROCK",
+    "CRYSTAL_WALL",
+    "CULTIST_RAK_SHOR",
+    "CULTIVATION",
+    "CVOID_PORTAL",
+    "CWEST_PORTAL",
+    "DAIKARA_ZONE",
+    "DECO_FLOOR",
+    "DECO_FLOOR1",
+    "DECO_FLOOR2",
+    "DECO_FLOOR3",
+    "DECO_FLOOR4",
+    "DECO_FLOOR5",
+    "DECO_FLOOR6",
+    "DECO_FLOOR7",
+    "DECO_FLOOR8",
+    "DEEP_BELLOW",
+    "DEFENDER_OF_REALITY",
+    "DESERT",
+    "DESERT_ROCK",
+    "DIRECTOR_HOMPALAN_ORDER",
+    "DIRT",
+    "DRAEBOR",
+    "DRAFT_LETTER",
+    "DREADFELL",
+    "DREAM2_END",
+    "DREAMING_ONE",
+    "DREAM_END",
+    "DREAM_MOUSE_HOLE",
+    "DREAM_STONE",
+    "DROLEM",
+    "EIDOLON",
+    "ELANDAR",
+    "ELANDAR_JOURNAL1",
+    "ELANDAR_JOURNAL2",
+    "ELDER",
+    "ELDRITCH_PEARL",
+    "ELVENWOOD_GREEN",
+    "ELVENWOOD_SNOW",
+    "EPOCH",
+    "EPOCH_CURVE",
+    "ERUAN",
+    "ESCAPE_REKNOR",
+    "EYAL",
+    "FAKE_SKULLCLEAVER",
+    "FAKE_WALL",
+    "FALLEN_SUN_PALADIN_AERYN",
+    "FARPORTAL",
+    "FAR_EAST_PORTAL",
+    "FEEBLE_ELF",
+    "FENCE_DOOR",
+    "FENCE_DOOR_HORIZ",
+    "FENCE_DOOR_HORIZ_OPEN",
+    "FENCE_DOOR_OPEN",
+    "FENCE_DOOR_OPEN_VERT",
+    "FENCE_DOOR_VERT",
+    "FENCE_FLOOR",
+    "FENCE_WALL",
+    "FENS",
+    "FIELDS",
+    "FILIO",
+    "FILIO_LETTER",
+    "FILLAREL",
+    "FINAL_LESSON",
+    "FLOOR_ROAD_STONE",
+    "FOREST",
+    "FORUM_TROLL",
+    "FOUNDATION_NOTE",
+    "FOUNTAIN",
+    "FOUNTAIN_MAIN",
+    "FROZEN_NORGOS",
+    "FROZEN_SEA",
+    "FYRK",
+    "GARKUL_HISTORY",
+    "GATES_OF_MORNING",
+    "GEM_STORE",
+    "GENERIC_BOOK1",
+    "GENERIC_BOOK2",
+    "GENERIC_BOOK3",
+    "GENERIC_LEVER_SAND",
+    "GHASTLY_TROLL",
+    "GLACIAL_LEGION",
+    "GLADIATOR",
+    "GLADIUM_ORB",
+    "GNARG",
+    "GOD_GERLYK",
+    "GOLBUG",
+    "GOLDCRYSTAL",
+    "GOLDEN_MOUNTAIN",
+    "GOLDEN_MOUNTAIN_WALL",
+    "GORBAT",
+    "GORBAT_PRIDE",
+    "GRAND_CORRUPTOR",
+    "GRASS",
+    "GRASS_CARAVAN",
+    "GRASS_DREAM",
+    "GRASS_EVENT",
+    "GRASS_INCHATE",
+    "GRASS_MEADOW",
+    "GRASS_PATCH",
+    "GRASS_ROCK",
+    "GRASS_UP2_UP2",
+    "GRASS_UP_WILDERNESS",
+    "GRAVE",
+    "GREATER_MUMMY",
+    "GREATER_MUMMY_LORD",
+    "GREATMOTHER",
+    "GROSS_TROLL",
+    "GRUSHNAK",
+    "GRUSHNAK_PRIDE",
+    "HALFLING_RUINS",
+    "HALF_BONE_GIANT",
+    "HARDGLASSWALL",
+    "HARDGLASSWALLF",
+    "HARDGLASSWALL_NORTH",
+    "HARDGLASSWALL_NORTH_SOUTH",
+    "HARDGLASSWALL_PILLAR_2",
+    "HARDGLASSWALL_PILLAR_4",
+    "HARDGLASSWALL_PILLAR_6",
+    "HARDGLASSWALL_PILLAR_8",
+    "HARDGLASSWALL_SMALL_PILLAR",
+    "HARDGLASSWALL_SOUTH",
+    "HARDTREE",
+    "HARNO",
+    "HEADLESSHORROR",
+    "HEALER_ASTELRID",
+    "HEART_GLOOM",
+    "HEAVY_ARMOR_STORE",
+    "HEAVY_SENTINEL",
+    "HERBALIST",
+    "HIGH_PEAK_UP",
+    "HIGH_SUN_PALADIN_AERYN",
+    "HIVE_MOTHER",
+    "HORNED_HORROR",
+    "ID_HISTORY",
+    "ILLUSION_YEEK",
+    "INFINITE",
+    "INQUISITOR",
+    "IRON_ACORN_BASIC",
+    "IRON_ACORN_EVIL",
+    "IRON_ACORN_GOOD",
+    "IRON_COUNCIL",
+    "IRON_THRONE_EDICT",
+    "IRON_THRONE_LAST_WORDS",
+    "IRON_THRONE_LEDGER",
+    "IRON_THRONE_PROFIT",
+    "ITEMS_VAULT",
+    "JEWELRY",
+    "JUNGLE_FOREST",
+    "JUNGLE_PLAINS",
+    "JUNGLE_PLAINS_PATCH",
+    "JUNGLE_ROCK",
+    "JUNGLE_TOWN",
+    "KITTY",
+    "KNIFE_WEAPON_STORE",
+    "KOLAL",
+    "KOR_FURY",
+    "KOR_PUL",
+    "KRYL_FEIJAN",
+    "KYLESS",
+    "KYLESS_BOOK",
+    "KYLESS_JOURNAL_",
+    "LAKE",
+    "LAKE_IRONDEEP",
+    "LAKE_NUR",
+    "LAKE_SPELLMURK",
+    "LAKE_WESTREACH",
+    "LAST_HOPE_GRAVEYARD",
+    "LAVA",
+    "LAVA_DOWN_FAKE",
+    "LAVA_FLOOR_FAKE",
+    "LAVA_ROCK",
+    "LAVA_WALL",
+    "LAVA_WALL_FAKE",
+    "LAVA_WALL_OPAQUE",
+    "LEARN_MIND_CONFUSION",
+    "LEARN_MIND_FEAR",
+    "LEARN_MIND_KB",
+    "LEARN_PHYS_KB",
+    "LEARN_SPELL_BLEED",
+    "LEARN_SPELL_BLINK",
+    "LEARN_SPELL_KB",
+    "LEARN_SPELL_KB3",
+    "LEGACY_NALOREN",
+    "LIBRARY",
+    "LIGHT_ARMOR_STORE",
+    "LIMMIR",
+    "LINANIIL_LECTURE",
+    "LITHFENGEL",
+    "LOCK",
+    "LOCK_HORIZ",
+    "LOCK_HORIZ_OPEN",
+    "LOCK_OPEN",
+    "LOCK_VERT",
+    "LOCK_VERT_OPEN",
+    "LORE",
+    "LORE4",
+    "LORE_NOTE",
+    "LORE_SONG",
+    "LOW_HILLS",
+    "LUXAM",
+    "MACE_WEAPON_STORE",
+    "MAGIC_DOOR",
+    "MASSOK",
+    "MASTERALCHEMIST",
+    "MASTERSLINGER",
+    "MAUL_WEAPON_STORE",
+    "MAUSOLEUM",
+    "MAZE",
+    "MELINDA",
+    "MELINDA_BEACH",
+    "MELINDA_BIKINI",
+    "MELINDA_FATHER",
+    "MENTALSAVE_RING",
+    "MERCHANT",
+    "MINDPOWER_AMULET",
+    "MINDSTAR",
+    "MINDSTAR_WEAPON_STORE",
+    "MINDWORM",
+    "MINOTAUR_MAZE",
+    "MONITOR_ORB1",
+    "MONITOR_ORB2",
+    "MONSTROUS_LOSGOROTH",
+    "MOONSTONE",
+    "MULTIHUEWYRMIC",
+    "MURAL_PAINTING",
+    "MURGOL",
+    "MURGOL_LAIR",
+    "NAGA_TIDECALLER",
+    "NAGA_TIDEWARDEN",
+    "NASHVA",
+    "NECROMANCER",
+    "NIMISIL",
+    "NORGAN",
+    "NORGOS",
+    "NORGOS_LAIR",
+    "NOTE",
+    "NOTE4",
+    "NOTE5",
+    "NOTE6",
+    "NOTE_FROM_LAST_HOPE",
+    "NOTE_LEARN_TRAP",
+    "NOTE_LORE",
+    "OASIS",
+    "OBSTINATE_ORC",
+    "OCEANS_OF_EYAL",
+    "OGRE_SENTRY",
+    "OGRE_SENTRY2",
+    "OLD_FOREST",
+    "OLD_FOREST_ZONE",
+    "OPEN_GATE",
+    "ORB_DESTRUCTION",
+    "ORB_DRAGON",
+    "ORB_ELEMENTS",
+    "ORB_MANY_WAYS2",
+    "ORB_UNDEATH",
+    "ORC_ATTACK",
+    "ORC_ELITE_BERSERKER",
+    "ORC_ELITE_FIGHTER",
+    "ORC_HISTORY",
+    "OVERPOWERED_WYRM",
+    "PACIFIST_ORC",
+    "PACIFIST_ORC_2",
+    "PALE_DRAKE",
+    "PEAK_DOOR",
+    "PEAK_STAIR",
+    "PEAK_STAIR_FAKE",
+    "PEARL_LIFE_DEATH",
+    "PENTAGRAM",
+    "PHYSSAVE_BOOTS",
+    "PINE_FOREST",
+    "PLAINS",
+    "PLAINS_PATCH",
+    "PLAYER_SLAVE",
+    "POLAR_CAP",
+    "PONX",
+    "PORTAL",
+    "PORTAL_BACK",
+    "PORTAL_BACK_2",
+    "PORTAL_BOSS",
+    "PORTAL_DEMON",
+    "POST",
+    "PROTECTOR_MYSSIL",
+    "PROX_NOTE",
+    "PUSHY_ELF",
+    "PUSHY_ORC",
+    "PUTRESCENT_POTION",
+    "QUICK_EXIT",
+    "RACES_NOTE",
+    "RAK_SHOR",
+    "RAK_SHOR_PRIDE",
+    "RANTHA_THE_WORM",
+    "RARE_GOODS",
+    "REAVER",
+    "REGENERATING_ORC",
+    "REKNOR",
+    "REL_TUNNEL",
+    "RESONATING_DIAMOND",
+    "RESONATING_DIAMOND_WEST",
+    "RESONATING_DIAMOND_WEST2",
+    "RHALOREN_CAMP",
+    "RIFT",
+    "RIFT2",
+    "RIFT_HOME",
+    "RING_MASTER",
+    "RING_OF_BLOOD",
+    "RITCH_TUNNELS",
+    "RIVER",
+    "ROAD",
+    "ROBES_DEFLECTION",
+    "ROCK",
+    "ROCKY_SNOWY_DOOR",
+    "ROCK_DOOR",
+    "ROCK_LEVER_DOOR",
+    "ROD_SPYDRIC_POISON",
+    "ROOTED_ORC",
+    "ROTTING_TITAN",
+    "RUDE_ORC",
+    "RUNEMASTER",
+    "RUNES",
+    "RUNE_DISSIPATION",
+    "RUNE_FLOOR",
+    "RUNE_RIFT",
+    "RUNIC_STORE",
+    "SANDQUEEN_HEART",
+    "SANDWORM_LAIR",
+    "SANDWORM_QUEEN",
+    "SANDWORM_TUNNELER",
+    "SANDWORM_TUNNELER_HUGE",
+    "SAND_ROCK",
+    "SCINTILLATING_CAVES",
+    "SEA_EYAL",
+    "SEA_SASH",
+    "SHADE",
+    "SHADE_OF_TELOS",
+    "SHADOW_CASTER",
+    "SHADOW_CLAW",
+    "SHADOW_STALKER",
+    "SHANDRAL",
+    "SHARDSKIN",
+    "SHERTUL_FORTRESS_DRY",
+    "SHERTUL_FORTRESS_FLOOD",
+    "SHIMMER_CONTROL",
+    "SIGN",
+    "SIGN_CAVE",
+    "SIGN_FLOOR",
+    "SIGN_SOLID_FLOOR",
+    "SIMPLE_GOWN",
+    "SKELERAT",
+    "SLASUL",
+    "SLASUL_NOTE",
+    "SLAZISH_NOTE",
+    "SLIME_TUNNELS",
+    "SLIMY_CRAWLER",
+    "SLINGER",
+    "SNAPROOT",
+    "SNOWY_DOOR",
+    "SNOWY_GRASS_2",
+    "SNOWY_PATCH_2",
+    "SNOWY_TREE_2",
+    "SOUTHSPAR_NOTE",
+    "SPACETIME_RIFT",
+    "SPACETIME_RIFT2",
+    "SPACIAL_DISTURBANCE",
+    "SPECTATOR",
+    "SPELLBLAZE_CRYSTAL",
+    "SPELLBLAZE_NOTE",
+    "SPELLBLAZE_SIMULACRUM",
+    "SQUARE_GRASS",
+    "STAFF_ABSORPTION_AWAKENED",
+    "STAFF_WEAPON_STORE",
+    "STATUE1",
+    "STATUE2",
+    "STATUE3",
+    "STATUE4",
+    "STATUE5",
+    "STATUE6",
+    "STAVES",
+    "STEW",
+    "SUBJECT_Z",
+    "SUMMERTIDE",
+    "SUMMON_CIRCLE",
+    "SUMMON_CIRCLE_BROKEN",
+    "SUN_PALADIN_DEFENDER",
+    "SUN_PALADIN_DEFENDER_RODMOUR",
+    "SUN_PALADIN_GUREN",
+    "SUPREME_ARCHMAGE_LINANIIL",
+    "SWAMPTREE",
+    "SWORD_WEAPON_STORE",
+    "TANNEN",
+    "TARELION",
+    "TARELION_LECTURE_MAGIC",
+    "TDOWN",
+    "TELEPORT_OUT",
+    "TELEPORT_OUT_MELINDA",
+    "TELMUR",
+    "TELOS_BOTTOM_HALF",
+    "TEMPEST_PEAK",
+    "TEMPORAL_DEFILER",
+    "THE_MASTER",
+    "THE_MOUTH",
+    "THE_POSSESSED",
+    "TIME_SHARD",
+    "TOOLSHOP",
+    "TOWN",
+    "TOWN_ANGOLWEN",
+    "TOWN_ANGOLWEN_PORTAL",
+    "TOWN_DERTH",
+    "TOWN_ELVALA",
+    "TOWN_GATES_OF_MORNING",
+    "TOWN_IRKKK",
+    "TOWN_IRON_COUNCIL",
+    "TOWN_LAST_HOPE",
+    "TOWN_SHATUR",
+    "TOWN_ZIGUR",
+    "TRAINER",
+    "TRAINING_DUMMY",
+    "TRAINING_ORB",
+    "TRAP_TUTORIAL",
+    "TRAP_TUTORIAL2",
+    "TRAP_TUTORIAL3",
+    "TRAP_TUTORIAL4",
+    "TRAP_TUTORIAL5",
+    "TRAP_TUTORIAL6",
+    "TREE",
+    "TROLLMIRE",
+    "TROLL_BILL",
+    "TROLL_PROX",
+    "TROLL_SHAX",
+    "TUP",
+    "TUTORIAL_CALC0",
+    "TUTORIAL_CALC1",
+    "TUTORIAL_CALC10",
+    "TUTORIAL_CALC11",
+    "TUTORIAL_CALC2",
+    "TUTORIAL_CALC3",
+    "TUTORIAL_CALC4",
+    "TUTORIAL_CALC5",
+    "TUTORIAL_CALC6",
+    "TUTORIAL_CALC7",
+    "TUTORIAL_CALC8",
+    "TUTORIAL_CALC9",
+    "TUTORIAL_INFORMED1",
+    "TUTORIAL_INTRO_MECHANICS_GUIDE",
+    "TUTORIAL_LEVELUP",
+    "TUTORIAL_MECHOPTION",
+    "TUTORIAL_MELEE",
+    "TUTORIAL_MOVE",
+    "TUTORIAL_NPC_LONE_WOLF",
+    "TUTORIAL_NPC_MAGE",
+    "TUTORIAL_NPC_TROLL",
+    "TUTORIAL_OBJECTS",
+    "TUTORIAL_ORC",
+    "TUTORIAL_QUESTS",
+    "TUTORIAL_RANGED",
+    "TUTORIAL_SCALE1",
+    "TUTORIAL_SCALE10",
+    "TUTORIAL_SCALE11",
+    "TUTORIAL_SCALE12",
+    "TUTORIAL_SCALE2",
+    "TUTORIAL_SCALE3",
+    "TUTORIAL_SCALE4",
+    "TUTORIAL_SCALE5",
+    "TUTORIAL_SCALE6",
+    "TUTORIAL_SCALE7",
+    "TUTORIAL_SCALE8",
+    "TUTORIAL_SCALE9",
+    "TUTORIAL_STATS1",
+    "TUTORIAL_STATS2",
+    "TUTORIAL_STATS3",
+    "TUTORIAL_STATS4",
+    "TUTORIAL_STATS5",
+    "TUTORIAL_STATS6",
+    "TUTORIAL_STATS7",
+    "TUTORIAL_STATS8",
+    "TUTORIAL_STATS9",
+    "TUTORIAL_TACTICS1",
+    "TUTORIAL_TACTICS2",
+    "TUTORIAL_TALENTS",
+    "TUTORIAL_TERRAIN",
+    "TUTORIAL_TIER0",
+    "TUTORIAL_TIER1",
+    "TUTORIAL_TIER10",
+    "TUTORIAL_TIER11",
+    "TUTORIAL_TIER12",
+    "TUTORIAL_TIER2",
+    "TUTORIAL_TIER3",
+    "TUTORIAL_TIER4",
+    "TUTORIAL_TIER5",
+    "TUTORIAL_TIER6",
+    "TUTORIAL_TIER7",
+    "TUTORIAL_TIER8",
+    "TUTORIAL_TIER9",
+    "TUTORIAL_TIMED0",
+    "TUTORIAL_TIMED1",
+    "TUTORIAL_TIMED2",
+    "TUTORIAL_TIMED3",
+    "TUTORIAL_TIMED4",
+    "TUTORIAL_TIMED5",
+    "TUTORIAL_TIMED6",
+    "TUTORIAL_TIMED7",
+    "TUTORIAL_TIMED8",
+    "TUTORIAL_WATER",
+    "TUT_GUIDE",
+    "TUT_SPIDER_1",
+    "TUT_SPIDER_2",
+    "TUT_SPIDER_3",
+    "UGLY_TROLL",
+    "UKLLMSWWIK",
+    "UKRUK",
+    "UKRUK_NOTE",
+    "UMBRELLA",
+    "UNDEAD_POEM_LEVEL_2",
+    "UNDEAD_POEM_LEVEL_5",
+    "UNDEAD_POEM_LEVEL_7",
+    "UNDERGROUND_ROCK",
+    "UNGOLE",
+    "UNLEARN_ALL",
+    "UNREMARKABLE_CAVE",
+    "UP_GRUSHNAK",
+    "UP_VALLEY",
+    "URKIS",
+    "VARSHA_THE_WRITHING",
+    "VAT1",
+    "VAT2",
+    "VOID_PORTAL",
+    "VOID_STAR",
+    "VOR",
+    "VOR_ARMOURY",
+    "VOR_PRIDE",
+    "WALL",
+    "WALL_NORTH",
+    "WALL_NORTH_SOUTH",
+    "WALL_PILLAR_2",
+    "WALL_PILLAR_4",
+    "WALL_PILLAR_6",
+    "WALL_PILLAR_8",
+    "WALL_SEE",
+    "WALL_SEE_NORTH",
+    "WALL_SEE_NORTH_SOUTH",
+    "WALL_SEE_PILLAR_2",
+    "WALL_SEE_PILLAR_4",
+    "WALL_SEE_PILLAR_6",
+    "WALL_SEE_PILLAR_8",
+    "WALL_SEE_SMALL_PILLAR",
+    "WALL_SEE_SOUTH",
+    "WALL_SMALL_PILLAR",
+    "WALL_SOUTH",
+    "WAR_DOG",
+    "WATER_BASE",
+    "WATER_BASE_DEEP",
+    "WATER_DOOR_FAKE",
+    "WATER_DOOR_HORIZ_FAKE",
+    "WATER_DOOR_HORIZ_OPEN_FAKE",
+    "WATER_DOOR_OPEN_FAKE",
+    "WATER_DOOR_OPEN_VERT_FAKE",
+    "WATER_DOOR_VERT_FAKE",
+    "WATER_DOWN",
+    "WATER_DOWN_FAKE",
+    "WATER_FLOOR_FAKE",
+    "WATER_WALL_FAKE",
+    "WATER_WALL_NORTH_FAKE",
+    "WATER_WALL_NORTH_SOUTH_FAKE",
+    "WATER_WALL_PILLAR_2_FAKE",
+    "WATER_WALL_PILLAR_4_FAKE",
+    "WATER_WALL_PILLAR_6_FAKE",
+    "WATER_WALL_PILLAR_8_FAKE",
+    "WATER_WALL_SMALL_PILLAR_FAKE",
+    "WATER_WALL_SOUTH_FAKE",
+    "WEAVER_QUEEN",
+    "WEIRDLING_BEAST",
+    "WEST_PORTAL",
+    "WIFE",
+    "WINTERTIDE",
+    "WITHERING_THING",
+    "WORMHOLE",
+    "WRATHROOT",
+    "YEEK_STORE_1HAND",
+    "YEEK_STORE_2HANDS",
+    "YEEK_STORE_CLOTH",
+    "YEEK_STORE_GEM",
+    "YEEK_STORE_LEATHER",
+    "YEEK_STORE_NATURE",
+    "YEEK_WAYIST",
+    "ZEMEKKYS",
+    "ZIGUR_HISTORY",
+    "ZOISLA",
+    "ZONE_DESERT",
+    "ZONE_JUNGLE_PLAINS",
+    "ZONE_PLAINS"
+  ],
+  "object_ids": [
+    "ADV_LTR_6",
+    "ADV_LTR_7",
+    "ARENA_SCORING",
+    "CELIA_HEART",
+    "CORRUPTED_SANDQUEEN_HEART",
+    "ID_HISTORY",
+    "LORE_SONG",
+    "NOTE",
+    "NOTE6",
+    "NOTE_LEARN_TRAP",
+    "PROX_NOTE",
+    "SLAZISH_NOTE1",
+    "SLAZISH_NOTE2"
+  ],
+  "sources": {
+    "ABOMINATION": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\npcs.lua:133"
+    ],
+    "ABOMINATION_RANTHA": [
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\npcs.lua:73"
+    ],
+    "ACCURACY_HELM": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\objects.lua:58"
+    ],
+    "ACCURACY_ORC_2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:511"
+    ],
+    "ACCURACY_ORC_5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:525"
+    ],
+    "ACOLYTE": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\npcs.lua:121"
+    ],
+    "ADV_LTR_6": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\objects.lua:33"
+    ],
+    "ADV_LTR_7": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\objects.lua:39"
+    ],
+    "ADV_LTR_8": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\objects.lua:45"
+    ],
+    "ALCHEMIST": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\traps.lua:29",
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:70",
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:50",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:50",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:105"
+    ],
+    "ALETTA": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\npcs.lua:282"
+    ],
+    "ALETTA_LETTER": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:55"
+    ],
+    "ALTAR": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:98",
+      "game\\modules\\tome\\data\\zones\\noxious-caldera\\grids.lua:26"
+    ],
+    "ALTAR_BARE": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:48"
+    ],
+    "ALTAR_CORRUPT": [
+      "game\\modules\\tome\\data\\zones\\mark-spellblaze\\grids.lua:27"
+    ],
+    "ALTAR_SPLATTER": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:57"
+    ],
+    "ALUIN": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\npcs.lua:223"
+    ],
+    "ARCANEBLADE": [
+      "game\\modules\\tome\\data\\zones\\arena-unlock\\npcs.lua:123"
+    ],
+    "ARCHER_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:46",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:64",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:68",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:40",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:62",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:48"
+    ],
+    "ARCH_ZEPHYR": [
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\npcs.lua:304"
+    ],
+    "ARDHUNGOL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:793"
+    ],
+    "ARENA_AGENT": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\npcs.lua:102"
+    ],
+    "ARENA_BOOTS_DISE": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:31"
+    ],
+    "ARENA_BOOTS_PHAS": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:54"
+    ],
+    "ARENA_BOOTS_RUSH": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:88"
+    ],
+    "ARENA_BOSS_FRYJIA": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:374"
+    ],
+    "ARENA_BOSS_MASTER_DEFAULT": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:524"
+    ],
+    "ARENA_BOSS_RIALA": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:432"
+    ],
+    "ARENA_BOSS_RYAL": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:343"
+    ],
+    "ARENA_BOSS_VALFREN": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:479"
+    ],
+    "ARENA_BOW": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:111"
+    ],
+    "ARENA_SCORING": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:24"
+    ],
+    "ARENA_SLING": [
+      "game\\modules\\tome\\data\\zones\\arena\\objects.lua:130"
+    ],
+    "ARGONIEL": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:219",
+      "game\\modules\\tome\\data\\zones\\high-peak\\npcs.lua:144"
+    ],
+    "ARGONIEL_ATHAME": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:35"
+    ],
+    "ARGONIEL_DIAMOND": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:27"
+    ],
+    "ASSASSIN_LORD": [
+      "game\\modules\\tome\\data\\zones\\thieves-tunnels\\npcs.lua:24"
+    ],
+    "ASTELRID_CLUBSTAFF": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\objects.lua:42"
+    ],
+    "ATAMATHON": [
+      "game\\modules\\tome\\data\\zones\\golem-graveyard\\npcs.lua:24"
+    ],
+    "ATAMATHON_ACTIVATE": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\objects.lua:106"
+    ],
+    "ATAMATHON_BROKEN": [
+      "game\\modules\\tome\\data\\zones\\golem-graveyard\\grids.lua:24"
+    ],
+    "ATAMATHON_RUBY_EYE": [
+      "game\\modules\\tome\\data\\zones\\golem-graveyard\\objects.lua:23"
+    ],
+    "ATHAME": [
+      "game\\modules\\tome\\data\\zones\\vor-armoury\\objects.lua:22"
+    ],
+    "ATHAME_WEST": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:47"
+    ],
+    "ATHAME_WEST2": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\objects.lua:43"
+    ],
+    "AUTUMN_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:129"
+    ],
+    "AVERAGE_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:260"
+    ],
+    "AXE_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:52",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:43",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:54",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:43"
+    ],
+    "BAMBOO_HUT_COOKING3": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\grids.lua:25"
+    ],
+    "BAMBOO_HUT_DOOR": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:160"
+    ],
+    "BAMBOO_HUT_DOOR_HORIZ": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:181"
+    ],
+    "BAMBOO_HUT_DOOR_HORIZ_OPEN": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:182"
+    ],
+    "BAMBOO_HUT_DOOR_OPEN": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:173"
+    ],
+    "BAMBOO_HUT_DOOR_OPEN_VERT": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:184"
+    ],
+    "BAMBOO_HUT_DOOR_VERT": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:183"
+    ],
+    "BAMBOO_HUT_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:100"
+    ],
+    "BAMBOO_HUT_WALL": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:111"
+    ],
+    "BANDERS_NOTES": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:23"
+    ],
+    "BASE_BERETHH_COMPANION": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:251"
+    ],
+    "BASE_CARAVANEER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:26"
+    ],
+    "BASE_NPC_ANGOLWEN_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\npcs.lua:189"
+    ],
+    "BASE_NPC_ARENA1": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:38"
+    ],
+    "BASE_NPC_DERTH_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\npcs.lua:25"
+    ],
+    "BASE_NPC_ELVALA_OGRE_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\npcs.lua:78"
+    ],
+    "BASE_NPC_ELVALA_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\npcs.lua:25",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\npcs.lua:23"
+    ],
+    "BASE_NPC_IRKKK_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:25"
+    ],
+    "BASE_NPC_IRON_COUNCIL_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\npcs.lua:25"
+    ],
+    "BASE_NPC_LAST_HOPE_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\npcs.lua:25"
+    ],
+    "BASE_NPC_LOSGOROTH": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:78"
+    ],
+    "BASE_NPC_NAGA": [
+      "game\\modules\\tome\\data\\zones\\murgol-lair\\npcs.lua:79",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\npcs.lua:34"
+    ],
+    "BASE_NPC_ORC_ATTACKER": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:112"
+    ],
+    "BASE_NPC_ORC_SUMMON": [
+      "game\\modules\\tome\\data\\zones\\orc-breeding-pit\\npcs.lua:26"
+    ],
+    "BASE_NPC_POINT_ZERO_TOWN": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:25"
+    ],
+    "BASE_NPC_RITCH_REL": [
+      "game\\modules\\tome\\data\\zones\\ritch-tunnels\\npcs.lua:28"
+    ],
+    "BASE_NPC_SLAVER": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\npcs.lua:145"
+    ],
+    "BASE_NPC_SPIDER": [
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\npcs.lua:23"
+    ],
+    "BASE_NPC_SUNWALL_DEFENDER": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:28"
+    ],
+    "BASE_NPC_VAT": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:29"
+    ],
+    "BASE_SHADOW": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:132"
+    ],
+    "BASE_TUTORIAL_SPIDER": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:382"
+    ],
+    "BASKET": [
+      "game\\modules\\tome\\data\\zones\\south-beach\\grids.lua:34"
+    ],
+    "BEACH_UP": [
+      "game\\modules\\tome\\data\\zones\\south-beach\\grids.lua:41"
+    ],
+    "BEN_CRUTHDAR": [
+      "game\\modules\\tome\\data\\zones\\town-lumberjack-village\\npcs.lua:22"
+    ],
+    "BEN_CRUTHDAR_ABOMINATION": [
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\npcs.lua:25"
+    ],
+    "BERETHH": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:388"
+    ],
+    "BERETHH_ARCHER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:296"
+    ],
+    "BERETHH_WARRIOR": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:273"
+    ],
+    "BHW_CROSS1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:149",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:80"
+    ],
+    "BHW_E_CROSS1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:146",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:77"
+    ],
+    "BHW_H_FULL": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:138",
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:141",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:69",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:72"
+    ],
+    "BHW_NE1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:151",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:84"
+    ],
+    "BHW_NW1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:152",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:85"
+    ],
+    "BHW_N_CROSS1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:144",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:75"
+    ],
+    "BHW_SE1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:153",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:86"
+    ],
+    "BHW_SOLO1": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:82"
+    ],
+    "BHW_SW1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:154",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:87"
+    ],
+    "BHW_S_CROSS1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:145",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:76"
+    ],
+    "BHW_V_FULL1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:136",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:67"
+    ],
+    "BHW_W_CROSS1": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:147",
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:78"
+    ],
+    "BINDINGS_ETERNAL_NIGHT": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\objects.lua:35"
+    ],
+    "BLOCK": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:23"
+    ],
+    "BLOOD_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:55",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:56"
+    ],
+    "BLUSTERING_ELF": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:347"
+    ],
+    "BOGTREE": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:41",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:46",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:60"
+    ],
+    "BOGWATER": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:62",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:77"
+    ],
+    "BOGWATER_MISC": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:68",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:71",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:83",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:86"
+    ],
+    "BOOTS_OF_PHASING": [
+      "game\\modules\\tome\\data\\zones\\demon-plane\\objects.lua:26"
+    ],
+    "BORED_ELF_1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:460"
+    ],
+    "BORED_ELF_2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:477"
+    ],
+    "BORED_ELF_3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:494"
+    ],
+    "BORFAST": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\npcs.lua:210"
+    ],
+    "BORFAST_LETTER": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:47"
+    ],
+    "BREEDING_HISTORY": [
+      "game\\modules\\tome\\data\\zones\\orc-breeding-pit\\objects.lua:33"
+    ],
+    "BREEDING_HISTORY5": [
+      "game\\modules\\tome\\data\\zones\\orc-breeding-pit\\objects.lua:40"
+    ],
+    "BREEZY_ELF": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:364"
+    ],
+    "BRIAGH": [
+      "game\\modules\\tome\\data\\zones\\briagh-lair\\npcs.lua:25"
+    ],
+    "BRIAGH_LAIR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:779"
+    ],
+    "BROTOQ": [
+      "game\\modules\\tome\\data\\zones\\reknor-escape\\npcs.lua:38"
+    ],
+    "BURNT_DOOR": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:155"
+    ],
+    "BURNT_FOREST": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:190",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:204"
+    ],
+    "BUTLER": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\npcs.lua:128"
+    ],
+    "CALDIZAR": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress-caldizar\\npcs.lua:23"
+    ],
+    "CALDIZAR_AOADS": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\npcs.lua:388"
+    ],
+    "CANDLE": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\grids.lua:58",
+      "game\\modules\\tome\\data\\zones\\vor-pride\\grids.lua:66"
+    ],
+    "CARAVAN_GUARD": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:75"
+    ],
+    "CARAVAN_MERCHANT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:62"
+    ],
+    "CARAVAN_PORTER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:91"
+    ],
+    "CAVEFLOOR_CAVE_DESCRIPTION": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:140"
+    ],
+    "CAVEFLOOR_CAVE_ENTRANCE": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:128"
+    ],
+    "CAVEFLOOR_CAVE_MARKER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:113"
+    ],
+    "CAVEFLOOR_DOG_VAULT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:176"
+    ],
+    "CAVEFLOOR_EVENT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:104"
+    ],
+    "CAVEFLOOR_VAULT_ENTRANCE": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:152"
+    ],
+    "CAVEFLOOR_VAULT_TRIGGER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:164"
+    ],
+    "CAVERN_MOON": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:786"
+    ],
+    "CAVE_DOOR": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:191"
+    ],
+    "CAVE_DOOR_HORIZ": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:212"
+    ],
+    "CAVE_DOOR_HORIZ_OPEN": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:213"
+    ],
+    "CAVE_DOOR_OPEN": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:204"
+    ],
+    "CAVE_DOOR_OPEN_VERT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:215"
+    ],
+    "CAVE_DOOR_VERT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:214"
+    ],
+    "CAVE_HIGH_PEAK_UP": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:219"
+    ],
+    "CAVE_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:103"
+    ],
+    "CCHARRED_SCAR_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\eruan\\grids.lua:55"
+    ],
+    "CELESTIAL_BODY": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:30"
+    ],
+    "CELIA": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\npcs.lua:28"
+    ],
+    "CELIA_HEART": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\objects.lua:34"
+    ],
+    "CELIA_NOTE": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\objects.lua:27"
+    ],
+    "CFARPORTAL": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:207",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress-caldizar\\grids.lua:54"
+    ],
+    "CFAR_EAST_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\grids.lua:46",
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:47",
+      "game\\modules\\tome\\data\\zones\\reknor\\grids.lua:50",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\grids.lua:55"
+    ],
+    "CHARRED_SCAR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:163"
+    ],
+    "CHARRED_SCAR_PATCH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:171"
+    ],
+    "CHARRED_SCAR_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\eruan\\grids.lua:29"
+    ],
+    "CHARRED_SCAR_VOLCANO": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:673"
+    ],
+    "CHRONOLITH_CLONE": [
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\npcs.lua:183"
+    ],
+    "CHRONOLITH_TWIN": [
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\npcs.lua:137"
+    ],
+    "CLOAK_DECEPTION": [
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\objects.lua:23"
+    ],
+    "CLOSED_GATE": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:65"
+    ],
+    "CLOTH_ARMOR_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:34",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:32",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:34",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:22"
+    ],
+    "CLOUD": [
+      "game\\modules\\tome\\data\\zones\\dreamscape-talent\\grids.lua:24"
+    ],
+    "COBBLESTONE": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:32",
+      "game\\modules\\tome\\data\\zones\\town-derth\\grids.lua:29",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\grids.lua:31",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:52"
+    ],
+    "COFFIN": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:64"
+    ],
+    "COFFIN_OPEN": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:80"
+    ],
+    "COLD_FOREST": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\grids.lua:41",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\grids.lua:54",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:247",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:261"
+    ],
+    "COMBAT_STATS_DONE": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:481"
+    ],
+    "COMMAND_ORB": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:93",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress-caldizar\\grids.lua:25"
+    ],
+    "CONTROL_ORB": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\grids.lua:41"
+    ],
+    "CORRUPTED_DAELACH": [
+      "game\\modules\\tome\\data\\zones\\valley-moon\\npcs.lua:25"
+    ],
+    "CORRUPTED_OOZEMANCER": [
+      "game\\modules\\tome\\data\\zones\\sludgenest\\npcs.lua:25"
+    ],
+    "CORRUPTED_SANDQUEEN_HEART": [
+      "game\\modules\\tome\\data\\zones\\mark-spellblaze\\objects.lua:32"
+    ],
+    "CORRUPTED_SAND_WYRM": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\npcs.lua:173"
+    ],
+    "CORRUPTED_WAR_DOG": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:118"
+    ],
+    "CORRUPTOR": [
+      "game\\modules\\tome\\data\\zones\\unremarkable-cave\\npcs.lua:101"
+    ],
+    "CRACKS": [
+      "game\\modules\\tome\\data\\zones\\maze\\grids.lua:33"
+    ],
+    "CROWN_ETERNAL_NIGHT": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\objects.lua:79"
+    ],
+    "CRYSTAL_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:64"
+    ],
+    "CRYSTAL_WALL": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:25"
+    ],
+    "CULTIST_RAK_SHOR": [
+      "game\\modules\\tome\\data\\zones\\shadow-crypt\\npcs.lua:27"
+    ],
+    "CULTIVATION": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:43",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:49"
+    ],
+    "CVOID_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:100"
+    ],
+    "CWEST_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:79",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:56"
+    ],
+    "DAIKARA_ZONE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:610"
+    ],
+    "DECO_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:58"
+    ],
+    "DECO_FLOOR1": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:59"
+    ],
+    "DECO_FLOOR2": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:60"
+    ],
+    "DECO_FLOOR3": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:61"
+    ],
+    "DECO_FLOOR4": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:62"
+    ],
+    "DECO_FLOOR5": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:63"
+    ],
+    "DECO_FLOOR6": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:64"
+    ],
+    "DECO_FLOOR7": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:65"
+    ],
+    "DECO_FLOOR8": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:66"
+    ],
+    "DEEP_BELLOW": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:40"
+    ],
+    "DEFENDER_OF_REALITY": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:51"
+    ],
+    "DESERT": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:461"
+    ],
+    "DESERT_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:77"
+    ],
+    "DIRECTOR_HOMPALAN_ORDER": [
+      "game\\modules\\tome\\data\\zones\\halfling-ruins\\objects.lua:32"
+    ],
+    "DIRT": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:27"
+    ],
+    "DOOR_OPEN": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:203",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:433"
+    ],
+    "DRAEBOR": [
+      "game\\modules\\tome\\data\\zones\\demon-plane\\npcs.lua:26"
+    ],
+    "DRAFT_LETTER": [
+      "game\\modules\\tome\\data\\zones\\mark-spellblaze\\objects.lua:23"
+    ],
+    "DREADFELL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:617"
+    ],
+    "DREAM2_END": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:41"
+    ],
+    "DREAMING_ONE": [
+      "game\\modules\\tome\\data\\zones\\heart-gloom\\npcs.lua:104"
+    ],
+    "DREAM_END": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:26"
+    ],
+    "DREAM_MOUSE_HOLE": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:56"
+    ],
+    "DREAM_STONE": [
+      "game\\modules\\tome\\data\\zones\\dreams\\grids.lua:77"
+    ],
+    "DROLEM": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\npcs.lua:95"
+    ],
+    "EIDOLON": [
+      "game\\modules\\tome\\data\\zones\\eidolon-plane\\npcs.lua:20"
+    ],
+    "ELANDAR": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:161",
+      "game\\modules\\tome\\data\\zones\\high-peak\\npcs.lua:54"
+    ],
+    "ELANDAR_JOURNAL1": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:43"
+    ],
+    "ELANDAR_JOURNAL2": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:51"
+    ],
+    "ELDER": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:93"
+    ],
+    "ELDRITCH_PEARL": [
+      "game\\modules\\tome\\data\\zones\\temple-of-creation\\objects.lua:29"
+    ],
+    "ELVENWOOD_GREEN": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:313",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:327"
+    ],
+    "ELVENWOOD_SNOW": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:280",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:294"
+    ],
+    "EPOCH": [
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\npcs.lua:25"
+    ],
+    "EPOCH_CURVE": [
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\objects.lua:27"
+    ],
+    "ERUAN": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:800"
+    ],
+    "ESCAPE_REKNOR": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:39"
+    ],
+    "EYAL": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:55"
+    ],
+    "FAKE_SKULLCLEAVER": [
+      "game\\modules\\tome\\data\\zones\\reknor-escape\\objects.lua:24"
+    ],
+    "FAKE_WALL": [
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:183"
+    ],
+    "FALLEN_SUN_PALADIN_AERYN": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\npcs.lua:237"
+    ],
+    "FARPORTAL": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:112",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress-caldizar\\grids.lua:36"
+    ],
+    "FAR_EAST_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\grids.lua:26",
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\reknor\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\grids.lua:35"
+    ],
+    "FEEBLE_ELF": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:171"
+    ],
+    "FENCE_DOOR": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:93"
+    ],
+    "FENCE_DOOR_HORIZ": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:115"
+    ],
+    "FENCE_DOOR_HORIZ_OPEN": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:116"
+    ],
+    "FENCE_DOOR_OPEN": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:107"
+    ],
+    "FENCE_DOOR_OPEN_VERT": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:118"
+    ],
+    "FENCE_DOOR_VERT": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:117"
+    ],
+    "FENCE_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:33"
+    ],
+    "FENCE_WALL": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:41"
+    ],
+    "FENS": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:84"
+    ],
+    "FIELDS": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:25",
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:30",
+      "game\\modules\\tome\\data\\zones\\town-derth\\grids.lua:24",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:45",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:50"
+    ],
+    "FILIO": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\npcs.lua:358"
+    ],
+    "FILIO_LETTER": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:63"
+    ],
+    "FILLAREL": [
+      "game\\modules\\tome\\data\\zones\\unremarkable-cave\\npcs.lua:30"
+    ],
+    "FINAL_LESSON": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:463"
+    ],
+    "FLOOR": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\npcs.lua:166",
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\zone.lua:103",
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\zone.lua:150"
+    ],
+    "FLOOR_ROAD_STONE": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\grids.lua:25"
+    ],
+    "FOREST": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:75",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:89"
+    ],
+    "FORUM_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:316"
+    ],
+    "FOUNDATION_NOTE": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\objects.lua:24"
+    ],
+    "FOUNTAIN": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:44"
+    ],
+    "FOUNTAIN_MAIN": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:53"
+    ],
+    "FROZEN_NORGOS": [
+      "game\\modules\\tome\\data\\zones\\norgos-lair\\npcs.lua:48"
+    ],
+    "FROZEN_SEA": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:219",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:228"
+    ],
+    "FYRK": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:271"
+    ],
+    "GARKUL_HISTORY": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\objects.lua:34"
+    ],
+    "GATES_OF_MORNING": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:113"
+    ],
+    "GEM_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:60"
+    ],
+    "GENERIC_BOOK1": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\grids.lua:31"
+    ],
+    "GENERIC_BOOK2": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\grids.lua:40"
+    ],
+    "GENERIC_BOOK3": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\grids.lua:49"
+    ],
+    "GENERIC_LEVER_SAND": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:27"
+    ],
+    "GHASTLY_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:302"
+    ],
+    "GLACIAL_LEGION": [
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\npcs.lua:195"
+    ],
+    "GLADIATOR": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:228",
+      "game\\modules\\tome\\data\\zones\\arena-unlock\\npcs.lua:24"
+    ],
+    "GLADIUM_ORB": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:23"
+    ],
+    "GNARG": [
+      "game\\modules\\tome\\data\\zones\\vor-armoury\\npcs.lua:29"
+    ],
+    "GOD_GERLYK": [
+      "game\\modules\\tome\\data\\zones\\void\\npcs.lua:25"
+    ],
+    "GOLBUG": [
+      "game\\modules\\tome\\data\\zones\\reknor\\npcs.lua:28"
+    ],
+    "GOLDCRYSTAL": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:105"
+    ],
+    "GOLDEN_MOUNTAIN": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:69",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:377"
+    ],
+    "GOLDEN_MOUNTAIN_WALL": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:82",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:390"
+    ],
+    "GORBAT": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\npcs.lua:33"
+    ],
+    "GORBAT_PRIDE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:751"
+    ],
+    "GRAND_CORRUPTOR": [
+      "game\\modules\\tome\\data\\zones\\mark-spellblaze\\npcs.lua:30",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\npcs.lua:28"
+    ],
+    "GRASS": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:31"
+    ],
+    "GRASS_CARAVAN": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:88"
+    ],
+    "GRASS_DREAM": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:59"
+    ],
+    "GRASS_EVENT": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:37"
+    ],
+    "GRASS_INCHATE": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:71"
+    ],
+    "GRASS_MEADOW": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:45"
+    ],
+    "GRASS_PATCH": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:39"
+    ],
+    "GRASS_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:37"
+    ],
+    "GRASS_UP2_UP2": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:99"
+    ],
+    "GRASS_UP_WILDERNESS": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:126",
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\grids.lua:28",
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\grids.lua:28",
+      "game\\modules\\tome\\data\\zones\\void\\grids.lua:28"
+    ],
+    "GRAVE": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:49",
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:62"
+    ],
+    "GREATER_MUMMY": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\npcs.lua:176"
+    ],
+    "GREATER_MUMMY_LORD": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\npcs.lua:35"
+    ],
+    "GREATMOTHER": [
+      "game\\modules\\tome\\data\\zones\\orc-breeding-pit\\npcs.lua:135"
+    ],
+    "GROSS_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:288"
+    ],
+    "GRUSHNAK": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\npcs.lua:29"
+    ],
+    "GRUSHNAK_PRIDE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:758"
+    ],
+    "HALFLING_RUINS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:631"
+    ],
+    "HALF_BONE_GIANT": [
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\npcs.lua:73"
+    ],
+    "HARDGLASSWALL": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:41"
+    ],
+    "HARDGLASSWALLF": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:51"
+    ],
+    "HARDGLASSWALL_NORTH": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:52"
+    ],
+    "HARDGLASSWALL_NORTH_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:53"
+    ],
+    "HARDGLASSWALL_PILLAR_2": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:59"
+    ],
+    "HARDGLASSWALL_PILLAR_4": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:56"
+    ],
+    "HARDGLASSWALL_PILLAR_6": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:55"
+    ],
+    "HARDGLASSWALL_PILLAR_8": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:58"
+    ],
+    "HARDGLASSWALL_SMALL_PILLAR": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:57"
+    ],
+    "HARDGLASSWALL_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\gladium\\grids.lua:54"
+    ],
+    "HARDTREE": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:96",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:113",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:190",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:207"
+    ],
+    "HARNO": [
+      "game\\modules\\tome\\data\\zones\\reknor\\npcs.lua:119"
+    ],
+    "HEADLESSHORROR": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:290"
+    ],
+    "HEALER_ASTELRID": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:140"
+    ],
+    "HEART_GLOOM": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:652"
+    ],
+    "HEAVY_ARMOR_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:22"
+    ],
+    "HEAVY_SENTINEL": [
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\npcs.lua:258"
+    ],
+    "HERBALIST": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:52",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:76",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:75",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:72",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:78"
+    ],
+    "HIGH_PEAK_UP": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:210"
+    ],
+    "HIGH_SUN_PALADIN_AERYN": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\npcs.lua:316",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\npcs.lua:25"
+    ],
+    "HIVE_MOTHER": [
+      "game\\modules\\tome\\data\\zones\\ritch-tunnels\\npcs.lua:98"
+    ],
+    "HORNED_HORROR": [
+      "game\\modules\\tome\\data\\zones\\maze\\npcs.lua:47"
+    ],
+    "ID_HISTORY": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\objects.lua:25"
+    ],
+    "ILLUSION_YEEK": [
+      "game\\modules\\tome\\data\\zones\\dreams\\npcs.lua:41"
+    ],
+    "INFINITE": [
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\grids.lua:57"
+    ],
+    "INQUISITOR": [
+      "game\\modules\\tome\\data\\zones\\rhaloren-camp\\npcs.lua:30"
+    ],
+    "IRON_ACORN_BASIC": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:32"
+    ],
+    "IRON_ACORN_EVIL": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:88"
+    ],
+    "IRON_ACORN_GOOD": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:60"
+    ],
+    "IRON_COUNCIL": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\reknor-escape\\grids.lua:22"
+    ],
+    "IRON_THRONE_EDICT": [
+      "game\\modules\\tome\\data\\zones\\reknor\\grids.lua:66"
+    ],
+    "IRON_THRONE_LAST_WORDS": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:84"
+    ],
+    "IRON_THRONE_LEDGER": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:76"
+    ],
+    "IRON_THRONE_PROFIT": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:67"
+    ],
+    "ITEMS_VAULT": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:384"
+    ],
+    "JEWELRY": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:58",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:63"
+    ],
+    "JUNGLE_FOREST": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:438",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:453"
+    ],
+    "JUNGLE_PLAINS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:398"
+    ],
+    "JUNGLE_PLAINS_PATCH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:406",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:409",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:412",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:415",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:418"
+    ],
+    "JUNGLE_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:116"
+    ],
+    "JUNGLE_TOWN": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:507"
+    ],
+    "KITTY": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\npcs.lua:176"
+    ],
+    "KNIFE_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:40",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:46",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:47",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:34",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:53"
+    ],
+    "KOLAL": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:88"
+    ],
+    "KOR_FURY": [
+      "game\\modules\\tome\\data\\zones\\ruins-kor-pul\\npcs.lua:138"
+    ],
+    "KOR_PUL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:624"
+    ],
+    "KRYL_FEIJAN": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\npcs.lua:28"
+    ],
+    "KYLESS": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:320"
+    ],
+    "KYLESS_BOOK": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:127"
+    ],
+    "KYLESS_JOURNAL_": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\objects.lua:117"
+    ],
+    "LAKE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:349"
+    ],
+    "LAKE_IRONDEEP": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:351"
+    ],
+    "LAKE_NUR": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:117",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:211",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:71",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:347"
+    ],
+    "LAKE_SPELLMURK": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:352"
+    ],
+    "LAKE_WESTREACH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:350"
+    ],
+    "LAST_HOPE_GRAVEYARD": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:733"
+    ],
+    "LAVA": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:38"
+    ],
+    "LAVA_DOWN_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:371"
+    ],
+    "LAVA_FLOOR_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:346",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:354"
+    ],
+    "LAVA_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:142"
+    ],
+    "LAVA_WALL": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\grids.lua:23"
+    ],
+    "LAVA_WALL_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:357",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:368"
+    ],
+    "LAVA_WALL_OPAQUE": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\grids.lua:30"
+    ],
+    "LEARN_MIND_CONFUSION": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:395"
+    ],
+    "LEARN_MIND_FEAR": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:341"
+    ],
+    "LEARN_MIND_KB": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:276"
+    ],
+    "LEARN_PHYS_KB": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:173"
+    ],
+    "LEARN_SPELL_BLEED": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:373"
+    ],
+    "LEARN_SPELL_BLINK": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:309"
+    ],
+    "LEARN_SPELL_KB": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:212"
+    ],
+    "LEARN_SPELL_KB3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:244"
+    ],
+    "LEGACY_NALOREN": [
+      "game\\modules\\tome\\data\\zones\\temple-of-creation\\objects.lua:76"
+    ],
+    "LIBRARY": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:224",
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\traps.lua:35",
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:56",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:87",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:65"
+    ],
+    "LIGHT_ARMOR_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:28",
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:27",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:28",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:27",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:27",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:28",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:28",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:32",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:27"
+    ],
+    "LIMMIR": [
+      "game\\modules\\tome\\data\\zones\\valley-moon\\npcs.lua:75"
+    ],
+    "LINANIIL_LECTURE": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\objects.lua:23"
+    ],
+    "LITHFENGEL": [
+      "game\\modules\\tome\\data\\zones\\reknor\\npcs.lua:156"
+    ],
+    "LOCK": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:49",
+      "game\\modules\\tome\\data\\zones\\arena-unlock\\grids.lua:37",
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\grids.lua:77",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:453"
+    ],
+    "LOCK_HORIZ": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:75",
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:35"
+    ],
+    "LOCK_HORIZ_OPEN": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:77"
+    ],
+    "LOCK_OPEN": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:68"
+    ],
+    "LOCK_VERT": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:76",
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:36"
+    ],
+    "LOCK_VERT_OPEN": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:78"
+    ],
+    "LORE": [
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\grids.lua:27"
+    ],
+    "LORE4": [
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\grids.lua:42"
+    ],
+    "LORE_NOTE": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\grids.lua:27"
+    ],
+    "LORE_SONG": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\objects.lua:35"
+    ],
+    "LOW_HILLS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:51",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:56"
+    ],
+    "LUXAM": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:101"
+    ],
+    "MACE_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:48",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:38"
+    ],
+    "MAGIC_DOOR": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:417"
+    ],
+    "MASSOK": [
+      "game\\modules\\tome\\data\\zones\\daikara\\npcs.lua:160"
+    ],
+    "MASTERALCHEMIST": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:121"
+    ],
+    "MASTERSLINGER": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:196"
+    ],
+    "MAUL_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:58",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:61",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:52"
+    ],
+    "MAUSOLEUM": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:87"
+    ],
+    "MAZE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:582"
+    ],
+    "MELINDA": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\npcs.lua:88"
+    ],
+    "MELINDA_BEACH": [
+      "game\\modules\\tome\\data\\zones\\south-beach\\npcs.lua:25"
+    ],
+    "MELINDA_BIKINI": [
+      "game\\modules\\tome\\data\\zones\\south-beach\\objects.lua:27"
+    ],
+    "MELINDA_FATHER": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:111"
+    ],
+    "MENTALSAVE_RING": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\objects.lua:76"
+    ],
+    "MERCHANT": [
+      "game\\modules\\tome\\data\\zones\\thieves-tunnels\\npcs.lua:113"
+    ],
+    "MINDPOWER_AMULET": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\objects.lua:40"
+    ],
+    "MINDSTAR": [
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:82"
+    ],
+    "MINDSTAR_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:58"
+    ],
+    "MINDWORM": [
+      "game\\modules\\tome\\data\\zones\\noxious-caldera\\npcs.lua:37"
+    ],
+    "MINOTAUR_MAZE": [
+      "game\\modules\\tome\\data\\zones\\maze\\npcs.lua:101"
+    ],
+    "MONITOR_ORB1": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:342"
+    ],
+    "MONITOR_ORB2": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:356"
+    ],
+    "MONSTROUS_LOSGOROTH": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:114"
+    ],
+    "MOONSTONE": [
+      "game\\modules\\tome\\data\\zones\\valley-moon\\grids.lua:26",
+      "game\\modules\\tome\\data\\zones\\valley-moon\\grids.lua:35"
+    ],
+    "MULTIHUEWYRMIC": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:160"
+    ],
+    "MURAL_PAINTING": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:260"
+    ],
+    "MURGOL": [
+      "game\\modules\\tome\\data\\zones\\murgol-lair\\npcs.lua:25"
+    ],
+    "MURGOL_LAIR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:711"
+    ],
+    "NAGA_TIDECALLER": [
+      "game\\modules\\tome\\data\\zones\\murgol-lair\\npcs.lua:124",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\npcs.lua:78"
+    ],
+    "NAGA_TIDEWARDEN": [
+      "game\\modules\\tome\\data\\zones\\murgol-lair\\npcs.lua:109",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\npcs.lua:61"
+    ],
+    "NASHVA": [
+      "game\\modules\\tome\\data\\zones\\murgol-lair\\npcs.lua:160"
+    ],
+    "NECROMANCER": [
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\npcs.lua:30"
+    ],
+    "NIMISIL": [
+      "game\\modules\\tome\\data\\zones\\maze\\npcs.lua:152"
+    ],
+    "NORGAN": [
+      "game\\modules\\tome\\data\\zones\\reknor-escape\\npcs.lua:91"
+    ],
+    "NORGOS": [
+      "game\\modules\\tome\\data\\zones\\norgos-lair\\npcs.lua:93"
+    ],
+    "NORGOS_LAIR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:603"
+    ],
+    "NOTE": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\objects.lua:28",
+      "game\\modules\\tome\\data\\zones\\ardhungol\\objects.lua:25",
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\objects.lua:65",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\objects.lua:27",
+      "game\\modules\\tome\\data\\zones\\daikara\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\halfling-ruins\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\lake-nur\\objects.lua:27",
+      "game\\modules\\tome\\data\\zones\\maze\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\noxious-caldera\\objects.lua:24"
+    ],
+    "NOTE4": [
+      "game\\modules\\tome\\data\\zones\\ardhungol\\objects.lua:32"
+    ],
+    "NOTE5": [
+      "game\\modules\\tome\\data\\zones\\rhaloren-camp\\objects.lua:32"
+    ],
+    "NOTE6": [
+      "game\\modules\\tome\\data\\zones\\scintillating-caves\\objects.lua:33"
+    ],
+    "NOTE_FROM_LAST_HOPE": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:22"
+    ],
+    "NOTE_LEARN_TRAP": [
+      "game\\modules\\tome\\data\\zones\\maze\\objects.lua:31"
+    ],
+    "NOTE_LORE": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\objects.lua:25",
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\objects.lua:25",
+      "game\\modules\\tome\\data\\zones\\orc-breeding-pit\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\objects.lua:25",
+      "game\\modules\\tome\\data\\zones\\vor-pride\\objects.lua:75"
+    ],
+    "OASIS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:486",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:500"
+    ],
+    "OBSTINATE_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:213"
+    ],
+    "OCEANS_OF_EYAL": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\objects.lua:59"
+    ],
+    "OGRE_SENTRY": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:102"
+    ],
+    "OGRE_SENTRY2": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:127"
+    ],
+    "OLD_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\zone.lua:152",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\npcs.lua:89"
+    ],
+    "OLD_FOREST": [
+      "game\\modules\\tome\\data\\zones\\lake-nur\\grids.lua:26",
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\grids.lua:30",
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\grids.lua:30",
+      "game\\modules\\tome\\data\\zones\\void\\grids.lua:30",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:142",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:156"
+    ],
+    "OLD_FOREST_ZONE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:596"
+    ],
+    "OPEN_GATE": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:75"
+    ],
+    "ORB_DESTRUCTION": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:171",
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:112",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:107"
+    ],
+    "ORB_DRAGON": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:157",
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:52",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:50"
+    ],
+    "ORB_ELEMENTS": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:143",
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:92",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:88"
+    ],
+    "ORB_MANY_WAYS2": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\objects.lua:67"
+    ],
+    "ORB_UNDEATH": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:129",
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:72",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:69"
+    ],
+    "ORC_ATTACK": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:135"
+    ],
+    "ORC_ELITE_BERSERKER": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\mapscripts\\last.lua:31",
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\mapscripts\\main.lua:26"
+    ],
+    "ORC_ELITE_FIGHTER": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\mapscripts\\last.lua:32",
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\mapscripts\\main.lua:27"
+    ],
+    "ORC_HISTORY": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\objects.lua:83"
+    ],
+    "OVERPOWERED_WYRM": [
+      "game\\modules\\tome\\data\\zones\\vor-armoury\\npcs.lua:85"
+    ],
+    "PACIFIST_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:133"
+    ],
+    "PACIFIST_ORC_2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:145"
+    ],
+    "PALE_DRAKE": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\npcs.lua:138"
+    ],
+    "PEAK_DOOR": [
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:133",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:127"
+    ],
+    "PEAK_STAIR": [
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:170",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:136"
+    ],
+    "PEAK_STAIR_FAKE": [
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:150"
+    ],
+    "PEARL_LIFE_DEATH": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:160"
+    ],
+    "PENTAGRAM": [
+      "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:39"
+    ],
+    "PHYSSAVE_BOOTS": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\objects.lua:22"
+    ],
+    "PINE_FOREST": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:108",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:122"
+    ],
+    "PLAINS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:33"
+    ],
+    "PLAINS_PATCH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:41"
+    ],
+    "PLAYER_SLAVE": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\npcs.lua:99"
+    ],
+    "POLAR_CAP": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\grids.lua:62",
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:211"
+    ],
+    "PONX": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:114"
+    ],
+    "PORTAL": [
+      "game\\modules\\tome\\data\\zones\\ruined-dungeon\\grids.lua:87",
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\grids.lua:74"
+    ],
+    "PORTAL_BACK": [
+      "game\\modules\\tome\\data\\zones\\demon-plane\\grids.lua:24",
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:29"
+    ],
+    "PORTAL_BACK_2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:54"
+    ],
+    "PORTAL_BOSS": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:185"
+    ],
+    "PORTAL_DEMON": [
+      "game\\modules\\tome\\data\\zones\\valley-moon\\grids.lua:39"
+    ],
+    "POST": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:26"
+    ],
+    "PROTECTOR_MYSSIL": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\npcs.lua:74"
+    ],
+    "PROX_NOTE": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\objects.lua:33"
+    ],
+    "PUSHY_ELF": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:330"
+    ],
+    "PUSHY_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:229"
+    ],
+    "PUTRESCENT_POTION": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\objects.lua:76"
+    ],
+    "QUICK_EXIT": [
+      "game\\modules\\tome\\data\\zones\\ancient-elven-ruins\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\maze\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\shadow-crypt\\grids.lua:23"
+    ],
+    "RACES_NOTE": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\objects.lua:37"
+    ],
+    "RAK_SHOR": [
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\npcs.lua:32"
+    ],
+    "RAK_SHOR_PRIDE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:744"
+    ],
+    "RANTHA_THE_WORM": [
+      "game\\modules\\tome\\data\\zones\\daikara\\npcs.lua:34"
+    ],
+    "RARE_GOODS": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:117"
+    ],
+    "REAVER": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:256"
+    ],
+    "REGENERATING_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:157"
+    ],
+    "REKNOR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:697"
+    ],
+    "REL_TUNNEL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:682"
+    ],
+    "RESONATING_DIAMOND": [
+      "game\\modules\\tome\\data\\zones\\briagh-lair\\objects.lua:23"
+    ],
+    "RESONATING_DIAMOND_WEST": [
+      "game\\modules\\tome\\data\\zones\\reknor\\objects.lua:34"
+    ],
+    "RESONATING_DIAMOND_WEST2": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\objects.lua:25"
+    ],
+    "RHALOREN_CAMP": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:645"
+    ],
+    "RIFT": [
+      "game\\modules\\tome\\data\\zones\\daikara\\grids.lua:25",
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\grids.lua:33",
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\grids.lua:33",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\grids.lua:24",
+      "game\\modules\\tome\\data\\zones\\void\\grids.lua:33"
+    ],
+    "RIFT2": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:232"
+    ],
+    "RIFT_HOME": [
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\grids.lua:35"
+    ],
+    "RING_MASTER": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\npcs.lua:24"
+    ],
+    "RING_OF_BLOOD": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\objects.lua:24"
+    ],
+    "RITCH_TUNNELS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:666"
+    ],
+    "RIVER": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:346"
+    ],
+    "ROAD": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:42"
+    ],
+    "ROBES_DEFLECTION": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\objects.lua:35"
+    ],
+    "ROCK": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\grids.lua:38",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\grids.lua:58"
+    ],
+    "ROCKY_SNOWY_DOOR": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:203"
+    ],
+    "ROCKY_UP_WILDERNESS": [
+      "game\\modules\\tome\\data\\zones\\tempest-peak\\zone.lua:93"
+    ],
+    "ROCK_DOOR": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:145"
+    ],
+    "ROCK_LEVER_DOOR": [
+      "game\\modules\\tome\\data\\zones\\gorbat-pride\\grids.lua:121"
+    ],
+    "ROD_SPYDRIC_POISON": [
+      "game\\modules\\tome\\data\\zones\\ardhungol\\objects.lua:42"
+    ],
+    "ROOTED_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:199"
+    ],
+    "ROTTING_TITAN": [
+      "game\\modules\\tome\\data\\zones\\rak-shor-pride\\npcs.lua:119"
+    ],
+    "RUDE_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:245"
+    ],
+    "RUNEMASTER": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:44",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:44",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:57"
+    ],
+    "RUNES": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:82",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:81"
+    ],
+    "RUNE_DISSIPATION": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\objects.lua:42"
+    ],
+    "RUNE_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:52",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:53"
+    ],
+    "RUNE_RIFT": [
+      "game\\modules\\tome\\data\\zones\\daikara\\objects.lua:32",
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\objects.lua:22"
+    ],
+    "RUNIC_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:54"
+    ],
+    "SANDQUEEN_HEART": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\objects.lua:34"
+    ],
+    "SANDWORM_LAIR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:659"
+    ],
+    "SANDWORM_QUEEN": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\npcs.lua:84"
+    ],
+    "SANDWORM_TUNNELER": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\npcs.lua:32"
+    ],
+    "SANDWORM_TUNNELER_HUGE": [
+      "game\\modules\\tome\\data\\zones\\sandworm-lair\\npcs.lua:57"
+    ],
+    "SAND_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:90"
+    ],
+    "SCINTILLATING_CAVES": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:638"
+    ],
+    "SEA_EYAL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:345"
+    ],
+    "SEA_SASH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:348"
+    ],
+    "SHADE": [
+      "game\\modules\\tome\\data\\zones\\ruins-kor-pul\\npcs.lua:41"
+    ],
+    "SHADE_OF_TELOS": [
+      "game\\modules\\tome\\data\\zones\\telmur\\npcs.lua:29"
+    ],
+    "SHADOW_CASTER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:226"
+    ],
+    "SHADOW_CLAW": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:171"
+    ],
+    "SHADOW_STALKER": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:193"
+    ],
+    "SHANDRAL": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:42"
+    ],
+    "SHARDSKIN": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\npcs.lua:43"
+    ],
+    "SHERTUL_FORTRESS_DRY": [
+      "game\\modules\\tome\\data\\zones\\lake-nur\\grids.lua:35"
+    ],
+    "SHERTUL_FORTRESS_FLOOD": [
+      "game\\modules\\tome\\data\\zones\\lake-nur\\grids.lua:53"
+    ],
+    "SHIMMER_CONTROL": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:370"
+    ],
+    "SIGN": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:97"
+    ],
+    "SIGN_CAVE": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:118"
+    ],
+    "SIGN_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:108"
+    ],
+    "SIGN_SOLID_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:128"
+    ],
+    "SIMPLE_GOWN": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\objects.lua:23"
+    ],
+    "SKELERAT": [
+      "game\\modules\\tome\\data\\zones\\arena\\npcs.lua:67"
+    ],
+    "SLASUL": [
+      "game\\modules\\tome\\data\\zones\\temple-of-creation\\npcs.lua:26"
+    ],
+    "SLASUL_NOTE": [
+      "game\\modules\\tome\\data\\zones\\temple-of-creation\\objects.lua:67"
+    ],
+    "SLAZISH_NOTE": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\objects.lua:27"
+    ],
+    "SLAZISH_NOTE1": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\zone.lua:108"
+    ],
+    "SLAZISH_NOTE2": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\zone.lua:117"
+    ],
+    "SLIME_FLOOR": [
+      "game\\modules\\tome\\data\\zones\\sludgenest\\zone.lua:115"
+    ],
+    "SLIME_TUNNELS": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\grids.lua:28"
+    ],
+    "SLIMY_CRAWLER": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\npcs.lua:91"
+    ],
+    "SLINGER": [
+      "game\\modules\\tome\\data\\zones\\arena-unlock\\npcs.lua:71"
+    ],
+    "SNAPROOT": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\npcs.lua:155"
+    ],
+    "SNOWY_DOOR": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:217"
+    ],
+    "SNOWY_GRASS_2": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:170"
+    ],
+    "SNOWY_PATCH_2": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:178"
+    ],
+    "SNOWY_TREE_2": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:186",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:200"
+    ],
+    "SOUTHSPAR_NOTE": [
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\objects.lua:48"
+    ],
+    "SPACETIME_RIFT": [
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\grids.lua:68"
+    ],
+    "SPACETIME_RIFT2": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:246"
+    ],
+    "SPACIAL_DISTURBANCE": [
+      "game\\modules\\tome\\data\\zones\\abashed-expanse\\npcs.lua:31"
+    ],
+    "SPECTATOR": [
+      "game\\modules\\tome\\data\\zones\\ring-of-blood\\npcs.lua:80"
+    ],
+    "SPELLBLAZE_CRYSTAL": [
+      "game\\modules\\tome\\data\\zones\\scintillating-caves\\npcs.lua:30"
+    ],
+    "SPELLBLAZE_NOTE": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\objects.lua:25"
+    ],
+    "SPELLBLAZE_SIMULACRUM": [
+      "game\\modules\\tome\\data\\zones\\scintillating-caves\\npcs.lua:75"
+    ],
+    "SQUARE_GRASS": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:79"
+    ],
+    "STAFF_ABSORPTION_AWAKENED": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\objects.lua:59"
+    ],
+    "STAFF_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:38",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:70",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:38",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:51"
+    ],
+    "STATUE1": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:42"
+    ],
+    "STATUE2": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:48"
+    ],
+    "STATUE3": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:54"
+    ],
+    "STATUE4": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:60"
+    ],
+    "STATUE5": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:66"
+    ],
+    "STATUE6": [
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\grids.lua:72"
+    ],
+    "STAVES": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\traps.lua:41"
+    ],
+    "STEW": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\grids.lua:26",
+      "game\\modules\\tome\\data\\zones\\trollmire\\grids.lua:34"
+    ],
+    "SUBJECT_Z": [
+      "game\\modules\\tome\\data\\zones\\halfling-ruins\\npcs.lua:26"
+    ],
+    "SUMMERTIDE": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:65"
+    ],
+    "SUMMON_CIRCLE": [
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\grids.lua:32"
+    ],
+    "SUMMON_CIRCLE_BROKEN": [
+      "game\\modules\\tome\\data\\zones\\blighted-ruins\\grids.lua:35"
+    ],
+    "SUN_PALADIN_DEFENDER": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:50"
+    ],
+    "SUN_PALADIN_DEFENDER_RODMOUR": [
+      "game\\modules\\tome\\data\\zones\\charred-scar\\npcs.lua:80"
+    ],
+    "SUN_PALADIN_GUREN": [
+      "game\\modules\\tome\\data\\zones\\eruan\\npcs.lua:28"
+    ],
+    "SUPREME_ARCHMAGE_LINANIIL": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\npcs.lua:22"
+    ],
+    "SWAMPTREE": [
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:27",
+      "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:40"
+    ],
+    "SWORD_WEAPON_STORE": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:34",
+      "game\\modules\\tome\\data\\zones\\town-elvala\\traps.lua:33",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:40",
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\traps.lua:33",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:38",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:40",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\traps.lua:46",
+      "game\\modules\\tome\\data\\zones\\town-shatur\\traps.lua:42",
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:33"
+    ],
+    "TANNEN": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\npcs.lua:33",
+      "game\\modules\\tome\\data\\zones\\town-last-hope\\traps.lua:99"
+    ],
+    "TARELION": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\npcs.lua:130"
+    ],
+    "TARELION_LECTURE_MAGIC": [
+      "game\\modules\\tome\\data\\zones\\town-angolwen\\objects.lua:32"
+    ],
+    "TDOWN": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\grids.lua:52"
+    ],
+    "TELEPORT_OUT": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:78"
+    ],
+    "TELEPORT_OUT_MELINDA": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:86"
+    ],
+    "TELMUR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:704"
+    ],
+    "TELOS_BOTTOM_HALF": [
+      "game\\modules\\tome\\data\\zones\\telmur\\objects.lua:28"
+    ],
+    "TEMPEST_PEAK": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:718"
+    ],
+    "TEMPORAL_DEFILER": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:202"
+    ],
+    "THE_MASTER": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\npcs.lua:34"
+    ],
+    "THE_MOUTH": [
+      "game\\modules\\tome\\data\\zones\\deep-bellow\\npcs.lua:27"
+    ],
+    "THE_POSSESSED": [
+      "game\\modules\\tome\\data\\zones\\ruins-kor-pul\\npcs.lua:93"
+    ],
+    "TIME_SHARD": [
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\objects.lua:27"
+    ],
+    "TOOLSHOP": [
+      "game\\modules\\tome\\data\\zones\\town-derth\\traps.lua:64",
+      "game\\modules\\tome\\data\\zones\\town-iron-council\\traps.lua:66"
+    ],
+    "TOWN": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:506"
+    ],
+    "TOWN_ANGOLWEN": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:519"
+    ],
+    "TOWN_ANGOLWEN_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:524"
+    ],
+    "TOWN_DERTH": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:509"
+    ],
+    "TOWN_ELVALA": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:536"
+    ],
+    "TOWN_GATES_OF_MORNING": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:541"
+    ],
+    "TOWN_IRKKK": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:547"
+    ],
+    "TOWN_IRON_COUNCIL": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:568"
+    ],
+    "TOWN_LAST_HOPE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:514"
+    ],
+    "TOWN_SHATUR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:531"
+    ],
+    "TOWN_ZIGUR": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:552"
+    ],
+    "TRAINER": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\traps.lua:71"
+    ],
+    "TRAINING_DUMMY": [
+      "game\\modules\\tome\\data\\zones\\grushnak-pride\\grids.lua:38",
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\npcs.lua:142"
+    ],
+    "TRAINING_ORB": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\grids.lua:270"
+    ],
+    "TRAP_TUTORIAL": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:22",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:22"
+    ],
+    "TRAP_TUTORIAL2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:38"
+    ],
+    "TRAP_TUTORIAL3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:54"
+    ],
+    "TRAP_TUTORIAL4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:70"
+    ],
+    "TRAP_TUTORIAL5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:86"
+    ],
+    "TRAP_TUTORIAL6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:102"
+    ],
+    "TREE": [
+      "game\\modules\\tome\\data\\zones\\heart-gloom\\grids.lua:70",
+      "game\\modules\\tome\\data\\zones\\heart-gloom\\grids.lua:84",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:82",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:110",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:176",
+      "game\\modules\\tome\\data\\zones\\old-forest\\grids.lua:204"
+    ],
+    "TROLLMIRE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:589"
+    ],
+    "TROLL_BILL": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\npcs.lua:179"
+    ],
+    "TROLL_PROX": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\npcs.lua:46"
+    ],
+    "TROLL_SHAX": [
+      "game\\modules\\tome\\data\\zones\\trollmire\\npcs.lua:112"
+    ],
+    "TUP": [
+      "game\\modules\\tome\\data\\zones\\tannen-tower\\grids.lua:48"
+    ],
+    "TUTORIAL_CALC0": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:297"
+    ],
+    "TUTORIAL_CALC1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:302"
+    ],
+    "TUTORIAL_CALC10": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:347"
+    ],
+    "TUTORIAL_CALC11": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:352"
+    ],
+    "TUTORIAL_CALC2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:307"
+    ],
+    "TUTORIAL_CALC3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:312"
+    ],
+    "TUTORIAL_CALC4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:317"
+    ],
+    "TUTORIAL_CALC5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:322"
+    ],
+    "TUTORIAL_CALC6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:327"
+    ],
+    "TUTORIAL_CALC7": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:332"
+    ],
+    "TUTORIAL_CALC8": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:337"
+    ],
+    "TUTORIAL_CALC9": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:342"
+    ],
+    "TUTORIAL_INFORMED1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:231"
+    ],
+    "TUTORIAL_INTRO_MECHANICS_GUIDE": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:175"
+    ],
+    "TUTORIAL_LEVELUP": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:58",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:138"
+    ],
+    "TUTORIAL_MECHOPTION": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:168"
+    ],
+    "TUTORIAL_MELEE": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:43",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:123"
+    ],
+    "TUTORIAL_MOVE": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:38",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:118"
+    ],
+    "TUTORIAL_NPC_LONE_WOLF": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\npcs.lua:48",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:79"
+    ],
+    "TUTORIAL_NPC_MAGE": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\npcs.lua:24",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:55"
+    ],
+    "TUTORIAL_NPC_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\npcs.lua:39",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:70"
+    ],
+    "TUTORIAL_OBJECTS": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:48",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:128"
+    ],
+    "TUTORIAL_ORC": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:113"
+    ],
+    "TUTORIAL_QUESTS": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:83",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:163"
+    ],
+    "TUTORIAL_RANGED": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:78",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:158"
+    ],
+    "TUTORIAL_SCALE1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:236"
+    ],
+    "TUTORIAL_SCALE10": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:282"
+    ],
+    "TUTORIAL_SCALE11": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:287"
+    ],
+    "TUTORIAL_SCALE12": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:292"
+    ],
+    "TUTORIAL_SCALE2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:241"
+    ],
+    "TUTORIAL_SCALE3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:246"
+    ],
+    "TUTORIAL_SCALE4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:251"
+    ],
+    "TUTORIAL_SCALE5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:256"
+    ],
+    "TUTORIAL_SCALE6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:262"
+    ],
+    "TUTORIAL_SCALE7": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:267"
+    ],
+    "TUTORIAL_SCALE8": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:272"
+    ],
+    "TUTORIAL_SCALE9": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:277"
+    ],
+    "TUTORIAL_STATS1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:180"
+    ],
+    "TUTORIAL_STATS2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:185"
+    ],
+    "TUTORIAL_STATS3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:190"
+    ],
+    "TUTORIAL_STATS4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:195"
+    ],
+    "TUTORIAL_STATS5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:200"
+    ],
+    "TUTORIAL_STATS6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:205"
+    ],
+    "TUTORIAL_STATS7": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:210"
+    ],
+    "TUTORIAL_STATS8": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:220"
+    ],
+    "TUTORIAL_STATS9": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:225"
+    ],
+    "TUTORIAL_TACTICS1": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:68",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:148"
+    ],
+    "TUTORIAL_TACTICS2": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:73",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:153"
+    ],
+    "TUTORIAL_TALENTS": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:53",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:133"
+    ],
+    "TUTORIAL_TERRAIN": [
+      "game\\modules\\tome\\data\\zones\\tutorial\\traps.lua:63",
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:143"
+    ],
+    "TUTORIAL_TIER0": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:402"
+    ],
+    "TUTORIAL_TIER1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:407"
+    ],
+    "TUTORIAL_TIER10": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:452"
+    ],
+    "TUTORIAL_TIER11": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:457"
+    ],
+    "TUTORIAL_TIER12": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:462"
+    ],
+    "TUTORIAL_TIER2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:412"
+    ],
+    "TUTORIAL_TIER3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:417"
+    ],
+    "TUTORIAL_TIER4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:422"
+    ],
+    "TUTORIAL_TIER5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:427"
+    ],
+    "TUTORIAL_TIER6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:432"
+    ],
+    "TUTORIAL_TIER7": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:437"
+    ],
+    "TUTORIAL_TIER8": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:442"
+    ],
+    "TUTORIAL_TIER9": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:447"
+    ],
+    "TUTORIAL_TIMED0": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:357"
+    ],
+    "TUTORIAL_TIMED1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:362"
+    ],
+    "TUTORIAL_TIMED2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:367"
+    ],
+    "TUTORIAL_TIMED3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:372"
+    ],
+    "TUTORIAL_TIMED4": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:377"
+    ],
+    "TUTORIAL_TIMED5": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:382"
+    ],
+    "TUTORIAL_TIMED6": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:387"
+    ],
+    "TUTORIAL_TIMED7": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:392"
+    ],
+    "TUTORIAL_TIMED8": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\traps.lua:397"
+    ],
+    "TUTORIAL_WATER": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:89"
+    ],
+    "TUT_GUIDE": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:25"
+    ],
+    "TUT_SPIDER_1": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:407"
+    ],
+    "TUT_SPIDER_2": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:424"
+    ],
+    "TUT_SPIDER_3": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:442"
+    ],
+    "UGLY_TROLL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\npcs.lua:274"
+    ],
+    "UKLLMSWWIK": [
+      "game\\modules\\tome\\data\\zones\\flooded-cave\\npcs.lua:25"
+    ],
+    "UKRUK": [
+      "game\\modules\\tome\\data\\zones\\dreadfell-ambush\\npcs.lua:24"
+    ],
+    "UKRUK_NOTE": [
+      "game\\modules\\tome\\data\\zones\\dreadfell-ambush\\objects.lua:23"
+    ],
+    "UMBRELLA": [
+      "game\\modules\\tome\\data\\zones\\south-beach\\grids.lua:26"
+    ],
+    "UNDEAD_POEM_LEVEL_2": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:23"
+    ],
+    "UNDEAD_POEM_LEVEL_5": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:31"
+    ],
+    "UNDEAD_POEM_LEVEL_7": [
+      "game\\modules\\tome\\data\\zones\\dreadfell\\objects.lua:39"
+    ],
+    "UNDERGROUND_ROCK": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:51"
+    ],
+    "UNGOLE": [
+      "game\\modules\\tome\\data\\zones\\ardhungol\\npcs.lua:26"
+    ],
+    "UNLEARN_ALL": [
+      "game\\modules\\tome\\data\\zones\\tutorial-combat-stats\\grids.lua:138"
+    ],
+    "UNREMARKABLE_CAVE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:690"
+    ],
+    "UP_GRUSHNAK": [
+      "game\\modules\\tome\\data\\zones\\slime-tunnels\\grids.lua:142",
+      "game\\modules\\tome\\data\\zones\\sludgenest\\grids.lua:152"
+    ],
+    "UP_VALLEY": [
+      "game\\modules\\tome\\data\\zones\\valley-moon-caverns\\grids.lua:24"
+    ],
+    "URKIS": [
+      "game\\modules\\tome\\data\\zones\\tempest-peak\\npcs.lua:29"
+    ],
+    "VARSHA_THE_WRITHING": [
+      "game\\modules\\tome\\data\\zones\\daikara\\npcs.lua:96"
+    ],
+    "VAT1": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:68",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:43"
+    ],
+    "VAT2": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:69",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\npcs.lua:52"
+    ],
+    "VOID_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:91"
+    ],
+    "VOID_STAR": [
+      "game\\modules\\tome\\data\\zones\\abashed-expanse\\objects.lua:24",
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\objects.lua:24"
+    ],
+    "VOR": [
+      "game\\modules\\tome\\data\\zones\\vor-pride\\npcs.lua:28"
+    ],
+    "VOR_ARMOURY": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:772"
+    ],
+    "VOR_PRIDE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:765"
+    ],
+    "WALL": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:25",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:39"
+    ],
+    "WALL_NORTH": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:40"
+    ],
+    "WALL_NORTH_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:43"
+    ],
+    "WALL_PILLAR_2": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:49"
+    ],
+    "WALL_PILLAR_4": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:48"
+    ],
+    "WALL_PILLAR_6": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:47"
+    ],
+    "WALL_PILLAR_8": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:41"
+    ],
+    "WALL_SEE": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:23",
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:36",
+      "game\\modules\\tome\\data\\zones\\arena-unlock\\grids.lua:25"
+    ],
+    "WALL_SEE_NORTH": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:37"
+    ],
+    "WALL_SEE_NORTH_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:40"
+    ],
+    "WALL_SEE_PILLAR_2": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:46"
+    ],
+    "WALL_SEE_PILLAR_4": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:45"
+    ],
+    "WALL_SEE_PILLAR_6": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:44"
+    ],
+    "WALL_SEE_PILLAR_8": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:38"
+    ],
+    "WALL_SEE_SMALL_PILLAR": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:43"
+    ],
+    "WALL_SEE_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:41",
+      "game\\modules\\tome\\data\\zones\\arena\\grids.lua:42"
+    ],
+    "WALL_SMALL_PILLAR": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:46"
+    ],
+    "WALL_SOUTH": [
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:44",
+      "game\\modules\\tome\\data\\zones\\conclave-vault\\grids.lua:45"
+    ],
+    "WAR_DOG": [
+      "game\\modules\\tome\\data\\zones\\keepsake-meadow\\npcs.lua:104"
+    ],
+    "WATER_BASE": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:334"
+    ],
+    "WATER_BASE_DEEP": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:343"
+    ],
+    "WATER_DOOR_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:304"
+    ],
+    "WATER_DOOR_HORIZ_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:325"
+    ],
+    "WATER_DOOR_HORIZ_OPEN_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:326"
+    ],
+    "WATER_DOOR_OPEN_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:317"
+    ],
+    "WATER_DOOR_OPEN_VERT_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:328"
+    ],
+    "WATER_DOOR_VERT_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:327"
+    ],
+    "WATER_DOWN": [
+      "game\\modules\\tome\\data\\zones\\paradox-plane\\grids.lua:29",
+      "game\\modules\\tome\\data\\zones\\temporal-rift\\grids.lua:29",
+      "game\\modules\\tome\\data\\zones\\void\\grids.lua:29"
+    ],
+    "WATER_DOWN_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:331"
+    ],
+    "WATER_FLOOR_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:263",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:269"
+    ],
+    "WATER_WALL_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:272",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:290"
+    ],
+    "WATER_WALL_NORTH_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:291"
+    ],
+    "WATER_WALL_NORTH_SOUTH_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:294"
+    ],
+    "WATER_WALL_PILLAR_2_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:300"
+    ],
+    "WATER_WALL_PILLAR_4_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:299"
+    ],
+    "WATER_WALL_PILLAR_6_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:298"
+    ],
+    "WATER_WALL_PILLAR_8_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:292"
+    ],
+    "WATER_WALL_SMALL_PILLAR_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:297"
+    ],
+    "WATER_WALL_SOUTH_FAKE": [
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:295",
+      "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:296"
+    ],
+    "WEAVER_QUEEN": [
+      "game\\modules\\tome\\data\\zones\\unhallowed-morass\\npcs.lua:119"
+    ],
+    "WEIRDLING_BEAST": [
+      "game\\modules\\tome\\data\\zones\\shertul-fortress\\npcs.lua:24"
+    ],
+    "WEST_PORTAL": [
+      "game\\modules\\tome\\data\\zones\\high-peak\\grids.lua:59",
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\grids.lua:36"
+    ],
+    "WIFE": [
+      "game\\modules\\tome\\data\\zones\\dreams\\npcs.lua:100"
+    ],
+    "WINTERTIDE": [
+      "game\\modules\\tome\\data\\zones\\stellar-system-shandral\\grids.lua:75"
+    ],
+    "WITHERING_THING": [
+      "game\\modules\\tome\\data\\zones\\heart-gloom\\npcs.lua:59"
+    ],
+    "WORMHOLE": [
+      "game\\modules\\tome\\data\\zones\\abashed-expanse\\grids.lua:25",
+      "game\\modules\\tome\\data\\zones\\ardhungol\\grids.lua:24"
+    ],
+    "WRATHROOT": [
+      "game\\modules\\tome\\data\\zones\\old-forest\\npcs.lua:93"
+    ],
+    "YEEK_STORE_1HAND": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:126"
+    ],
+    "YEEK_STORE_2HANDS": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:108"
+    ],
+    "YEEK_STORE_CLOTH": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:144"
+    ],
+    "YEEK_STORE_GEM": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:90"
+    ],
+    "YEEK_STORE_LEATHER": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:162"
+    ],
+    "YEEK_STORE_NATURE": [
+      "game\\modules\\tome\\data\\zones\\town-irkkk\\npcs.lua:180"
+    ],
+    "YEEK_WAYIST": [
+      "game\\modules\\tome\\data\\zones\\halfling-ruins\\npcs.lua:117"
+    ],
+    "ZEMEKKYS": [
+      "game\\modules\\tome\\data\\zones\\town-gates-of-morning\\traps.lua:88",
+      "game\\modules\\tome\\data\\zones\\town-point-zero\\npcs.lua:130"
+    ],
+    "ZIGUR_HISTORY": [
+      "game\\modules\\tome\\data\\zones\\town-zigur\\objects.lua:23"
+    ],
+    "ZOISLA": [
+      "game\\modules\\tome\\data\\zones\\slazish-fen\\npcs.lua:116"
+    ],
+    "ZONE_DESERT": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:579"
+    ],
+    "ZONE_JUNGLE_PLAINS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:580"
+    ],
+    "ZONE_PLAINS": [
+      "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:578"
+    ]
+  },
+  "terrain_ids": [
+    "ALTAR_BARE",
+    "ALTAR_SPLATTER",
+    "ATAMATHON_BROKEN",
+    "COFFIN_OPEN",
+    "DOOR_OPEN",
+    "FENS",
+    "FLOOR",
+    "GRASS",
+    "IRON_THRONE_EDICT",
+    "LOCK",
+    "LOCK_OPEN",
+    "LORE_NOTE",
+    "OLD_FLOOR",
+    "PORTAL_BACK",
+    "RIFT",
+    "RIFT_HOME",
+    "ROCKY_UP_WILDERNESS",
+    "SLIME_FLOOR"
+  ]
+}
