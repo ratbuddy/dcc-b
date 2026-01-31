@@ -4,16 +4,9 @@
 -- Resources (grids/npcs/objects/traps) load from /data/zones/dccb-tileset-gallery/ (overload)
 
 -- This is a debug/reference zone to validate terrain tilesets
--- It displays a dense "palette map" of dozens/hundreds of terrain samples
+-- It displays a dense "palette map" of terrain samples with runtime probing
 -- Missing IDs are skipped safely, dangerous terrains (with change_level/on_stand) are filtered
-
--- =============================================================================
--- GALLERY MODE CONFIGURATION
--- =============================================================================
--- "probe"    = Use full canonical manifest (384 terrains), generate probe reports
--- "showcase" = Use verified working list (34 terrains), clean display
-local GALLERY_MODE = "probe"  -- Change to "showcase" for production
--- =============================================================================
+-- Always uses the canonical manifest (384 terrains) and generates probe reports
 
 -- Dense layout configuration
 local CELL_W = 3              -- Cell width (3x3 per terrain)
@@ -74,20 +67,9 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load terrain manifest based on GALLERY_MODE
-    local manifest_path
-    if GALLERY_MODE == "probe" then
-      manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"  -- Full 384 terrains
-      print("[DCCB-Gallery] Mode: PROBE (full canonical manifest)")
-    elseif GALLERY_MODE == "showcase" then
-      manifest_path = "/data-dccb/dccb/tileset/gallery_manifest_working_only.lua"  -- Verified 34 terrains
-      print("[DCCB-Gallery] Mode: SHOWCASE (verified working only)")
-    else
-      print("[DCCB-Gallery] ERROR: Invalid GALLERY_MODE: " .. tostring(GALLERY_MODE))
-      return
-    end
-    
-    print("[DCCB-Gallery] Loading manifest from: " .. manifest_path)
+    -- Load canonical terrain manifest (384 terrains)
+    local manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"
+    print("[DCCB-Gallery] Loading canonical manifest (384 terrains): " .. manifest_path)
     local manifest_ok, manifest = pcall(loadfile, manifest_path)
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
