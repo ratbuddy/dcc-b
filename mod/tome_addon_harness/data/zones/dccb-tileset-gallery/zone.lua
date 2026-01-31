@@ -7,6 +7,14 @@
 -- It displays a dense "palette map" of dozens/hundreds of terrain samples
 -- Missing IDs are skipped safely, dangerous terrains (with change_level/on_stand) are filtered
 
+-- =============================================================================
+-- GALLERY MODE CONFIGURATION
+-- =============================================================================
+-- "probe"    = Use full canonical manifest (384 terrains), generate probe reports
+-- "showcase" = Use verified working list (34 terrains), clean display
+local GALLERY_MODE = "probe"  -- Change to "showcase" for production
+-- =============================================================================
+
 -- Dense layout configuration
 local CELL_W = 3              -- Cell width (3x3 per terrain)
 local CELL_H = 3              -- Cell height (3x3 per terrain)
@@ -66,10 +74,21 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load terrain manifest (verified working-only for clean catalog)
-    -- Only includes terrains confirmed to work with general packs
-    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest_working_only.lua")
-    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest_working_only.lua")
+    -- Load terrain manifest based on GALLERY_MODE
+    local manifest_path
+    if GALLERY_MODE == "probe" then
+      manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"  -- Full 384 terrains
+      print("[DCCB-Gallery] Mode: PROBE (full canonical manifest)")
+    elseif GALLERY_MODE == "showcase" then
+      manifest_path = "/data-dccb/dccb/tileset/gallery_manifest_working_only.lua"  -- Verified 34 terrains
+      print("[DCCB-Gallery] Mode: SHOWCASE (verified working only)")
+    else
+      print("[DCCB-Gallery] ERROR: Invalid GALLERY_MODE: " .. tostring(GALLERY_MODE))
+      return
+    end
+    
+    print("[DCCB-Gallery] Loading manifest from: " .. manifest_path)
+    local manifest_ok, manifest = pcall(loadfile, manifest_path)
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
       print("[DCCB-Gallery] Error: " .. tostring(manifest))
@@ -323,6 +342,102 @@ return {
     print(string.format("[DCCB-Gallery] Skipped (dangerous): %d", phase1_dangerous))
     print(string.format("[DCCB-Gallery] Unique visual signatures: %d", unique_count))
     print(string.format("[DCCB-Gallery] Visual duplicates found: %d", phase1_resolved - unique_count))
+    print("[DCCB-Gallery] ")
+    
+    -- PROBE REPORTS: Generate structured output to te4_log.txt
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Generating Probe Reports (te4_log.txt)")
+    print("[DCCB-Gallery] ========================================")
+    
+    -- Build classification lists
+    local resolved_list = {}
+    local missing_list = {}
+    local dangerous_list = {}
+    local duplicate_list = {}
+    
+    for idx = start_idx, end_idx do
+      local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+      if terrain_info then
+        local id = terrain_info.id
+        local sig = id_to_signature[id]
+        
+        if sig == "MISSING" then
+          table.insert(missing_list, id)
+        elseif sig == "DANGEROUS" then
+          table.insert(dangerous_list, id)
+        elseif sig then
+          -- Check if this is the first ID for this signature
+          if signature_map[sig] and signature_map[sig].first_id == id then
+            table.insert(resolved_list, id)
+          else
+            table.insert(duplicate_list, id)
+          end
+        end
+      end
+    end
+    
+    -- Sort lists
+    table.sort(resolved_list)
+    table.sort(missing_list)
+    table.sort(dangerous_list)
+    table.sort(duplicate_list)
+    
+    -- Output RESOLVED IDs
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print(string.format("[DCCB-PROBE-REPORT] RESOLVED IDs (%d):", #resolved_list))
+    print("[DCCB-PROBE-REPORT] ========================================")
+    for _, id in ipairs(resolved_list) do
+      print("[DCCB-PROBE-REPORT]   " .. id)
+    end
+    print("[DCCB-PROBE-REPORT] ")
+    
+    -- Output MISSING IDs
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print(string.format("[DCCB-PROBE-REPORT] MISSING IDs (%d):", #missing_list))
+    print("[DCCB-PROBE-REPORT] ========================================")
+    for _, id in ipairs(missing_list) do
+      print("[DCCB-PROBE-REPORT]   " .. id)
+    end
+    print("[DCCB-PROBE-REPORT] ")
+    
+    -- Output DANGEROUS IDs
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print(string.format("[DCCB-PROBE-REPORT] DANGEROUS IDs (%d):", #dangerous_list))
+    print("[DCCB-PROBE-REPORT] ========================================")
+    for _, id in ipairs(dangerous_list) do
+      print("[DCCB-PROBE-REPORT]   " .. id)
+    end
+    print("[DCCB-PROBE-REPORT] ")
+    
+    -- Output DUPLICATE VISUAL IDs
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print(string.format("[DCCB-PROBE-REPORT] DUPLICATE VISUAL IDs (%d):", #duplicate_list))
+    print("[DCCB-PROBE-REPORT] ========================================")
+    for _, id in ipairs(duplicate_list) do
+      local sig = id_to_signature[id]
+      if sig and signature_map[sig] then
+        print(string.format("[DCCB-PROBE-REPORT]   %s (same as %s)", 
+          id, signature_map[sig].first_id))
+      end
+    end
+    print("[DCCB-PROBE-REPORT] ")
+    
+    -- Output SIGNATURE GROUPS
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print("[DCCB-PROBE-REPORT] VISUAL SIGNATURE GROUPS:")
+    print("[DCCB-PROBE-REPORT] ========================================")
+    for sig, group in pairs(signature_map) do
+      if #group.ids > 1 then
+        print(string.format("[DCCB-PROBE-REPORT]   Signature: %s", sig))
+        print(string.format("[DCCB-PROBE-REPORT]     Representative: %s", group.first_id))
+        print(string.format("[DCCB-PROBE-REPORT]     Aliases: %s", 
+          table.concat(group.ids, ", ")))
+      end
+    end
+    print("[DCCB-PROBE-REPORT] ")
+    print("[DCCB-PROBE-REPORT] ========================================")
+    print("[DCCB-PROBE-REPORT] Probe Report Complete")
+    print("[DCCB-PROBE-REPORT] ========================================")
     print("[DCCB-Gallery] ")
     
     -- PHASE 2: Place unique visuals only
