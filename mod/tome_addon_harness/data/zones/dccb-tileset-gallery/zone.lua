@@ -66,7 +66,6 @@ return {
   -- Post-process: Place dense terrain palette with safe filtering
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
-    local fs = require "engine.GameFiles"
     
     -- Load canonical terrain manifest (384 terrains)
     local manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"
@@ -244,7 +243,12 @@ return {
       
       -- Try to load the file with pcall (safe loading)
       local load_ok, load_err = pcall(function()
-        load(grid_file)
+        local file_loader = loadfile(grid_file)
+        if file_loader then
+          file_loader()
+        else
+          error("Failed to loadfile: " .. grid_file)
+        end
       end)
       
       -- Always restore wrapper, even if load failed
