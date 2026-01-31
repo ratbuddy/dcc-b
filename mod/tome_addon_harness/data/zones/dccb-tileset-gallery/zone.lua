@@ -123,6 +123,28 @@ return {
       return
     end
     
+    -- Helper function to compute visual signature
+    local function compute_visual_signature(terrain)
+      if not terrain then return nil end
+      
+      local image = terrain.image or ""
+      local add_mos_str = ""
+      
+      if terrain.add_mos then
+        local mos_list = {}
+        for _, mos in ipairs(terrain.add_mos) do
+          if type(mos) == "table" and mos.image then
+            table.insert(mos_list, mos.image)
+          end
+        end
+        table.sort(mos_list)  -- Consistent ordering
+        add_mos_str = table.concat(mos_list, ",")
+      end
+      
+      local display = tostring(terrain.display or "")
+      return image .. "|" .. add_mos_str .. "|" .. display
+    end
+    
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Generating Dense Tileset Palette")
     print("[DCCB-Gallery] ========================================")
@@ -203,85 +225,191 @@ return {
         pad_w, pad_h, pad_x, pad_y))
     end
     
-    -- Step 4: Place terrain samples with BOUNDS-SAFE placement
-    print(string.format("[DCCB-Gallery] Step 4: Placing terrain samples from manifest (%d candidates)...", 
-      #manifest.TERRAIN_CANDIDATES))
+    -- PHASE 1: Build visual signature map
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Phase 1: Building visual signature map...")
+    print("[DCCB-Gallery] ========================================")
     
-    local placed_count = 0
-    local skipped_missing = 0
-    local skipped_dangerous = 0
-    local stopped_reason = nil
+    local signature_map = {}  -- signature -> {first_id, ids[], signature}
+    local id_to_signature = {}  -- id -> signature (for quick lookup)
+    local phase1_resolved = 0
+    local phase1_missing = 0
+    local phase1_dangerous = 0
     
-    -- Blacklist of known-dangerous terrains that should NOT be displayed
+    -- Blacklist of known-dangerous terrains
     local KNOWN_DANGEROUS = {
       DCCB_ENTRANCE = true,  -- Has on_stand message
     }
     
+    -- Process all terrains in range to build signature map
+    for idx = start_idx, end_idx do
+      local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+      if not terrain_info then break end
+      
+      local id = terrain_info.id
+      
+      -- Skip blacklisted dangerous terrains
+      if KNOWN_DANGEROUS[id] then
+        phase1_dangerous = phase1_dangerous + 1
+        id_to_signature[id] = "DANGEROUS"
+      else
+        -- Try to create terrain
+        local terrain = zone:makeEntityByName(level, "terrain", id)
+        
+        if not terrain then
+          -- Terrain not found
+          phase1_missing = phase1_missing + 1
+          id_to_signature[id] = "MISSING"
+        else
+          -- Resolve terrain to get actual properties
+          if terrain.resolve then terrain:resolve() end
+          
+          -- Compute visual signature
+          local signature = compute_visual_signature(terrain)
+          
+          if signature then
+            phase1_resolved = phase1_resolved + 1
+            id_to_signature[id] = signature
+            
+            -- Group by signature
+            if not signature_map[signature] then
+              signature_map[signature] = {
+                first_id = id,
+                ids = {id},
+                signature = signature
+              }
+            else
+              table.insert(signature_map[signature].ids, id)
+            end
+          end
+        end
+      end
+    end
+    
+    -- Count unique signatures
+    local unique_count = 0
+    for _ in pairs(signature_map) do
+      unique_count = unique_count + 1
+    end
+    
+    -- Report visual signature groups
+    print("[DCCB-Gallery] ")
+    print("[DCCB-Gallery] Visual Signature Groups:")
+    print("[DCCB-Gallery] ----------------------------------------")
+    
+    local group_count = 0
+    for sig, group in pairs(signature_map) do
+      if #group.ids > 1 then
+        group_count = group_count + 1
+        print(string.format("[DCCB-Gallery] Signature: %s", sig))
+        print(string.format("[DCCB-Gallery]   Representative: %s", group.first_id))
+        print(string.format("[DCCB-Gallery]   Visual aliases: %s", 
+          table.concat(group.ids, ", ")))
+        print("[DCCB-Gallery] ")
+      end
+    end
+    
+    if group_count == 0 then
+      print("[DCCB-Gallery] (No visual duplicates found - all terrains have unique signatures)")
+      print("[DCCB-Gallery] ")
+    end
+    
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Phase 1 Complete")
+    print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Total IDs processed: %d", end_idx - start_idx + 1))
+    print(string.format("[DCCB-Gallery] Resolved successfully: %d", phase1_resolved))
+    print(string.format("[DCCB-Gallery] Skipped (missing): %d", phase1_missing))
+    print(string.format("[DCCB-Gallery] Skipped (dangerous): %d", phase1_dangerous))
+    print(string.format("[DCCB-Gallery] Unique visual signatures: %d", unique_count))
+    print(string.format("[DCCB-Gallery] Visual duplicates found: %d", phase1_resolved - unique_count))
+    print("[DCCB-Gallery] ")
+    
+    -- PHASE 2: Place unique visuals only
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Phase 2: Placing visually unique terrains...")
+    print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Placing %d unique visual signatures...", unique_count))
+    print("[DCCB-Gallery] ")
+    
+    local placed_count = 0
+    local skipped_missing = 0
+    local skipped_dangerous = 0
+    local skipped_visual_duplicate = 0
+    local stopped_reason = nil
+    
+    -- Track which signatures we've already placed
+    local placed_signatures = {}
+    
     -- Track category for logging
     local last_category = nil
     local category_start_idx = 1
+    local placement_idx = 0  -- Tracks actual placement position (not terrain idx)
     
-    -- Place each terrain candidate (BOUNDS-AWARE, LEVEL-AWARE)
+    -- Place each terrain candidate (BOUNDS-AWARE, LEVEL-AWARE, SIGNATURE-AWARE)
     -- Only place terrains in the range for this level
     for idx = start_idx, end_idx do
       local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
       if not terrain_info then break end  -- Safety check
       
-      -- Calculate relative position (idx relative to level start)
-      local relative_idx = idx - start_idx
+      local id = terrain_info.id
+      local sig = id_to_signature[id]
       
       -- Log category headers (when category changes)
       if terrain_info.category ~= last_category then
         if last_category then
-          print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, relative_idx))
+          print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, placement_idx - category_start_idx))
         end
         last_category = terrain_info.category
-        category_start_idx = relative_idx
+        category_start_idx = placement_idx
         print(string.format("[DCCB-Gallery] Category: %s", terrain_info.category))
       end
       
-      -- Calculate position from relative index (not absolute)
-      local row = math.floor(relative_idx / max_cols)
-      local col = relative_idx % max_cols
-      
-      local x = START_X + (col * stride_x)
-      local y = START_Y + (row * stride_y)
-      
-      -- BOUNDS CHECK: Stop if placement would exceed map bounds
-      if x >= W or y >= H then
-        print(string.format("[DCCB-Gallery] Palette full at terrain #%d, stopping placement", idx))
-        stopped_reason = "Map full"
-        break
-      end
-      
-      -- Try to make the terrain entity
-      local terrain = zone:makeEntityByName(level, "terrain", terrain_info.id)
-      
-      if not terrain then
-        -- Terrain not found (missing)
+      -- Check signature status
+      if sig == "MISSING" then
         skipped_missing = skipped_missing + 1
         if skipped_missing <= 5 then
-          print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | MISSING", 
-            x, y, terrain_info.id))
+          print(string.format("[DCCB-Gallery] ⊘ [skip] %-20s | MISSING", id))
+        end
+      elseif sig == "DANGEROUS" then
+        skipped_dangerous = skipped_dangerous + 1
+        print(string.format("[DCCB-Gallery] ⚠ [skip] %-20s | DANGEROUS (blacklisted)", id))
+      elseif placed_signatures[sig] then
+        -- This signature already placed - skip visual duplicate
+        skipped_visual_duplicate = skipped_visual_duplicate + 1
+        if skipped_visual_duplicate <= 10 then
+          print(string.format("[DCCB-Gallery] ≈ [skip] %-20s | VISUAL DUPLICATE of %s", 
+            id, signature_map[sig].first_id))
         end
       else
-        -- Resolve the terrain first
-        if terrain.resolve then terrain:resolve() end
+        -- This signature not yet placed - place it!
+        -- Calculate position from placement_idx
+        local row = math.floor(placement_idx / max_cols)
+        local col = placement_idx % max_cols
         
-        -- Check if blacklisted
-        if KNOWN_DANGEROUS[terrain_info.id] then
-          skipped_dangerous = skipped_dangerous + 1
-          print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (blacklisted)", 
-            x, y, terrain_info.id))
-        else
-          -- Safe to place: place single tile (not fill cell)
+        local x = START_X + (col * stride_x)
+        local y = START_Y + (row * stride_y)
+        
+        -- BOUNDS CHECK: Stop if placement would exceed map bounds
+        if x >= W or y >= H then
+          print(string.format("[DCCB-Gallery] Palette full at terrain #%d, stopping placement", idx))
+          stopped_reason = "Map full"
+          break
+        end
+        
+        -- Create and place terrain
+        local terrain = zone:makeEntityByName(level, "terrain", id)
+        if terrain then
+          if terrain.resolve then terrain:resolve() end
           level.map(x, y, Map.TERRAIN, terrain)
+          placed_signatures[sig] = true
           placed_count = placed_count + 1
+          placement_idx = placement_idx + 1
           
           -- Only log first few placements
           if placed_count <= 10 then
             print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
-              x, y, terrain_info.id, terrain_info.category))
+              x, y, id, terrain_info.category))
           end
         end
       end
@@ -289,7 +417,7 @@ return {
     
     -- Log final category
     if last_category then
-      local final_count = end_idx - category_start_idx + 1
+      local final_count = placement_idx - category_start_idx
       print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, final_count))
     end
     
@@ -335,9 +463,10 @@ return {
     print(string.format("[DCCB-Gallery] Terrain range: %d-%d (of %d total)", start_idx, end_idx, total_terrains))
     print(string.format("[DCCB-Gallery] Map bounds: %d × %d", W, H))
     print(string.format("[DCCB-Gallery] Layout capacity: %d cols × %d rows = %d max", max_cols, max_rows, capacity))
-    print(string.format("[DCCB-Gallery] ✓ Placed: %d terrains", placed_count))
+    print(string.format("[DCCB-Gallery] ✓ Placed: %d visually unique terrains", placed_count))
     print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
     print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
+    print(string.format("[DCCB-Gallery] ≈ Skipped (visual duplicates): %d", skipped_visual_duplicate))
     if stopped_reason then
       print(string.format("[DCCB-Gallery] Stopped due to: %s", stopped_reason))
     end
