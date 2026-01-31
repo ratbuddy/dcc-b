@@ -140,14 +140,12 @@ return {
     local function discover_zone_grids()
       local discovered = {}
       
-      -- TODO: ToME filesystem enumeration API unclear - using best-effort approach
-      -- For now, we'll try to load from known zone paths in a deterministic manner
-      -- This is a cautious implementation that logs clearly what it attempts
+      -- TODO: ToME filesystem enumeration API unclear - using placeholder implementation
+      -- This is a framework-ready implementation awaiting ToME API discovery
       
       print("[DCCB-Gallery] TODO: Full filesystem enumeration not implemented")
-      print("[DCCB-Gallery] Using best-effort zone grid discovery")
-      print("[DCCB-Gallery] NOTE: Without filesystem enumeration API, using empty candidate list")
-      print("[DCCB-Gallery] This is a framework-ready implementation awaiting ToME API discovery")
+      print("[DCCB-Gallery] Using placeholder zone grid discovery (returns empty list)")
+      print("[DCCB-Gallery] NOTE: Framework is ready - awaiting filesystem API documentation")
       
       -- In a full implementation with filesystem API, we would:
       -- 1. Recursively enumerate /data/zones/**/
@@ -261,7 +259,8 @@ return {
         local newly_resolved_this_file = 0
         local still_missing = {}
         
-        for id, _ in pairs(missing_ids) do
+        -- missing_ids is a set (id -> true), iterate over keys only
+        for id in pairs(missing_ids) do
           local entity = zone:makeEntityByName(level, "terrain", id)
           if entity then
             -- This ID transitioned from MISSING -> RESOLVED
@@ -848,7 +847,7 @@ return {
     print(string.format("[DCCB-Gallery] Map bounds: %d × %d", W, H))
     print(string.format("[DCCB-Gallery] Layout capacity: %d cols × %d rows = %d max", max_cols, max_rows, capacity))
     print(string.format("[DCCB-Gallery] ✓ Placed: %d visually unique terrains", placed_count))
-    print("[DCCB-Gallery] NOTE: Few rows placed simply means few visually unique resolved terrains")
+    print("[DCCB-Gallery] NOTE: Row count reflects the number of visually unique resolved terrains")
     print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
     print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
     print(string.format("[DCCB-Gallery] ≈ Skipped (visual duplicates): %d", skipped_visual_duplicate))
