@@ -140,20 +140,82 @@ return {
     local function discover_zone_grids()
       local discovered = {}
       
-      -- TODO: ToME filesystem enumeration API unclear - using placeholder implementation
-      -- This is a framework-ready implementation awaiting ToME API discovery
+      print("[DCCB-Gallery] Discovering zone grid files...")
       
-      print("[DCCB-Gallery] TODO: Full filesystem enumeration not implemented")
-      print("[DCCB-Gallery] Using placeholder zone grid discovery (returns empty list)")
-      print("[DCCB-Gallery] NOTE: Framework is ready - awaiting filesystem API documentation")
+      -- Try to get the fs module for filesystem operations
+      local ok, fs = pcall(require, "engine.GameFiles")
+      if not ok then
+        print("[DCCB-Gallery] WARNING: Could not load engine.GameFiles, trying fallback")
+        -- Try alternative module name
+        ok, fs = pcall(require, "fs")
+      end
       
-      -- In a full implementation with filesystem API, we would:
-      -- 1. Recursively enumerate /data/zones/**/
-      -- 2. Match files named grids.lua or grids-*.lua
-      -- 3. Sort deterministically
-      -- 4. Return the list
+      if not ok or not fs then
+        print("[DCCB-Gallery] WARNING: Filesystem module not available")
+        print("[DCCB-Gallery] Falling back to empty grid list")
+        return discovered
+      end
       
-      -- For now, return empty list (framework is ready for future enhancement)
+      -- Check if fs.list exists
+      if not fs.list then
+        print("[DCCB-Gallery] WARNING: fs.list not available")
+        print("[DCCB-Gallery] Falling back to empty grid list")
+        return discovered
+      end
+      
+      -- Enumerate zone directories
+      local zones_ok, zone_dirs = pcall(fs.list, "/data/zones/")
+      if not zones_ok or not zone_dirs then
+        print("[DCCB-Gallery] WARNING: Could not enumerate /data/zones/")
+        print("[DCCB-Gallery] Error: " .. tostring(zone_dirs))
+        return discovered
+      end
+      
+      -- For each zone directory, look for grids files
+      for _, zone_dir in ipairs(zone_dirs) do
+        local zone_path = "/data/zones/" .. zone_dir
+        
+        -- Check if this is actually a directory (try to list it)
+        local dir_ok, zone_files = pcall(fs.list, zone_path)
+        if dir_ok and zone_files then
+          -- Look for grids.lua
+          local grids_path = zone_path .. "/grids.lua"
+          if fs.exists and pcall(fs.exists, grids_path) then
+            table.insert(discovered, grids_path)
+          end
+          
+          -- Look for grids-*.lua files
+          for _, file in ipairs(zone_files) do
+            if type(file) == "string" and file:match("^grids%-.*%.lua$") then
+              local grid_file_path = zone_path .. "/" .. file
+              table.insert(discovered, grid_file_path)
+            end
+          end
+        end
+      end
+      
+      -- Sort deterministically for consistency
+      table.sort(discovered)
+      
+      print(string.format("[DCCB-Gallery] Discovered %d zone grid files", #discovered))
+      if #discovered > 0 and #discovered <= 10 then
+        -- Log first few files for debugging
+        for i, path in ipairs(discovered) do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, path))
+        end
+      elseif #discovered > 10 then
+        -- Log first 5 and last 5
+        print("[DCCB-Gallery] First 5 files:")
+        for i = 1, 5 do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, discovered[i]))
+        end
+        print("[DCCB-Gallery] ...")
+        print("[DCCB-Gallery] Last 5 files:")
+        for i = #discovered - 4, #discovered do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, discovered[i]))
+        end
+      end
+      
       return discovered
     end
     
