@@ -20,8 +20,8 @@ return {
   short_name = "dccb-tileset-gallery",
   level_range = {1, 1},
   max_level = 1,
-  width = 50,  -- Wide enough for dense palette
-  height = 50, -- Tall enough for many rows
+  width = 60,  -- Wide enough for dense palette (384 terrains)
+  height = 100, -- Tall enough for many rows (~25 rows needed)
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
@@ -166,8 +166,22 @@ return {
       -- because many safe terrains inherit hooks from base entities
     }
     
+    -- Track category for logging
+    local last_category = nil
+    local category_start_idx = 1
+    
     -- Place each terrain candidate
     for idx, terrain_info in ipairs(manifest.TERRAIN_CANDIDATES) do
+      -- Log category headers (when category changes)
+      if terrain_info.category ~= last_category then
+        if last_category then
+          print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, idx - category_start_idx))
+        end
+        last_category = terrain_info.category
+        category_start_idx = idx
+        print(string.format("[DCCB-Gallery] Category: %s", terrain_info.category))
+      end
+      
       local row = math.floor((idx - 1) / cols)
       local col = (idx - 1) % cols
       
@@ -178,6 +192,7 @@ return {
       
       -- Skip if out of bounds
       if x >= map_width - 2 or y >= level.map.h - 2 then
+        print(string.format("[DCCB-Gallery] WARNING: Out of bounds at terrain #%d, stopping", idx))
         break
       end
       
@@ -214,6 +229,11 @@ return {
           end
         end
       end
+    end
+    
+    -- Log final category
+    if last_category then
+      print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, #manifest.TERRAIN_CANDIDATES - category_start_idx + 1))
     end
     
     print("[DCCB-Gallery] ========================================")
