@@ -1,0 +1,89 @@
+Scanning ToME repository at: c:\git\t-engine4
+Found 89 grids.lua files to process
+Extracted 357 unique terrain define_as IDs
+
+JSON results written to: tome_terrain_manifest.json
+Text ID list written to: tome_terrain_manifest.txt
+
+============================================================
+EXTRACTION SUMMARY:
+============================================================
+Total terrain IDs: 357
+
+First 20 IDs:
+  - ALTAR
+  - ALTAR_BARE
+  - ALTAR_CORRUPT
+  - ALTAR_SPLATTER
+  - ARDHUNGOL
+  - ATAMATHON_BROKEN
+  - AUTUMN_ROCK
+  - BAMBOO_HUT_COOKING3
+  - BAMBOO_HUT_DOOR
+  - BAMBOO_HUT_DOOR_HORIZ
+  - BAMBOO_HUT_DOOR_HORIZ_OPEN
+  - BAMBOO_HUT_DOOR_OPEN
+  - BAMBOO_HUT_DOOR_OPEN_VERT
+  - BAMBOO_HUT_DOOR_VERT
+  - BAMBOO_HUT_FLOOR
+  - BAMBOO_HUT_WALL
+  - BASKET
+  - BEACH_UP
+  - BHW_CROSS1
+  - BHW_E_CROSS1
+  ... and 337 more
+
+============================================================
+JSON OUTPUT (first 50 lines):
+============================================================
+{
+  "meta": {
+    "ALTAR": {
+      "image": "terrain/marble_floor.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\last-hope-graveyard\\grids.lua:98",
+        "game\\modules\\tome\\data\\zones\\noxious-caldera\\grids.lua:26"
+      ]
+    },
+    "ALTAR_BARE": {
+      "image": "terrain/marble_floor.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:48"
+      ]
+    },
+    "ALTAR_CORRUPT": {
+      "base": "ALTAR",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\mark-spellblaze\\grids.lua:27"
+      ]
+    },
+    "ALTAR_SPLATTER": {
+      "image": "terrain/marble_floor.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\crypt-kryl-feijan\\grids.lua:57"
+      ]
+    },
+    "ARDHUNGOL": {
+      "base": "ZONE_PLAINS",
+      "image": "terrain/cave_entrance02.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\wilderness\\grids.lua:793"
+      ]
+    },
+    "ATAMATHON_BROKEN": {
+      "base": "HARDWALL",
+      "image": "terrain/grass.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\golem-graveyard\\grids.lua:24"
+      ]
+    },
+    "AUTUMN_ROCK": {
+      "image": "terrain/grass/autumn_grass_main_01.png",
+      "sources": [
+        "game\\modules\\tome\\data\\zones\\infinite-dungeon\\grids.lua:129"
+      ]
+    },
+    "BAMBOO_HUT_COOKING3": {
+      "base": "BAMBOO_HUT_FLOOR",
+      "image": "terrain/bamboo/floor_deco_cooking_pit_c_01.png",
+... (2741 more lines)
