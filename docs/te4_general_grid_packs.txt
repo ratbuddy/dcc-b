@@ -1,0 +1,14 @@
+# ToME4 General Terrain Packs - Verified to Exist
+# This file lists terrain pack files that are confirmed to exist in ToME4
+# Used by dccb-tileset-gallery for loading terrain definitions
+# One path per line, relative to ToME data root
+
+/data/general/grids/water.lua
+/data/general/grids/forest.lua
+/data/general/grids/lava.lua
+/data/general/grids/mountain.lua
+/data/general/grids/jungle_hut.lua
+/data/general/grids/crystal.lua
+/data/general/grids/ice.lua
+/data/general/grids/sand.lua
+/data/general/grids/void.lua

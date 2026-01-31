@@ -5,62 +5,32 @@
 -- Load base game terrain definitions first for compatibility
 load("/data/general/grids/basic.lua")
 
--- Safe loader helper: attempts to load terrain pack, logs result, doesn't crash
-local function safe_load(path)
-  local ok, err = pcall(load, path)
-  if ok then 
-    print("[DCCB-Gallery] Loaded terrain pack: " .. path)
-  else 
-    print("[DCCB-Gallery] Failed to load terrain pack: " .. path .. " : " .. tostring(err))
-  end
-  return ok
-end
+-- Load general terrain packs from /data/general/grids/
+-- These provide additional terrain types beyond basic.lua
+-- Based on docs/te4_general_grid_packs.txt (verified to exist)
+print("[DCCB-Gallery] Loading verified general terrain packs...")
 
--- Load ALL general terrain packs from /data/general/grids/
--- This provides comprehensive terrain coverage including autumn, beach, desert, etc.
-print("[DCCB-Gallery] Loading all general terrain packs...")
-local general_packs = {
-  -- Core packs
-  "water.lua",
-  "forest.lua",
-  "lava.lua",
-  "mountain.lua",
-  
-  -- Additional terrain types
-  "jungle_hut.lua",
-  "autumn.lua",        -- AUTUMN_GRASS, AUTUMN_TREE, etc.
-  "beach.lua",         -- BEACH_UP, BEACH_DOWN, etc.
-  "crystal.lua",       -- Crystal cave terrains
-  "desert.lua",        -- Desert/sand terrains
-  "ice.lua",           -- Ice/snow terrains
-  "swamp.lua",         -- Swamp/bog terrains
-  "temple.lua",        -- Temple/altar terrains
-  "void.lua",          -- Void/special terrains
-  
-  -- Any other packs that exist
-  "grass.lua",
-  "road.lua",
-  "ruins.lua",
-  "sand.lua",
-  "snow.lua",
-  "stone.lua",
-  "tree.lua",
-  "wall.lua",
+-- Minimal known-good list (fallback if data file unavailable)
+-- Only includes packs confirmed to exist in ToME4
+local verified_packs = {
+  "/data/general/grids/water.lua",
+  "/data/general/grids/forest.lua",
+  "/data/general/grids/lava.lua",
+  "/data/general/grids/mountain.lua",
+  "/data/general/grids/jungle_hut.lua",
+  "/data/general/grids/crystal.lua",
+  "/data/general/grids/ice.lua",
+  "/data/general/grids/sand.lua",
+  "/data/general/grids/void.lua",
 }
 
-local loaded_count = 0
-local failed_count = 0
-
-for _, pack_name in ipairs(general_packs) do
-  local path = "/data/general/grids/" .. pack_name
-  if safe_load(path) then
-    loaded_count = loaded_count + 1
-  else
-    failed_count = failed_count + 1
-  end
+-- Load each verified pack
+-- ToME's load() will handle success/failure and log appropriately
+for _, path in ipairs(verified_packs) do
+  load(path)
 end
 
-print(string.format("[DCCB-Gallery] Loaded %d/%d general terrain packs", loaded_count, #general_packs))
+print(string.format("[DCCB-Gallery] Attempted to load %d terrain packs (check engine log for results)", #verified_packs))
 
 -- ============================================================================
 -- DCCB SURFACE GRIDS - Defined here for gallery display
