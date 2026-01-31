@@ -130,3 +130,47 @@ wc -l te4_grid_ids_by_category/special.txt
 ## Legacy Script
 
 The `make_gallery_safe_list.py` script is kept for backward compatibility with the old `te4_grid_manifest.json` format. The enhanced extractor now generates `te4_gallery_safe_ids.txt` automatically with better categorization.
+
+---
+
+## Related Documentation
+
+After generating the catalog, see these documents for usage guidance:
+
+### Safety and Usage
+- **`docs/TE4_GRID_SAFETY_ANALYSIS.md`**: Comprehensive safety analysis for each terrain category
+  - Detailed risk assessment (safe, caution, avoid)
+  - Recommended usage patterns
+  - Safety checklist for template authors
+
+### Zone Integration
+- **`docs/ToME_zone_spec.md`**: Zone construction patterns (Section 12: Terrain Resources)
+  - How to use categorized terrain in zone generators
+  - Theme-based terrain selection examples
+  - Safe terrain selection in post_process
+
+- **`docs/ToME-Integration-Notes.md`**: Integration reference (Section 10: Terrain Resources)
+  - Overview of terrain catalog resources
+  - Integration with DCCB systems
+  - Future enhancements
+
+### Template Development
+- **`docs/DCC-Engineering.md`**: Engineering spec (Section 4.1: Terrain Resources)
+  - Data loading conventions
+  - Terrain resource locations
+
+### Gallery Creation
+- **`docs/TERRAIN_GALLERY_PROMPT.md`**: Complete guide for creating a terrain gallery zone
+  - Display all terrain types in an organized layout
+  - Visual reference and testing ground
+  - Implementation approaches and examples
+
+---
+
+## Workflow Summary
+
+1. **Extract**: Run `extract_tome_terrain_ids.py` to generate catalog
+2. **Review**: Check `TE4_GRID_SAFETY_ANALYSIS.md` for safety guidelines
+3. **Select**: Choose appropriate categories for your zone theme
+4. **Integrate**: Use terrain lists in zone generators and post_process
+5. **Test**: Create a gallery zone using `TERRAIN_GALLERY_PROMPT.md` if needed
