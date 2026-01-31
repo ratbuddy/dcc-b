@@ -1,0 +1,58 @@
+# ToME4 General Terrain Packs - Verified to Exist
+# This file lists terrain pack files that are confirmed to exist in ToME4
+# Used by dccb-tileset-gallery for loading terrain definitions
+# One path per line, relative to ToME data root
+
+# ToME4 General Grid Packs - Definitive List
+
+## Overview
+This file contains the definitive master list of ALL general terrain packs that exist in ToME4.
+Generated from actual ToME4 source at: `game/modules/tome/data/general/grids/`
+
+## Usage
+Used by `dccb-tileset-gallery` for comprehensive terrain loading.
+The gallery loads this list via: `/data-dccb/dccb/tileset/te4_general_grid_packs.lua`
+
+## Pack List (29 packs)
+
+### Terrain Types
+- autumn_forest.lua - Autumn forest terrains
+- basic.lua - Basic floor/wall (loaded separately first)
+- bone.lua - Bone/skeletal terrains
+- burntland.lua - Burnt/charred terrains
+- cave.lua - Cave terrains
+- crystal.lua - Crystal formations
+- elven_forest.lua - Elven forest terrains
+- forest.lua - Standard forest terrains
+- fortress.lua - Fortress/stronghold terrains
+- gothic.lua - Gothic/undead architecture
+- ice.lua - Ice/frozen terrains
+- icecave.lua - Ice cave terrains
+- jungle.lua - Jungle terrains
+- jungle_hut.lua - Jungle hut structures
+- lava.lua - Lava/volcanic terrains
+- malrok_walls.lua - Malrok-specific walls
+- mountain.lua - Mountain/rocky terrains
+- psicave.lua - Psionic cave terrains
+- sand.lua - Sand/beach terrains
+- sanddunes.lua - Sand dune terrains
+- slime.lua - Slime terrains
+- slimy_walls.lua - Slime-covered walls
+- snowy_forest.lua - Snowy forest terrains
+- underground.lua - Underground terrains
+- underground_dreamy.lua - Dreamy underground
+- underground_gloomy.lua - Gloomy underground
+- underground_slimy.lua - Slimy underground
+- void.lua - Void/space terrains
+- water.lua - Water/aquatic terrains
+
+## Loading Strategy
+1. basic.lua is loaded first (provides base entities)
+2. All other packs loaded with pcall for error handling
+3. Only successful loads are counted and logged
+4. Failed loads are reported with error messages
+5. Summary shows: attempted / loaded / failed counts
+
+## Fallback
+If pack list file unavailable, falls back to minimal 9-pack list:
+- water, forest, lava, mountain, jungle_hut, crystal, ice, sand, void
