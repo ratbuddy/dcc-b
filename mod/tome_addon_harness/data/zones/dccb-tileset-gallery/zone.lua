@@ -18,14 +18,14 @@ local SPAWN_PAD_SIZE = 8      -- Walkable spawn pad size
 return {
   name = "DCCB Tileset Gallery",
   short_name = "dccb-tileset-gallery",
-  level_range = {1, 1},
-  max_level = 1,
+  level_range = {1, 2},
+  max_level = 2,  -- Calculated: ceil(384 terrains / 196 per level) = 2 levels
   width = 64,  -- Safe, proven size (bounds-aware placement)
   height = 64, -- Small, predictable (prevents out-of-bounds)
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
-  no_level_connectivity = true,
+  no_level_connectivity = false,  -- Enable stairs between levels
   
   -- Explicit zone entity loads (ensures grids/npcs/objects/traps are registered)
   load = {
@@ -130,7 +130,22 @@ return {
     -- Read actual map bounds at runtime (NEVER assume size)
     local map = level.map
     local W, H = map.w, map.h
+    
+    -- Detect current level (multi-level support)
+    local current_level = level.level or 1
+    local MAX_LEVEL = 2  -- Calculated: ceil(384 terrains / 196 per level)
+    local TERRAINS_PER_LEVEL = 196  -- Approximate capacity per 64×64 level
+    
+    print(string.format("[DCCB-Gallery] Level %d of %d", current_level, MAX_LEVEL))
     print(string.format("[DCCB-Gallery] Map bounds: %d x %d", W, H))
+    
+    -- Calculate terrain range for this level
+    local total_terrains = #manifest.TERRAIN_CANDIDATES
+    local start_idx = (current_level - 1) * TERRAINS_PER_LEVEL + 1
+    local end_idx = math.min(current_level * TERRAINS_PER_LEVEL, total_terrains)
+    
+    print(string.format("[DCCB-Gallery] Terrain range for this level: %d-%d (of %d total)", 
+      start_idx, end_idx, total_terrains))
     
     -- Step 1: Fill background to prevent black map
     print("[DCCB-Gallery] Step 1: Filling background...")
@@ -206,21 +221,28 @@ return {
     local last_category = nil
     local category_start_idx = 1
     
-    -- Place each terrain candidate (BOUNDS-AWARE)
-    for idx, terrain_info in ipairs(manifest.TERRAIN_CANDIDATES) do
+    -- Place each terrain candidate (BOUNDS-AWARE, LEVEL-AWARE)
+    -- Only place terrains in the range for this level
+    for idx = start_idx, end_idx do
+      local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+      if not terrain_info then break end  -- Safety check
+      
+      -- Calculate relative position (idx relative to level start)
+      local relative_idx = idx - start_idx
+      
       -- Log category headers (when category changes)
       if terrain_info.category ~= last_category then
         if last_category then
-          print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, idx - category_start_idx))
+          print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, relative_idx))
         end
         last_category = terrain_info.category
-        category_start_idx = idx
+        category_start_idx = relative_idx
         print(string.format("[DCCB-Gallery] Category: %s", terrain_info.category))
       end
       
-      -- Calculate position from index
-      local row = math.floor((idx - 1) / max_cols)
-      local col = (idx - 1) % max_cols
+      -- Calculate position from relative index (not absolute)
+      local row = math.floor(relative_idx / max_cols)
+      local col = relative_idx % max_cols
       
       local x = START_X + (col * stride_x)
       local y = START_Y + (row * stride_y)
@@ -274,15 +296,52 @@ return {
     
     -- Log final category
     if last_category then
-      print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, #manifest.TERRAIN_CANDIDATES - category_start_idx + 1))
+      local final_count = end_idx - category_start_idx + 1
+      print(string.format("[DCCB-Gallery]   %s: %d terrains", last_category, final_count))
+    end
+    
+    -- Step 5: Place stairs for multi-level navigation
+    print("[DCCB-Gallery] Step 5: Placing stairs...")
+    
+    -- DOWN stairs (if not last level)
+    if current_level < MAX_LEVEL then
+      local stair_x = W - 4  -- Bottom-right area
+      local stair_y = H - 4
+      
+      local down_stair = zone:makeEntityByName(level, "terrain", "DOWN")
+      if down_stair then
+        if down_stair.resolve then down_stair:resolve() end
+        level.map(stair_x, stair_y, Map.TERRAIN, down_stair)
+        print(string.format("[DCCB-Gallery] DOWN stairs placed at (%d,%d) → Level %d", 
+          stair_x, stair_y, current_level + 1))
+      else
+        print("[DCCB-Gallery] WARNING: DOWN stairs not found")
+      end
+    end
+    
+    -- UP stairs (if not first level)
+    if current_level > 1 then
+      local stair_x = 2  -- Bottom-left area
+      local stair_y = H - 4
+      
+      local up_stair = zone:makeEntityByName(level, "terrain", "UP")
+      if up_stair then
+        if up_stair.resolve then up_stair:resolve() end
+        level.map(stair_x, stair_y, Map.TERRAIN, up_stair)
+        print(string.format("[DCCB-Gallery] UP stairs placed at (%d,%d) → Level %d", 
+          stair_x, stair_y, current_level - 1))
+      else
+        print("[DCCB-Gallery] WARNING: UP stairs not found")
+      end
     end
     
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Palette generation complete")
     print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Level: %d of %d", current_level, MAX_LEVEL))
+    print(string.format("[DCCB-Gallery] Terrain range: %d-%d (of %d total)", start_idx, end_idx, total_terrains))
     print(string.format("[DCCB-Gallery] Map bounds: %d × %d", W, H))
     print(string.format("[DCCB-Gallery] Layout capacity: %d cols × %d rows = %d max", max_cols, max_rows, capacity))
-    print(string.format("[DCCB-Gallery] Total candidates: %d", #manifest.TERRAIN_CANDIDATES))
     print(string.format("[DCCB-Gallery] ✓ Placed: %d terrains", placed_count))
     print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
     print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
