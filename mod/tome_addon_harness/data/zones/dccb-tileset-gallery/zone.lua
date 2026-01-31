@@ -66,10 +66,10 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load terrain manifest (comprehensive extracted list)
-    -- Now using full manifest since all general packs are loaded
-    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest.lua")
-    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest.lua")
+    -- Load terrain manifest (verified working-only for clean catalog)
+    -- Only includes terrains confirmed to work with general packs
+    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest_working_only.lua")
+    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest_working_only.lua")
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
       print("[DCCB-Gallery] Error: " .. tostring(manifest))
