@@ -247,8 +247,8 @@ return {
       local x = START_X + (col * stride_x)
       local y = START_Y + (row * stride_y)
       
-      -- BOUNDS CHECK: Stop if cell would exceed map bounds
-      if x + CELL_W - 1 >= W or y + CELL_H - 1 >= H then
+      -- BOUNDS CHECK: Stop if placement would exceed map bounds
+      if x >= W or y >= H then
         print(string.format("[DCCB-Gallery] Palette full at terrain #%d, stopping placement", idx))
         stopped_reason = "Map full"
         break
@@ -274,15 +274,8 @@ return {
           print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (blacklisted)", 
             x, y, terrain_info.id))
         else
-          -- Safe to place: place entire cell (3×3)
-          for cx = 0, CELL_W - 1 do
-            for cy = 0, CELL_H - 1 do
-              local px, py = x + cx, y + cy
-              if px < W and py < H then  -- Extra safety
-                level.map(px, py, Map.TERRAIN, terrain)
-              end
-            end
-          end
+          -- Safe to place: place single tile (not fill cell)
+          level.map(x, y, Map.TERRAIN, terrain)
           placed_count = placed_count + 1
           
           -- Only log first few placements
