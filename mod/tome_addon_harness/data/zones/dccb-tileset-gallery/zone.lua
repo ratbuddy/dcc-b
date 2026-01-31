@@ -20,8 +20,8 @@ return {
   short_name = "dccb-tileset-gallery",
   level_range = {1, 1},
   max_level = 1,
-  width = 70,  -- Wide enough for comprehensive terrain catalog (200-300+ terrains)
-  height = 120, -- Tall enough for many rows (~30 rows for ~500 terrains)
+  width = 64,  -- Safe, proven size (bounds-aware placement)
+  height = 64, -- Small, predictable (prevents out-of-bounds)
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
@@ -36,9 +36,12 @@ return {
   },
   
   -- Generator: Empty (blank canvas for manual palette placement)
+  -- MUST be 64×64 for safe, bounds-aware placement
   generator = {
     map = {
       class = "engine.generator.map.Empty",
+      width = 64,
+      height = 64,
     },
     actor = {
       nb_npc = {0, 0},
@@ -124,6 +127,11 @@ return {
     print("[DCCB-Gallery] Generating Dense Tileset Palette")
     print("[DCCB-Gallery] ========================================")
     
+    -- Read actual map bounds at runtime (NEVER assume size)
+    local map = level.map
+    local W, H = map.w, map.h
+    print(string.format("[DCCB-Gallery] Map bounds: %d x %d", W, H))
+    
     -- Step 1: Fill background to prevent black map
     print("[DCCB-Gallery] Step 1: Filling background...")
     local background_grid = zone:makeEntityByName(level, "terrain", "GRASS") or 
@@ -131,8 +139,8 @@ return {
     
     if background_grid then
       if background_grid.resolve then background_grid:resolve() end
-      for x = 0, level.map.w - 1 do
-        for y = 0, level.map.h - 1 do
+      for x = 0, W - 1 do
+        for y = 0, H - 1 do
           level.map(x, y, Map.TERRAIN, background_grid)
         end
       end
@@ -141,55 +149,64 @@ return {
       print("[DCCB-Gallery] WARNING: No background grid available (GRASS/FLOOR not found)")
     end
     
-    -- Step 2: Create spawn pad (walkable area for player)
-    print("[DCCB-Gallery] Step 2: Creating spawn pad...")
-    local spawn_x = level.map.w - SPAWN_PAD_SIZE - 2
-    local spawn_y = level.map.h - SPAWN_PAD_SIZE - 2
+    -- Step 2: Calculate dynamic layout based on actual bounds
+    local stride_x = CELL_W + CELL_GAP  -- 4
+    local stride_y = CELL_H + CELL_GAP  -- 4
+    local margin = 2
+    
+    local max_cols = math.max(1, math.floor((W - START_X - margin) / stride_x))
+    local max_rows = math.max(1, math.floor((H - START_Y - margin) / stride_y))
+    local capacity = max_cols * max_rows
+    
+    print(string.format("[DCCB-Gallery] Step 2: Layout: %d cols × %d rows (max capacity: %d)", 
+      max_cols, max_rows, capacity))
+    print(string.format("[DCCB-Gallery]   Cell: %dx%d, Gap: %d, Stride: %dx%d", 
+      CELL_W, CELL_H, CELL_GAP, stride_x, stride_y))
+    
+    -- Step 3: Place spawn pad AFTER knowing bounds
+    print("[DCCB-Gallery] Step 3: Creating spawn pad...")
+    -- Clamp spawn pad to safe location within bounds
+    local pad_x = math.max(2, math.min(W - SPAWN_PAD_SIZE - 2, W - SPAWN_PAD_SIZE - margin))
+    local pad_y = math.max(2, math.min(H - SPAWN_PAD_SIZE - 2, H - SPAWN_PAD_SIZE - margin))
+    
     local spawn_floor = zone:makeEntityByName(level, "terrain", "GRASS") or 
                        zone:makeEntityByName(level, "terrain", "FLOOR")
     
     if spawn_floor then
       if spawn_floor.resolve then spawn_floor:resolve() end
-      for x = spawn_x, spawn_x + SPAWN_PAD_SIZE - 1 do
-        for y = spawn_y, spawn_y + SPAWN_PAD_SIZE - 1 do
-          level.map(x, y, Map.TERRAIN, spawn_floor)
+      -- Clamp spawn pad size to never exceed bounds
+      local pad_w = math.min(SPAWN_PAD_SIZE, W - pad_x)
+      local pad_h = math.min(SPAWN_PAD_SIZE, H - pad_y)
+      for x = pad_x, pad_x + pad_w - 1 do
+        for y = pad_y, pad_y + pad_h - 1 do
+          if x < W and y < H then  -- Extra safety check
+            level.map(x, y, Map.TERRAIN, spawn_floor)
+          end
         end
       end
       print(string.format("[DCCB-Gallery] Spawn pad: %dx%d at (%d,%d)", 
-        SPAWN_PAD_SIZE, SPAWN_PAD_SIZE, spawn_x, spawn_y))
+        pad_w, pad_h, pad_x, pad_y))
     end
     
-    -- Step 3: Calculate dense layout with 3x3 cells + 1 tile gap
-    local map_width = level.map.w
-    local cell_total = CELL_W + CELL_GAP  -- Total space per cell
-    local available_width = map_width - START_X - 2
-    local cols = math.floor(available_width / cell_total)
-    cols = math.max(cols, 8)  -- At least 8 columns
-    
-    print(string.format("[DCCB-Gallery] Step 3: Layout: %d columns, %dx%d cells, %d gap", 
-      cols, CELL_W, CELL_H, CELL_GAP))
-    
-    -- Step 4: Place terrain samples with safety checks
+    -- Step 4: Place terrain samples with BOUNDS-SAFE placement
     print(string.format("[DCCB-Gallery] Step 4: Placing terrain samples from manifest (%d candidates)...", 
       #manifest.TERRAIN_CANDIDATES))
     
     local placed_count = 0
     local skipped_missing = 0
     local skipped_dangerous = 0
+    local stopped_reason = nil
     
     -- Blacklist of known-dangerous terrains that should NOT be displayed
-    -- These have actual gameplay hooks that could cause unwanted transitions
     local KNOWN_DANGEROUS = {
       DCCB_ENTRANCE = true,  -- Has on_stand message
-      -- Note: We're using a blacklist approach instead of checking for hooks
-      -- because many safe terrains inherit hooks from base entities
     }
     
     -- Track category for logging
     local last_category = nil
     local category_start_idx = 1
     
-    -- Place each terrain candidate
+    -- Place each terrain candidate (BOUNDS-AWARE)
     for idx, terrain_info in ipairs(manifest.TERRAIN_CANDIDATES) do
       -- Log category headers (when category changes)
       if terrain_info.category ~= last_category then
@@ -201,47 +218,52 @@ return {
         print(string.format("[DCCB-Gallery] Category: %s", terrain_info.category))
       end
       
-      local row = math.floor((idx - 1) / cols)
-      local col = (idx - 1) % cols
+      -- Calculate position from index
+      local row = math.floor((idx - 1) / max_cols)
+      local col = (idx - 1) % max_cols
       
-      -- Calculate position with cell spacing + gap
-      local cell_total = CELL_W + CELL_GAP
-      local x = START_X + (col * cell_total)
-      local y = START_Y + (row * cell_total)
+      local x = START_X + (col * stride_x)
+      local y = START_Y + (row * stride_y)
       
-      -- Skip if out of bounds
-      if x >= map_width - 2 or y >= level.map.h - 2 then
-        print(string.format("[DCCB-Gallery] WARNING: Out of bounds at terrain #%d, stopping", idx))
+      -- BOUNDS CHECK: Stop if cell would exceed map bounds
+      if x + CELL_W - 1 >= W or y + CELL_H - 1 >= H then
+        print(string.format("[DCCB-Gallery] Palette full at terrain #%d, stopping placement", idx))
+        stopped_reason = "Map full"
         break
       end
       
-      -- Try to make the terrain entity using "terrain" kind
+      -- Try to make the terrain entity
       local terrain = zone:makeEntityByName(level, "terrain", terrain_info.id)
       
       if not terrain then
         -- Terrain not found (missing)
         skipped_missing = skipped_missing + 1
-        -- Only log first few missing to avoid spam
         if skipped_missing <= 5 then
           print(string.format("[DCCB-Gallery] ⊘ [%2d,%2d] %-20s | MISSING", 
             x, y, terrain_info.id))
         end
       else
-        -- Resolve the terrain first to get actual properties
+        -- Resolve the terrain first
         if terrain.resolve then terrain:resolve() end
         
-        -- Check if this is a blacklisted dangerous terrain
+        -- Check if blacklisted
         if KNOWN_DANGEROUS[terrain_info.id] then
-          -- Blacklisted: skip it
           skipped_dangerous = skipped_dangerous + 1
           print(string.format("[DCCB-Gallery] ⚠ [%2d,%2d] %-20s | DANGEROUS (blacklisted)", 
             x, y, terrain_info.id))
         else
-          -- Not blacklisted: safe to place
-          level.map(x, y, Map.TERRAIN, terrain)
+          -- Safe to place: place entire cell (3×3)
+          for cx = 0, CELL_W - 1 do
+            for cy = 0, CELL_H - 1 do
+              local px, py = x + cx, y + cy
+              if px < W and py < H then  -- Extra safety
+                level.map(px, py, Map.TERRAIN, terrain)
+              end
+            end
+          end
           placed_count = placed_count + 1
           
-          -- Only log first few placements to avoid spam
+          -- Only log first few placements
           if placed_count <= 10 then
             print(string.format("[DCCB-Gallery] ✓ [%2d,%2d] %-20s | %s", 
               x, y, terrain_info.id, terrain_info.category))
@@ -258,12 +280,17 @@ return {
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Palette generation complete")
     print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Map bounds: %d × %d", W, H))
+    print(string.format("[DCCB-Gallery] Layout capacity: %d cols × %d rows = %d max", max_cols, max_rows, capacity))
     print(string.format("[DCCB-Gallery] Total candidates: %d", #manifest.TERRAIN_CANDIDATES))
     print(string.format("[DCCB-Gallery] ✓ Placed: %d terrains", placed_count))
     print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
     print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
-    print(string.format("[DCCB-Gallery] Layout: %d columns × %d rows visible", 
-      cols, math.ceil(placed_count / cols)))
+    if stopped_reason then
+      print(string.format("[DCCB-Gallery] Stopped due to: %s", stopped_reason))
+    end
+    print(string.format("[DCCB-Gallery] Actual layout: %d columns × %d rows", 
+      max_cols, math.ceil(placed_count / max_cols)))
     print("[DCCB-Gallery] ========================================")
   end,
 }
