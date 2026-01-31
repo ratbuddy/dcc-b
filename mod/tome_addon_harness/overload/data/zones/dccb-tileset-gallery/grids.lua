@@ -16,13 +16,51 @@ local function safe_load(path)
   return ok
 end
 
--- Load additional official terrain packs (used by official zones)
--- These provide water, forest, lava, mountain, and jungle terrain types
-safe_load("/data/general/grids/water.lua")
-safe_load("/data/general/grids/forest.lua")
-safe_load("/data/general/grids/lava.lua")
-safe_load("/data/general/grids/mountain.lua")
-safe_load("/data/general/grids/jungle_hut.lua")
+-- Load ALL general terrain packs from /data/general/grids/
+-- This provides comprehensive terrain coverage including autumn, beach, desert, etc.
+print("[DCCB-Gallery] Loading all general terrain packs...")
+local general_packs = {
+  -- Core packs
+  "water.lua",
+  "forest.lua",
+  "lava.lua",
+  "mountain.lua",
+  
+  -- Additional terrain types
+  "jungle_hut.lua",
+  "autumn.lua",        -- AUTUMN_GRASS, AUTUMN_TREE, etc.
+  "beach.lua",         -- BEACH_UP, BEACH_DOWN, etc.
+  "crystal.lua",       -- Crystal cave terrains
+  "desert.lua",        -- Desert/sand terrains
+  "ice.lua",           -- Ice/snow terrains
+  "swamp.lua",         -- Swamp/bog terrains
+  "temple.lua",        -- Temple/altar terrains
+  "void.lua",          -- Void/special terrains
+  
+  -- Any other packs that exist
+  "grass.lua",
+  "road.lua",
+  "ruins.lua",
+  "sand.lua",
+  "snow.lua",
+  "stone.lua",
+  "tree.lua",
+  "wall.lua",
+}
+
+local loaded_count = 0
+local failed_count = 0
+
+for _, pack_name in ipairs(general_packs) do
+  local path = "/data/general/grids/" .. pack_name
+  if safe_load(path) then
+    loaded_count = loaded_count + 1
+  else
+    failed_count = failed_count + 1
+  end
+end
+
+print(string.format("[DCCB-Gallery] Loaded %d/%d general terrain packs", loaded_count, #general_packs))
 
 -- ============================================================================
 -- DCCB SURFACE GRIDS - Defined here for gallery display

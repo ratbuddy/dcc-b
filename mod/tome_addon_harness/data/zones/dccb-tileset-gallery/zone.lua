@@ -20,8 +20,8 @@ return {
   short_name = "dccb-tileset-gallery",
   level_range = {1, 1},
   max_level = 1,
-  width = 60,  -- Wide enough for dense palette (384 terrains)
-  height = 100, -- Tall enough for many rows (~25 rows needed)
+  width = 70,  -- Wide enough for comprehensive terrain catalog (200-300+ terrains)
+  height = 120, -- Tall enough for many rows (~30 rows for ~500 terrains)
   persistent = "zone",
   all_remembered = true,
   all_lited = true,
@@ -63,9 +63,10 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load terrain manifest (using verified working terrains only)
-    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest_verified.lua")
-    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest_verified.lua")
+    -- Load terrain manifest (comprehensive extracted list)
+    -- Now using full manifest since all general packs are loaded
+    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest.lua")
+    local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest.lua")
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
       print("[DCCB-Gallery] Error: " .. tostring(manifest))
@@ -76,7 +77,7 @@ return {
     -- Debug: Log manifest info
     if manifest and manifest.TERRAIN_CANDIDATES then
       local count = #manifest.TERRAIN_CANDIDATES
-      print(string.format("[DCCB-Gallery] Verified manifest loaded: %d terrains (100%% working, 0%% missing)", count))
+      print(string.format("[DCCB-Gallery] Manifest loaded: %d terrain candidates", count))
       if count > 0 then
         local first_few = {}
         for i = 1, math.min(5, count) do
