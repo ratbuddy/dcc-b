@@ -41,6 +41,7 @@ IMAGE_PATTERN     = re.compile(r'image\s*=\s*["\']([^"\']+)["\']', re.IGNORECASE
 NAME_PATTERN      = re.compile(r'name\s*=\s*["\']([^"\']+)["\']', re.IGNORECASE)
 TYPE_PATTERN      = re.compile(r'type\s*=\s*["\']([^"\']+)["\']', re.IGNORECASE)
 SUBTYPE_PATTERN   = re.compile(r'subtype\s*=\s*["\']([^"\']+)["\']', re.IGNORECASE)
+# Note: ToME uses both 'block_move' and 'does_block_move' field names
 BLOCK_MOVE_PATTERN = re.compile(r'(?:block_move|does_block_move)\s*=\s*(true|false|[0-9]+)', re.IGNORECASE)
 BLOCK_SIGHT_PATTERN = re.compile(r'block_sight\s*=\s*(true|false|[0-9]+)', re.IGNORECASE)
 CAN_PASS_PATTERN  = re.compile(r'can_pass\s*=\s*(\{[^}]*\}|true|false)', re.IGNORECASE)
@@ -236,10 +237,10 @@ def extract_from_file(file_path: Path, root_path: Path):
                 if current.get("image"):
                     terrain_data[tid]["image"] = terrain_data[tid]["image"] or current["image"]
 
-                # Merge semantic fields
+                # Merge semantic fields (preserve first non-None value)
                 for field in ["name", "type", "subtype", "block_move", "block_sight", "can_pass", "nice_editer_def"]:
-                    if current.get(field) is not None:
-                        terrain_data[tid][field] = terrain_data[tid][field] or current[field]
+                    if current.get(field) is not None and terrain_data[tid][field] is None:
+                        terrain_data[tid][field] = current[field]
 
                 # Merge boolean presence flags (OR logic)
                 for field in ["change_level", "change_zone", "on_stand", "on_move", 
@@ -283,9 +284,9 @@ def merge(all_dicts):
             if data.get("image") and not merged[tid]["image"]:
                 merged[tid]["image"] = data["image"]
 
-            # merge semantic fields
+            # merge semantic fields (preserve first non-None value)
             for field in ["name", "type", "subtype", "block_move", "block_sight", "can_pass", "nice_editer_def"]:
-                if data.get(field) is not None and not merged[tid][field]:
+                if data.get(field) is not None and merged[tid][field] is None:
                     merged[tid][field] = data[field]
 
             # merge boolean flags (OR logic)
@@ -360,8 +361,9 @@ def derive_flags_and_category(tid: str, meta: dict) -> dict:
         category = "wall"
     elif any(kw in tid_upper for kw in [
         "ALTAR", "STATUE", "PILLAR", "HUT", "COLUMN", "FOUNTAIN", "BRAZIER"
-    ]) and not result["is_blocking"]:
-        category = "feature"
+    ]):
+        # Non-blocking decorative features
+        category = "feature" if not result["is_blocking"] else "wall"
     elif (not result["is_blocking"] and 
           ("floor" in type_str or "floor" in subtype_str)) or any(kw in tid_upper for kw in [
         "GRASS", "FLOOR", "ROAD", "SAND", "SNOW", "ICE", "DIRT", "PATH", "GROUND"
