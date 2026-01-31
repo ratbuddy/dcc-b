@@ -64,12 +64,34 @@ return {
     local Map = require "engine.Map"
     
     -- Load terrain manifest
+    print("[DCCB-Gallery] Loading manifest from: /data-dccb/dccb/tileset/gallery_manifest.lua")
     local manifest_ok, manifest = pcall(loadfile, "/data-dccb/dccb/tileset/gallery_manifest.lua")
     if not manifest_ok or not manifest then
       print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
+      print("[DCCB-Gallery] Error: " .. tostring(manifest))
       return
     end
     manifest = manifest()
+    
+    -- Debug: Log manifest info to diagnose loading issues
+    if manifest and manifest.TERRAIN_CANDIDATES then
+      local count = #manifest.TERRAIN_CANDIDATES
+      print(string.format("[DCCB-Gallery] Manifest loaded: %d terrains", count))
+      if count > 0 then
+        local first_few = {}
+        for i = 1, math.min(5, count) do
+          table.insert(first_few, manifest.TERRAIN_CANDIDATES[i].id)
+        end
+        print("[DCCB-Gallery] First 5 IDs: " .. table.concat(first_few, ", "))
+      end
+      if count ~= 384 then
+        print("[DCCB-Gallery] WARNING: Expected 384 terrains, got " .. count)
+        print("[DCCB-Gallery] User may need to: git pull origin copilot/add-dccb-surface-master-zone")
+      end
+    else
+      print("[DCCB-Gallery] ERROR: Manifest loaded but has no TERRAIN_CANDIDATES")
+      return
+    end
     
     -- Capability-based detection: find level and zone by their methods
     local level, zone
