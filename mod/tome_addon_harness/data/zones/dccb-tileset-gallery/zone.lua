@@ -278,22 +278,114 @@ return {
     local discovered_files = discover_zone_grids()
     print(string.format("[DCCB-Gallery] Discovered %d zone grid file candidates", #discovered_files))
     
-    -- NOTE: Zone grid files cannot be loaded here
-    -- Zone grid files (e.g., /data/zones/*/grids.lua) are designed to be loaded by ToME's
-    -- zone loading system, not by user code. They call ToME's internal load() function and
-    -- depend on ToME's zone loading context (entity constructors, class methods, etc).
-    -- Attempting to load them with loadfile() causes errors:
-    --   - "bad argument #2 to 'load' (string expected, got function)"
-    --   - "attempt to call field 'new' (a nil value)"
-    -- These files are automatically loaded by ToME when you enter those zones.
-    -- The discovery above is kept for logging/debugging purposes only.
+    -- Track loading statistics
+    local loaded_count = 0
+    local failed_count = 0
+    local early_stop_threshold = 50  -- Stop after N consecutive files with no new resolutions
+    local consecutive_no_resolve = 0
+    local newly_resolved_total = 0
+    
+    -- Count initial missing terrains (before zone grid loading)
+    local initial_missing_count = count_missing_terrains()
+    print(string.format("[DCCB-Gallery] Missing terrains before zone grid loading: %d", initial_missing_count))
+    
+    -- Track which IDs are currently missing (for incremental re-probing)
+    local missing_ids = {}
+    for idx = 1, #manifest.TERRAIN_CANDIDATES do
+      local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+      if terrain_info then
+        local id = terrain_info.id
+        local entity = zone:makeEntityByName(level, "terrain", id)
+        if not entity then
+          missing_ids[id] = true
+        end
+      end
+    end
+    
+    -- Get ToME's load function for loading terrain files
+    local tome_load = rawget(_G, "load")
+    
+    -- Load zone grid files incrementally
+    for _, grid_file in ipairs(discovered_files) do
+      -- Setup capture wrapper for this file
+      local orig_newEntity = setup_capture_wrapper(grid_file)
+      
+      -- Try to load the file using ToME's load() function
+      local load_ok, load_err = pcall(function()
+        if tome_load then
+          tome_load(grid_file)
+        else
+          error("ToME load() function not available")
+        end
+      end)
+      
+      -- Always restore wrapper, even if load failed
+      restore_wrapper(orig_newEntity)
+      
+      if load_ok then
+        loaded_count = loaded_count + 1
+        
+        -- Re-probe only the currently missing IDs
+        local newly_resolved_this_file = 0
+        local still_missing = {}
+        
+        -- missing_ids is a set (id -> true), iterate over keys only
+        for id in pairs(missing_ids) do
+          local entity = zone:makeEntityByName(level, "terrain", id)
+          if entity then
+            -- This ID transitioned from MISSING -> RESOLVED
+            newly_resolved_this_file = newly_resolved_this_file + 1
+            newly_resolved_total = newly_resolved_total + 1
+            
+            -- Record resolved_source_file (if not already set)
+            if not resolved_source_map[id] then
+              resolved_source_map[id] = grid_file
+            end
+          else
+            -- Still missing
+            still_missing[id] = true
+          end
+        end
+        
+        -- Update missing_ids for next iteration
+        missing_ids = still_missing
+        
+        -- Track consecutive no-resolve for early stop
+        if newly_resolved_this_file == 0 then
+          consecutive_no_resolve = consecutive_no_resolve + 1
+          
+          -- Early stop check
+          if consecutive_no_resolve >= early_stop_threshold then
+            print(string.format("[DCCB-Gallery] Early stop: %d consecutive files with no resolutions", 
+              consecutive_no_resolve))
+            break
+          end
+        else
+          consecutive_no_resolve = 0  -- Reset counter
+        end
+      else
+        failed_count = failed_count + 1
+        print(string.format("[DCCB-Gallery] WARNING: Failed to load %s: %s", 
+          grid_file, tostring(load_err)))
+      end
+    end
+    
+    -- Count final missing terrains (after zone grid loading)
+    local final_missing_count = count_missing_terrains()
     
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Zone Grid Loading Complete")
     print("[DCCB-Gallery] ========================================")
-    print(string.format("[DCCB-Gallery] Discovered: %d zone grid files", #discovered_files))
-    print("[DCCB-Gallery] NOTE: Zone grid files are not loaded here - they require ToME's zone context")
-    print("[DCCB-Gallery] These files are automatically loaded when you enter their respective zones")
+    print(string.format("[DCCB-Gallery] Discovered: %d files", #discovered_files))
+    print(string.format("[DCCB-Gallery] Loaded successfully: %d files", loaded_count))
+    print(string.format("[DCCB-Gallery] Failed: %d files", failed_count))
+    print(string.format("[DCCB-Gallery] Newly resolved terrains: %d", newly_resolved_total))
+    print(string.format("[DCCB-Gallery] Missing before: %d", initial_missing_count))
+    print(string.format("[DCCB-Gallery] Missing after: %d", final_missing_count))
+    if consecutive_no_resolve >= early_stop_threshold then
+      print(string.format("[DCCB-Gallery] Early stop triggered: %d consecutive files with no resolutions", 
+        consecutive_no_resolve))
+    end
     print("[DCCB-Gallery] ")
     
     -- Helper function to compute visual signature
