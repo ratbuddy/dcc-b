@@ -1,0 +1,53 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "dcc-b (addon)"
+    },
+    {
+      "path": "../t-engine4",
+      "name": "T-Engine4 (reference)"
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "*.lua": "lua"
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/build": true,
+      "**/.git": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/**": true
+    },
+    "lua.runtime.version": "LuaJIT",
+    "lua.diagnostics.globals": [
+      "game",
+      "engine",
+      "mod",
+      "class",
+      "require",
+      "pcall",
+      "loadfile",
+      "newEntity",
+      "Map",
+      "Grid",
+      "Zone",
+      "DamageType"
+    ],
+    "lua.workspace.library": [
+      "${workspaceFolder}/../t-engine4/game/engines"
+    ],
+    "lua.workspace.checkThirdParty": false
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "sumneko.lua",
+      "continue.continue"
+    ]
+  }
+}
