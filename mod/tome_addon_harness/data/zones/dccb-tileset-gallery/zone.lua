@@ -67,6 +67,50 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
+    -- Capability-based detection: find level and zone by their methods
+    local level, zone
+    
+    -- Find level: whichever arg is a table with .map
+    for _, arg in ipairs({a, b, c}) do
+      if type(arg) == "table" and arg.map then
+        level = arg
+        break
+      end
+    end
+    
+    -- Find zone: whichever arg is a table with .makeEntityByName or .makeEntity
+    for _, arg in ipairs({a, b, c}) do
+      if type(arg) == "table" and (arg.makeEntityByName or arg.makeEntity) then
+        zone = arg
+        break
+      end
+    end
+    
+    -- Validate we have both level and zone
+    if not level or not level.map then
+      print("[DCCB-Gallery] ERROR: Cannot detect level object (no .map found)")
+      return
+    end
+    
+    if not zone or not (zone.makeEntityByName or zone.makeEntity) then
+      print("[DCCB-Gallery] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
+      return
+    end
+    
+    -- FIX: Force map to be 64×64 since Empty generator doesn't respect dimensions
+    -- The engine creates 30×16 by default, but we need the full 64×64 for palette
+    local current_w, current_h = level.map.w, level.map.h
+    print(string.format("[DCCB-Gallery] Current map size: %d x %d", current_w, current_h))
+    
+    if current_w ~= 64 or current_h ~= 64 then
+      print("[DCCB-Gallery] Resizing map to 64x64...")
+      -- Create new 64×64 map
+      local new_map = Map.new(64, 64)
+      -- Replace level's map
+      level.map = new_map
+      print(string.format("[DCCB-Gallery] Map resized to: %d x %d", level.map.w, level.map.h))
+    end
+    
     -- Load canonical terrain manifest (384 terrains)
     local manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"
     print("[DCCB-Gallery] Loading canonical manifest (384 terrains): " .. manifest_path)
@@ -101,36 +145,6 @@ return {
     print("[DCCB-Gallery] ========================================")
     print("[DCCB-Gallery] Zone Grid Discovery and Loading")
     print("[DCCB-Gallery] ========================================")
-    
-    -- Capability-based detection: find level and zone by their methods
-    local level, zone
-    
-    -- Find level: whichever arg is a table with .map
-    for _, arg in ipairs({a, b, c}) do
-      if type(arg) == "table" and arg.map then
-        level = arg
-        break
-      end
-    end
-    
-    -- Find zone: whichever arg is a table with .makeEntityByName or .makeEntity
-    for _, arg in ipairs({a, b, c}) do
-      if type(arg) == "table" and (arg.makeEntityByName or arg.makeEntity) then
-        zone = arg
-        break
-      end
-    end
-    
-    -- Validate we have both level and zone
-    if not level or not level.map then
-      print("[DCCB-Gallery] ERROR: Cannot detect level object (no .map found)")
-      return
-    end
-    
-    if not zone or not (zone.makeEntityByName or zone.makeEntity) then
-      print("[DCCB-Gallery] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
-      return
-    end
     
     -- Attribution tracking: terrain ID -> source file information
     local define_source_map = {}      -- id -> first file where define_as was seen
@@ -273,15 +287,69 @@ return {
     -- Get Grid class for proper entity loading environment
     local Grid = require("engine.Grid")
     
+    -- Get Zone class for currentZone context manipulation
+    local Zone = require("engine.Zone")
+    
+    -- Create sandbox zone with stub helpers for safe grid loading
+    -- Grid files may call currentZone:makeNewTrees(), makeTrees(), etc.
+    -- These stubs prevent crashes while allowing discovery/documentation
+    local sandbox_helper_calls = {}  -- Track which helpers are invoked
+    
+    local function make_sandbox_zone()
+      local sandbox = {}
+      
+      -- Stub: makeNewTrees - returns empty table to prevent crashes
+      sandbox.makeNewTrees = function(self, ...)
+        local file = debug.getinfo(2, "S").source or "unknown"
+        if not sandbox_helper_calls.makeNewTrees then
+          sandbox_helper_calls.makeNewTrees = {}
+        end
+        if not sandbox_helper_calls.makeNewTrees[file] then
+          sandbox_helper_calls.makeNewTrees[file] = true
+          print(string.format("[DCCB-Gallery] SANDBOX helper invoked: makeNewTrees (file=%s)", file))
+        end
+        return {}
+      end
+      
+      -- Stub: makeTrees - returns empty table to prevent crashes
+      sandbox.makeTrees = function(self, ...)
+        local file = debug.getinfo(2, "S").source or "unknown"
+        if not sandbox_helper_calls.makeTrees then
+          sandbox_helper_calls.makeTrees = {}
+        end
+        if not sandbox_helper_calls.makeTrees[file] then
+          sandbox_helper_calls.makeTrees[file] = true
+          print(string.format("[DCCB-Gallery] SANDBOX helper invoked: makeTrees (file=%s)", file))
+        end
+        return {}
+      end
+      
+      -- Add more stub helpers as discovered through error logs
+      -- Each should log once per file and return safe empty value
+      
+      return sandbox
+    end
+    
+    local sandbox_zone = make_sandbox_zone()
+    
     -- Load zone grid files incrementally using Grid:loadList
     -- This provides the proper ToME entity loading environment with:
     -- - Custom load() function that calls Grid:loadList recursively
     -- - newEntity that registers define_as into results
-    -- - Zone context via currentZone
+    -- - Zone context via currentZone (sandboxed to prevent crashes)
     for _, grid_file in ipairs(discovered_files) do
+      -- Save original getCurrentLoadingZone to restore after load
+      local orig_getCurrentLoadingZone = Zone.getCurrentLoadingZone
+      
       -- Try to load the file using Grid:loadList with attribution callback
+      -- Wrap in currentZone context so grid files can call zone helpers safely
       local load_ok, load_err = pcall(function()
         if Grid and Grid.loadList then
+          -- Temporarily replace getCurrentLoadingZone to return our sandbox
+          Zone.getCurrentLoadingZone = function()
+            return sandbox_zone
+          end
+          
           -- Use mod callback (4th parameter) to capture define_as attribution
           Grid:loadList(grid_file, nil, nil, function(e)
             if e and e.define_as and not define_source_map[e.define_as] then
@@ -292,6 +360,9 @@ return {
           error("Grid:loadList not available")
         end
       end)
+      
+      -- Always restore original getCurrentLoadingZone, even on error
+      Zone.getCurrentLoadingZone = orig_getCurrentLoadingZone
       
       if load_ok then
         loaded_count = loaded_count + 1
