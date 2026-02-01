@@ -302,25 +302,28 @@ return {
       end
     end
     
-    -- Get ToME's load function for loading terrain files
-    local tome_load = rawget(_G, "load")
+    -- Get Grid class for proper entity loading environment
+    local Grid = require("engine.Grid")
     
-    -- Load zone grid files incrementally
+    -- Load zone grid files incrementally using Grid:loadList
+    -- This provides the proper ToME entity loading environment with:
+    -- - Custom load() function that calls Grid:loadList recursively
+    -- - newEntity that registers define_as into results
+    -- - Zone context via currentZone
     for _, grid_file in ipairs(discovered_files) do
-      -- Setup capture wrapper for this file
-      local orig_newEntity = setup_capture_wrapper(grid_file)
-      
-      -- Try to load the file using ToME's load() function
+      -- Try to load the file using Grid:loadList with attribution callback
       local load_ok, load_err = pcall(function()
-        if tome_load then
-          tome_load(grid_file)
+        if Grid and Grid.loadList then
+          -- Use mod callback (4th parameter) to capture define_as attribution
+          Grid:loadList(grid_file, nil, nil, function(e)
+            if e and e.define_as and not define_source_map[e.define_as] then
+              define_source_map[e.define_as] = grid_file
+            end
+          end)
         else
-          error("ToME load() function not available")
+          error("Grid:loadList not available")
         end
       end)
-      
-      -- Always restore wrapper, even if load failed
-      restore_wrapper(orig_newEntity)
       
       if load_ok then
         loaded_count = loaded_count + 1
