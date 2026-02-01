@@ -225,38 +225,6 @@ return {
       return discovered
     end
     
-    -- Helper: Setup entity definition capture wrapper
-    local function setup_capture_wrapper(current_file)
-      -- Save original newEntity if available
-      local orig_newEntity = _G.newEntity
-      
-      -- Wrap newEntity to capture define_as -> source file
-      _G.newEntity = function(t, ...)
-        -- Capture first occurrence of define_as
-        if t and t.define_as and not define_source_map[t.define_as] then
-          define_source_map[t.define_as] = current_file
-        end
-        
-        -- Call original if it exists
-        if orig_newEntity then
-          return orig_newEntity(t, ...)
-        else
-          return t
-        end
-      end
-      
-      return orig_newEntity
-    end
-    
-    -- Helper: Restore original entity definition function
-    local function restore_wrapper(orig_newEntity)
-      if orig_newEntity then
-        _G.newEntity = orig_newEntity
-      else
-        _G.newEntity = nil
-      end
-    end
-    
     -- Helper: Count current missing terrains
     local function count_missing_terrains()
       local missing = 0
