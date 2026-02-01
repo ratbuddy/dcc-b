@@ -142,15 +142,10 @@ return {
       
       print("[DCCB-Gallery] Discovering zone grid files...")
       
-      -- Try to get the fs module for filesystem operations
-      local ok, fs = pcall(require, "engine.GameFiles")
-      if not ok then
-        print("[DCCB-Gallery] WARNING: Could not load engine.GameFiles, trying fallback")
-        -- Try alternative module name
-        ok, fs = pcall(require, "fs")
-      end
+      -- Get the engine global fs
+      local fs = rawget(_G, "fs")
       
-      if not ok or not fs then
+      if not fs then
         print("[DCCB-Gallery] WARNING: Filesystem module not available")
         print("[DCCB-Gallery] Falling back to empty grid list")
         return discovered
@@ -171,17 +166,28 @@ return {
         return discovered
       end
       
+      -- Sort zone directories for deterministic ordering
+      table.sort(zone_dirs)
+      
       -- For each zone directory, look for grids files
       for _, zone_dir in ipairs(zone_dirs) do
+        -- Normalize zone_dir to avoid trailing slashes
+        zone_dir = zone_dir:gsub("/$", "")
         local zone_path = "/data/zones/" .. zone_dir
         
         -- Check if this is actually a directory (try to list it)
         local dir_ok, zone_files = pcall(fs.list, zone_path)
         if dir_ok and zone_files then
+          -- Sort zone files for deterministic ordering
+          table.sort(zone_files)
+          
           -- Look for grids.lua
           local grids_path = zone_path .. "/grids.lua"
-          if fs.exists and pcall(fs.exists, grids_path) then
-            table.insert(discovered, grids_path)
+          if fs.exists then
+            local exists_ok, exists_result = pcall(fs.exists, grids_path)
+            if exists_ok and exists_result then
+              table.insert(discovered, grids_path)
+            end
           end
           
           -- Look for grids-*.lua files
