@@ -67,33 +67,6 @@ return {
   post_process = function(a, b, c, ...)
     local Map = require "engine.Map"
     
-    -- Load canonical terrain manifest (384 terrains)
-    local manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"
-    print("[DCCB-Gallery] Loading canonical manifest (384 terrains): " .. manifest_path)
-    local manifest_ok, manifest = pcall(loadfile, manifest_path)
-    if not manifest_ok or not manifest then
-      print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
-      print("[DCCB-Gallery] Error: " .. tostring(manifest))
-      return
-    end
-    manifest = manifest()
-    
-    -- Debug: Log manifest info
-    if manifest and manifest.TERRAIN_CANDIDATES then
-      local count = #manifest.TERRAIN_CANDIDATES
-      print(string.format("[DCCB-Gallery] Manifest loaded: %d terrain candidates", count))
-      if count > 0 then
-        local first_few = {}
-        for i = 1, math.min(5, count) do
-          table.insert(first_few, manifest.TERRAIN_CANDIDATES[i].id)
-        end
-        print("[DCCB-Gallery] First 5 IDs: " .. table.concat(first_few, ", "))
-      end
-    else
-      print("[DCCB-Gallery] ERROR: Manifest loaded but has no TERRAIN_CANDIDATES")
-      return
-    end
-    
     -- Capability-based detection: find level and zone by their methods
     local level, zone
     
@@ -123,6 +96,339 @@ return {
       print("[DCCB-Gallery] ERROR: Cannot detect zone object (no .makeEntityByName/.makeEntity found)")
       return
     end
+    
+    -- FIX: Force map to be 64×64 since Empty generator doesn't respect dimensions
+    -- The engine creates 30×16 by default, but we need the full 64×64 for palette
+    local current_w, current_h = level.map.w, level.map.h
+    print(string.format("[DCCB-Gallery] Current map size: %d x %d", current_w, current_h))
+    
+    if current_w ~= 64 or current_h ~= 64 then
+      print("[DCCB-Gallery] Resizing map to 64x64...")
+      -- Create new 64×64 map
+      local new_map = Map.new(64, 64)
+      -- Replace level's map
+      level.map = new_map
+      print(string.format("[DCCB-Gallery] Map resized to: %d x %d", level.map.w, level.map.h))
+    end
+    
+    -- Load canonical terrain manifest (384 terrains)
+    local manifest_path = "/data-dccb/dccb/tileset/gallery_manifest.lua"
+    print("[DCCB-Gallery] Loading canonical manifest (384 terrains): " .. manifest_path)
+    local manifest_ok, manifest = pcall(loadfile, manifest_path)
+    if not manifest_ok or not manifest then
+      print("[DCCB-Gallery] ERROR: Cannot load gallery manifest")
+      print("[DCCB-Gallery] Error: " .. tostring(manifest))
+      return
+    end
+    manifest = manifest()
+    
+    -- Debug: Log manifest info
+    if manifest and manifest.TERRAIN_CANDIDATES then
+      local count = #manifest.TERRAIN_CANDIDATES
+      print(string.format("[DCCB-Gallery] Manifest loaded: %d terrain candidates", count))
+      if count > 0 then
+        local first_few = {}
+        for i = 1, math.min(5, count) do
+          table.insert(first_few, manifest.TERRAIN_CANDIDATES[i].id)
+        end
+        print("[DCCB-Gallery] First 5 IDs: " .. table.concat(first_few, ", "))
+      end
+    else
+      print("[DCCB-Gallery] ERROR: Manifest loaded but has no TERRAIN_CANDIDATES")
+      return
+    end
+    
+    -- ========================================================================
+    -- ZONE GRID DISCOVERY AND LOADING
+    -- ========================================================================
+    -- Discover and load zone-local grid files to resolve more terrain IDs
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Zone Grid Discovery and Loading")
+    print("[DCCB-Gallery] ========================================")
+    
+    -- Attribution tracking: terrain ID -> source file information
+    local define_source_map = {}      -- id -> first file where define_as was seen
+    local resolved_source_map = {}    -- id -> file load after which ID first resolved
+    
+    -- Helper: Discover zone grid files under /data/zones/**/
+    local function discover_zone_grids()
+      local discovered = {}
+      
+      print("[DCCB-Gallery] Discovering zone grid files...")
+      
+      -- Get the engine global fs
+      local fs = rawget(_G, "fs")
+      
+      if not fs then
+        print("[DCCB-Gallery] WARNING: Filesystem module not available")
+        print("[DCCB-Gallery] Falling back to empty grid list")
+        return discovered
+      end
+      
+      -- Check if fs.list exists
+      if not fs.list then
+        print("[DCCB-Gallery] WARNING: fs.list not available")
+        print("[DCCB-Gallery] Falling back to empty grid list")
+        return discovered
+      end
+      
+      -- Enumerate zone directories
+      local zones_ok, zone_dirs = pcall(fs.list, "/data/zones/")
+      if not zones_ok or not zone_dirs then
+        print("[DCCB-Gallery] WARNING: Could not enumerate /data/zones/")
+        print("[DCCB-Gallery] Error: " .. tostring(zone_dirs))
+        return discovered
+      end
+      
+      -- Sort zone directories for deterministic ordering
+      table.sort(zone_dirs)
+      
+      -- For each zone directory, look for grids files
+      for _, zone_dir in ipairs(zone_dirs) do
+        -- Normalize zone_dir to avoid trailing slashes
+        zone_dir = zone_dir:gsub("/$", "")
+        local zone_path = "/data/zones/" .. zone_dir
+        
+        -- Check if this is actually a directory (try to list it)
+        local dir_ok, zone_files = pcall(fs.list, zone_path)
+        if dir_ok and zone_files then
+          -- Sort zone files for deterministic ordering
+          table.sort(zone_files)
+          
+          -- Look for grids.lua
+          local grids_path = zone_path .. "/grids.lua"
+          if fs.exists then
+            local exists_ok, exists_result = pcall(fs.exists, grids_path)
+            if exists_ok and exists_result then
+              table.insert(discovered, grids_path)
+            end
+          end
+          
+          -- Look for grids-*.lua files
+          for _, file in ipairs(zone_files) do
+            if type(file) == "string" and file:match("^grids%-.*%.lua$") then
+              local grid_file_path = zone_path .. "/" .. file
+              table.insert(discovered, grid_file_path)
+            end
+          end
+        end
+      end
+      
+      -- Sort deterministically for consistency
+      table.sort(discovered)
+      
+      print(string.format("[DCCB-Gallery] Discovered %d zone grid files", #discovered))
+      if #discovered > 0 and #discovered <= 10 then
+        -- Log first few files for debugging
+        for i, path in ipairs(discovered) do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, path))
+        end
+      elseif #discovered > 10 then
+        -- Log first 5 and last 5
+        print("[DCCB-Gallery] First 5 files:")
+        for i = 1, 5 do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, discovered[i]))
+        end
+        print("[DCCB-Gallery] ...")
+        print("[DCCB-Gallery] Last 5 files:")
+        for i = #discovered - 4, #discovered do
+          print(string.format("[DCCB-Gallery]   [%d] %s", i, discovered[i]))
+        end
+      end
+      
+      return discovered
+    end
+    
+    -- Helper: Count current missing terrains
+    local function count_missing_terrains()
+      local missing = 0
+      for idx = 1, #manifest.TERRAIN_CANDIDATES do
+        local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+        if terrain_info then
+          local id = terrain_info.id
+          -- Try to resolve the terrain
+          local entity = zone:makeEntityByName(level, "terrain", id)
+          if not entity then
+            missing = missing + 1
+          end
+        end
+      end
+      return missing
+    end
+    
+    -- Discover zone grid files
+    local discovered_files = discover_zone_grids()
+    print(string.format("[DCCB-Gallery] Discovered %d zone grid file candidates", #discovered_files))
+    
+    -- Track loading statistics
+    local loaded_count = 0
+    local failed_count = 0
+    local early_stop_threshold = 50  -- Stop after N consecutive files with no new resolutions
+    local consecutive_no_resolve = 0
+    local newly_resolved_total = 0
+    
+    -- Count initial missing terrains (before zone grid loading)
+    local initial_missing_count = count_missing_terrains()
+    print(string.format("[DCCB-Gallery] Missing terrains before zone grid loading: %d", initial_missing_count))
+    
+    -- Track which IDs are currently missing (for incremental re-probing)
+    local missing_ids = {}
+    for idx = 1, #manifest.TERRAIN_CANDIDATES do
+      local terrain_info = manifest.TERRAIN_CANDIDATES[idx]
+      if terrain_info then
+        local id = terrain_info.id
+        local entity = zone:makeEntityByName(level, "terrain", id)
+        if not entity then
+          missing_ids[id] = true
+        end
+      end
+    end
+    
+    -- Get Grid class for proper entity loading environment
+    local Grid = require("engine.Grid")
+    
+    -- Get Zone class for currentZone context manipulation
+    local Zone = require("engine.Zone")
+    
+    -- Create sandbox zone with stub helpers for safe grid loading
+    -- Grid files may call currentZone:makeNewTrees(), makeTrees(), etc.
+    -- These stubs prevent crashes while allowing discovery/documentation
+    local sandbox_helper_calls = {}  -- Track which helpers are invoked
+    
+    local function make_sandbox_zone()
+      local sandbox = {}
+      
+      -- Stub: makeNewTrees - returns empty table to prevent crashes
+      sandbox.makeNewTrees = function(self, ...)
+        local file = debug.getinfo(2, "S").source or "unknown"
+        if not sandbox_helper_calls.makeNewTrees then
+          sandbox_helper_calls.makeNewTrees = {}
+        end
+        if not sandbox_helper_calls.makeNewTrees[file] then
+          sandbox_helper_calls.makeNewTrees[file] = true
+          print(string.format("[DCCB-Gallery] SANDBOX helper invoked: makeNewTrees (file=%s)", file))
+        end
+        return {}
+      end
+      
+      -- Stub: makeTrees - returns empty table to prevent crashes
+      sandbox.makeTrees = function(self, ...)
+        local file = debug.getinfo(2, "S").source or "unknown"
+        if not sandbox_helper_calls.makeTrees then
+          sandbox_helper_calls.makeTrees = {}
+        end
+        if not sandbox_helper_calls.makeTrees[file] then
+          sandbox_helper_calls.makeTrees[file] = true
+          print(string.format("[DCCB-Gallery] SANDBOX helper invoked: makeTrees (file=%s)", file))
+        end
+        return {}
+      end
+      
+      -- Add more stub helpers as discovered through error logs
+      -- Each should log once per file and return safe empty value
+      
+      return sandbox
+    end
+    
+    local sandbox_zone = make_sandbox_zone()
+    
+    -- Load zone grid files incrementally using Grid:loadList
+    -- This provides the proper ToME entity loading environment with:
+    -- - Custom load() function that calls Grid:loadList recursively
+    -- - newEntity that registers define_as into results
+    -- - Zone context via currentZone (sandboxed to prevent crashes)
+    for _, grid_file in ipairs(discovered_files) do
+      -- Save original getCurrentLoadingZone to restore after load
+      local orig_getCurrentLoadingZone = Zone.getCurrentLoadingZone
+      
+      -- Try to load the file using Grid:loadList with attribution callback
+      -- Wrap in currentZone context so grid files can call zone helpers safely
+      local load_ok, load_err = pcall(function()
+        if Grid and Grid.loadList then
+          -- Temporarily replace getCurrentLoadingZone to return our sandbox
+          Zone.getCurrentLoadingZone = function()
+            return sandbox_zone
+          end
+          
+          -- Use mod callback (4th parameter) to capture define_as attribution
+          Grid:loadList(grid_file, nil, nil, function(e)
+            if e and e.define_as and not define_source_map[e.define_as] then
+              define_source_map[e.define_as] = grid_file
+            end
+          end)
+        else
+          error("Grid:loadList not available")
+        end
+      end)
+      
+      -- Always restore original getCurrentLoadingZone, even on error
+      Zone.getCurrentLoadingZone = orig_getCurrentLoadingZone
+      
+      if load_ok then
+        loaded_count = loaded_count + 1
+        
+        -- Re-probe only the currently missing IDs
+        local newly_resolved_this_file = 0
+        local still_missing = {}
+        
+        -- missing_ids is a set (id -> true), iterate over keys only
+        for id in pairs(missing_ids) do
+          local entity = zone:makeEntityByName(level, "terrain", id)
+          if entity then
+            -- This ID transitioned from MISSING -> RESOLVED
+            newly_resolved_this_file = newly_resolved_this_file + 1
+            newly_resolved_total = newly_resolved_total + 1
+            
+            -- Record resolved_source_file (if not already set)
+            if not resolved_source_map[id] then
+              resolved_source_map[id] = grid_file
+            end
+          else
+            -- Still missing
+            still_missing[id] = true
+          end
+        end
+        
+        -- Update missing_ids for next iteration
+        missing_ids = still_missing
+        
+        -- Track consecutive no-resolve for early stop
+        if newly_resolved_this_file == 0 then
+          consecutive_no_resolve = consecutive_no_resolve + 1
+          
+          -- Early stop check
+          if consecutive_no_resolve >= early_stop_threshold then
+            print(string.format("[DCCB-Gallery] Early stop: %d consecutive files with no resolutions", 
+              consecutive_no_resolve))
+            break
+          end
+        else
+          consecutive_no_resolve = 0  -- Reset counter
+        end
+      else
+        failed_count = failed_count + 1
+        print(string.format("[DCCB-Gallery] WARNING: Failed to load %s: %s", 
+          grid_file, tostring(load_err)))
+      end
+    end
+    
+    -- Count final missing terrains (after zone grid loading)
+    local final_missing_count = count_missing_terrains()
+    
+    print("[DCCB-Gallery] ========================================")
+    print("[DCCB-Gallery] Zone Grid Loading Complete")
+    print("[DCCB-Gallery] ========================================")
+    print(string.format("[DCCB-Gallery] Discovered: %d files", #discovered_files))
+    print(string.format("[DCCB-Gallery] Loaded successfully: %d files", loaded_count))
+    print(string.format("[DCCB-Gallery] Failed: %d files", failed_count))
+    print(string.format("[DCCB-Gallery] Newly resolved terrains: %d", newly_resolved_total))
+    print(string.format("[DCCB-Gallery] Missing before: %d", initial_missing_count))
+    print(string.format("[DCCB-Gallery] Missing after: %d", final_missing_count))
+    if consecutive_no_resolve >= early_stop_threshold then
+      print(string.format("[DCCB-Gallery] Early stop triggered: %d consecutive files with no resolutions", 
+        consecutive_no_resolve))
+    end
+    print("[DCCB-Gallery] ")
     
     -- Helper function to compute visual signature
     local function compute_visual_signature(terrain)
@@ -449,7 +755,19 @@ return {
     print(string.format("[DCCB-PROBE-REPORT] RESOLVED IDs (%d):", #resolved_list))
     print("[DCCB-PROBE-REPORT] ========================================")
     for _, id in ipairs(resolved_list) do
-      print("[DCCB-PROBE-REPORT]   " .. id)
+      local attribution_parts = {id}
+      
+      -- Add define_source_file if available
+      if define_source_map[id] then
+        table.insert(attribution_parts, string.format("define_source_file=%s", define_source_map[id]))
+      end
+      
+      -- Add resolved_source_file if available
+      if resolved_source_map[id] then
+        table.insert(attribution_parts, string.format("resolved_source_file=%s", resolved_source_map[id]))
+      end
+      
+      print("[DCCB-PROBE-REPORT]   " .. table.concat(attribution_parts, " | "))
     end
     print("[DCCB-PROBE-REPORT] ")
     
@@ -641,6 +959,7 @@ return {
     print(string.format("[DCCB-Gallery] Map bounds: %d × %d", W, H))
     print(string.format("[DCCB-Gallery] Layout capacity: %d cols × %d rows = %d max", max_cols, max_rows, capacity))
     print(string.format("[DCCB-Gallery] ✓ Placed: %d visually unique terrains", placed_count))
+    print("[DCCB-Gallery] NOTE: Row count reflects the number of visually unique resolved terrains")
     print(string.format("[DCCB-Gallery] ⊘ Skipped (missing): %d", skipped_missing))
     print(string.format("[DCCB-Gallery] ⚠ Skipped (dangerous): %d", skipped_dangerous))
     print(string.format("[DCCB-Gallery] ≈ Skipped (visual duplicates): %d", skipped_visual_duplicate))
