@@ -50,7 +50,7 @@ def _load_dotenv() -> None:
                 continue
             key, _, value = line.partition("=")
             key = key.strip()
-            value = value.strip()
+            value = value.strip().strip("\"'")
             if not os.environ.get(key):
                 os.environ[key] = value
 
@@ -133,13 +133,18 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL) -> str:
     api_key = _get_api_key()
     client = OpenAI(api_key=api_key)
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-    )
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+        )
+    except Exception as exc:
+        print(f"ERROR: OpenAI API call failed: {exc}", file=sys.stderr)
+        sys.exit(1)
+
     return response.choices[0].message.content
 
 
@@ -158,7 +163,15 @@ def generate_json(prompt: str, *, model: str = DEFAULT_MODEL) -> dict:
     if text.endswith("```"):
         text = text[:-3]
 
-    return json.loads(text.strip())
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError as exc:
+        print(
+            f"ERROR: Failed to parse model response as JSON: {exc}\n"
+            f"Raw response:\n{raw}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
