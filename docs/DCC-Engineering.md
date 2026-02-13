@@ -426,4 +426,17 @@ When using ChatGPT/Cursor/Claude:
 - Require unit-test-like “self checks” via log output and deterministic seed runs
 - Merge results back into repo and update docs as contracts evolve
 
+### Scripted AI Helper (OpenAI)
+
+`ai_helper.py` provides a command-line interface for content generation
+via the OpenAI (ChatGPT) API. It is pre-loaded with DCC-B project context.
+
+Setup:
+1. `cp .env.example .env` and add your OpenAI API key
+2. `pip install openai`
+3. `python ai_helper.py "Generate a swamp region profile"`
+
+See `ai_helper.py` docstring for full usage and `generate_json()` for
+structured JSON output (regions, floor rules, reward tables, etc.).
+
 ---
